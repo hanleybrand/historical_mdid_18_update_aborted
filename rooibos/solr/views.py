@@ -12,7 +12,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from . import SolrIndex
 from pysolr import SolrError
-from rooibos.access import filter_by_access, accessible_ids
+from rooibos.access import filter_by_access
 import socket
 from rooibos.util import safe_int, json_view, calculate_hash
 from rooibos.data.models import Field, Collection, FieldValue, Record
@@ -242,12 +242,26 @@ def _generate_query(search_facets, user, collection, criteria, keywords, selecte
         query = 'id:(%s) AND %s' % (' '.join(map(str, selected or [-1])), query)
 
     if not user.is_superuser:
-        collections = ' '.join(map(str, accessible_ids(user, Collection)))
+        collections = ' '.join(map(str, filter_by_access(user, Collection).values_list('id', flat=True)))
         c = []
-        if collections: c.append('collections:(%s)' % collections)
-        if user.id: c.append('owner:%s' % user.id)
+        if collections:
+            # access through readable collection when no record ACL set
+            c.append('collections:(%s) AND acl_read:default' % collections)
+        if user.id:
+            # access through ownership
+            c.append('owner:%s' % user.id)
+            # access through record ACL
+            groups = ' '.join(
+                'g%d' % id for id in user.groups.values_list('id', flat=True)
+                )
+            if groups:
+                groups = '((%s) AND NOT (%s)) OR ' % (groups, groups.upper())
+            c.append('acl_read:((%su%d) AND NOT U%d)' % (groups, user.id, user.id))
+        else:
+            # access through record ACL
+            c.append('acl_read:anon')
         if c:
-            query = '(%s) AND %s' % (' OR '.join(c), query)
+            query = '((%s)) AND %s' % (') OR ('.join(c), query)
         else:
             query = 'id:"-1"'
 
@@ -268,7 +282,7 @@ def run_search(user,
                remove=None,
                produce_facets=False):
 
-    available_storage = accessible_ids(user, Storage)
+    available_storage = list(filter_by_access(user, Storage).values_list('id', flat=True))
     exclude_facets = ['identifier']
     fields = Field.objects.filter(standard__prefix='dc').exclude(name__in=exclude_facets)
 
