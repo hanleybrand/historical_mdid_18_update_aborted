@@ -4,6 +4,11 @@ import ldap
 from baseauth import BaseAuthenticationBackend
 import logging
 
+logger = logging.getLogger('rooibos')
+authlog = logging.FileHandler('/var/local/mdid/mdid-storage/mdid-scratch/logs/ldap.log')
+logFormat = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+authlog.setFormatter(logFormat)
+
 class LdapAuthenticationBackend(BaseAuthenticationBackend):
     def authenticate(self, username=None, password=None):
         for ldap_auth in settings.LDAP_AUTH:

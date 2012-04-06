@@ -11,3 +11,10 @@ solr/wrapper-license.conf
 config.xml
 CACHE
 rooibos/static/flowplayer/flowplayer.commercial*
+.idea/*
+*/.idea/*
+rooibos/auth/badLADP.py
+
+rooibos/ldapauth_test.py
+
+rooibos/auth/ldapAgain.py
