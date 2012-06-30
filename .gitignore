@@ -14,3 +14,6 @@ rooibos/static/flowplayer/flowplayer.commercial*
 Thumbs.db
 rooibos/static/cache/*
 2*M.mysql
+rooibos/mdid2.xml
+rooibos/nohup_solr
+solr/nohup_solr
