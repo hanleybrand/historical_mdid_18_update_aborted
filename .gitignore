@@ -1,5 +1,6 @@
 *.pyc
 *.pyo
+Dev/*
 rooibos/settings_local.py
 solr/logs/*.log
 solr/solr/data/
@@ -12,8 +13,9 @@ config.xml
 CACHE
 rooibos/static/flowplayer/flowplayer.commercial*
 Thumbs.db
-rooibos/static/cache/*
 2*M.mysql
 rooibos/mdid2.xml
 rooibos/nohup_solr
+rooibos/mdid2migrateOut.txt
+rooibos/static/cache/*
 solr/nohup_solr
