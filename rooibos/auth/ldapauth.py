@@ -1,36 +1,68 @@
 from django.contrib.auth.models import User
 from django.conf import settings
 import ldap
+import sys, traceback
 from baseauth import BaseAuthenticationBackend
 import logging
 
+logger = logging.getLogger('rooibos')
+authlog = logging.FileHandler('/var/local/mdid-storage/mdid-scratch/logs/ldap.log')
+logFormat = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+authlog.setFormatter(logFormat)
+logger.addHandler(authlog)
+logger.setLevel(logging.DEBUG)
+
 class LdapAuthenticationBackend(BaseAuthenticationBackend):
     def authenticate(self, username=None, password=None):
+        
+        if settings.DEBUG == True:
+             logger.debug('start ldap for  %s' % username)
+             ldap.set_option(ldap.OPT_DEBUG_LEVEL, 4095)
+
+
         for ldap_auth in settings.LDAP_AUTH:
+
+            l = ldap.initialize(ldap_auth['uri'])
             try:
+                logging.debug('login request for  %s' % username)
                 username = username.strip()
-                l = ldap.initialize(ldap_auth['uri'])
                 l.protocol_version = ldap_auth['version']
                 for option, value in ldap_auth['options'].iteritems():
                     l.set_option(getattr(ldap, option), value)
-
+                    
                 if ldap_auth.get('bind_user'):
-                    l.simple_bind_s(ldap_auth['bind_user'],
-                                    ldap_auth.get('bind_password'))
+                    logger.debug('Bind user binding %s' % username)
+
+#                    testLdap = l.simple_bind_s(ldap_auth['bind_user'],
+#                                    ldap_auth.get('bind_password'))
+#                    logger.debug('result of bind user binding: %s' % l.result(testLdap))
+
                     result = l.search_s(ldap_auth['base'],
                                     ldap_auth['scope'],
                                     '%s=%s' % (ldap_auth['cn'], username),
                                     attrlist=[ldap_auth.get('dn', 'dn')])
-                    if (len(result) != 1):
+                    logger.debug(result)
+#                    logger.debug(result[0][0])
+
+                    if (len(result) != 1 ):
                         continue
                     dn = result[0][1].get(ldap_auth.get('dn', 'dn'))
+                    logger.debug('dn is %s' % dn)
+                    
                     if type(dn) in (tuple, list):
                         dn = dn[0]
+
+                    dn = result[0][0]
+                    
+
+                    logger.debug('dn is %s' % dn)
                 else:
                     dn = '%s=%s,%s' % (ldap_auth['cn'],
                                        username, ldap_auth['base'])
 
-                l.simple_bind_s(dn, password)
+                logger.debug('dn is %s' % dn)
+                testLdap = l.simple_bind_s(dn, password)
+                logger.debug(testLdap)
                 result = l.search_s(ldap_auth['base'],
                                     ldap_auth['scope'],
                                     '%s=%s' % (ldap_auth['cn'], username),
@@ -57,6 +89,9 @@ class LdapAuthenticationBackend(BaseAuthenticationBackend):
                 return user
             except ldap.LDAPError, error_message:
                 logging.debug('LDAP error: %s' % error_message)
+            except Exception as e:
+                logger.debug(traceback.format_exception(*sys.exc_info()))
+                raise # reraises the exception
             finally:
                 if l:
                     l.unbind_s()
