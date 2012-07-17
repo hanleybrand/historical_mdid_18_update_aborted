@@ -22,8 +22,8 @@ class LdapAuthenticationBackend(BaseAuthenticationBackend):
 
         for ldap_auth in settings.LDAP_AUTH:
 
-            l = ldap.initialize(ldap_auth['uri'])
             try:
+                l = ldap.initialize(ldap_auth['uri'])
                 logging.debug('login request for  %s' % username)
                 username = username.strip()
                 l.protocol_version = ldap_auth['version']
@@ -47,26 +47,29 @@ class LdapAuthenticationBackend(BaseAuthenticationBackend):
                     if (len(result) != 1 ):
                         continue
                     dn = result[0][1].get(ldap_auth.get('dn', 'dn'))
-                    logger.debug('dn is %s' % dn)
+                    logger.debug('result[0][1].get(ldap_auth.get(\'dn\', \'dn\') dn is %s' % dn)
                     
                     if type(dn) in (tuple, list):
                         dn = dn[0]
+                        logger.debug('dn=dn[0] is %s' % dn)
 
                     dn = result[0][0]
                     
 
-                    logger.debug('dn is %s' % dn)
+                    logger.debug('dn = result[0][0] is %s' % dn)
                 else:
+                    logger.debug('no bu - binding %s' % username)
                     dn = '%s=%s,%s' % (ldap_auth['cn'],
                                        username, ldap_auth['base'])
 
-                logger.debug('dn is %s' % dn)
+                    logger.debug('dn from cn=username,base is %s' % dn)
                 testLdap = l.simple_bind_s(dn, password)
-                logger.debug(testLdap)
+                #logger.debug('result is %s' % l.result(testLdap))
                 result = l.search_s(ldap_auth['base'],
                                     ldap_auth['scope'],
                                     '%s=%s' % (ldap_auth['cn'], username),
                                     attrlist=ldap_auth['attributes'])
+                
                 if (len(result) != 1):
                     continue
                 attributes = result[0][1]
