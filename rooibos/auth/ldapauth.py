@@ -40,7 +40,7 @@ class LdapAuthenticationBackend(BaseAuthenticationBackend):
                     dn = '%s=%s,%s' % (ldap_auth['cn'],
                                        username, ldap_auth['base'])
 
-                logging.debug('Login with dn: %s' % dn)
+                logging.debug('%s login with dn: %s' % (username, dn))
 
                 l.simple_bind_s(dn, password)
                 result = l.search_s(ldap_auth['base'],

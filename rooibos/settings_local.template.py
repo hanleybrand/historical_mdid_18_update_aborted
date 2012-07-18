@@ -115,9 +115,9 @@ LDAP_AUTH = (
         'email': 'mail',
          # uncomment this line if your LDAP implementation supports searching without
          # binding first, and will then allow the user to bind themselves
-
+         #
         'no_bindGetDN' : True ,
-
+         #
          # uncomment & change bind_user and bind_password if your LDAP implementation
          # requires a bind user to authenticate app users
         'bind_user': '',
