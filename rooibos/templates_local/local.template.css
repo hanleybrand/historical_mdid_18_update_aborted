@@ -1,0 +1,52 @@
+/*
+
+        Directions:
+
+        Save this file as /rooibos/templates_local/local.css to activate it
+
+        This file will load after master.css; use it to override or add css styling to
+        your local installation (see examples below)
+
+        If you would like to change some colors defined in master.css you copy those colors
+        to the localcolors block below - note you will also have to copy the associated styles
+        and override the color, for example copy and change:
+
+            "facet":                        "rgb(25,25,25)",
+
+        from master.css and add it to the block below
+
+        and then duplicate all styles in master.css that contain {{ colors.facet }}  -
+        of course, you can simplify the rules so you are only overriding the color specifications:
+
+            .facet { border: 1px {{ colors.facet }} solid; }
+            .facet-header {  background-color: {{ colors.facet }}; }
+
+        Note: Due to the functionality of django-compressor, all css selectors must occur between
+        the <style> tags.
+
+*/
+
+{% load ui %}
+{% var as localcolors %}
+{
+"background":                   "rgb(229, 225, 214)",
+"header_background":            "{{ PRIMARY_COLOR }}",
+"dropdownmenu_text":            "{{ SECONDARY_COLOR }}"
+}
+{% endvar %}
+
+
+<style type='text/css'>
+
+html {}
+
+#logo {
+    background: url({% url static 'static_local/custom_logo_idea.png' %}) no-repeat bottom left;
+}
+
+body.master {
+background-color: {{ localcolors.background }};
+background-image: url({% url static 'static_local/custom_background_img.png' %});
+    }
+</style>
+
