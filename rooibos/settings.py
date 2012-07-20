@@ -151,6 +151,7 @@ LOGIN_CHECKS = (
 
 TEMPLATE_DIRS = (
     os.path.join(install_dir, 'rooibos', 'templates'),
+    os.path.join(install_dir, 'rooibos', 'templates_local'),
 )
 
 STATIC_DIR = os.path.join(install_dir, 'rooibos', 'static')
