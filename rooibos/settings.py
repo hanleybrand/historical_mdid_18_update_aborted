@@ -121,6 +121,7 @@ INSTALLED_APPS = (
     'impersonate',
     'compressor',
     'south',
+    'rooibos.templates_local',
 )
 
 STORAGE_SYSTEMS = {

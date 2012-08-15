@@ -27,9 +27,12 @@
     {% include "master.css" %}
 {% endcompress %}
 
-{% compress css  %}
-    {% include "../templates_local/local.css" %}
-{% endcompress  %}
+
+
+        {% compress css  %}
+            {% include "../templates_local/local.css" %}
+        {% endcompress  %}
+
 
 
     <!--[if IE]>
