@@ -1,34 +1,13 @@
-from django.conf import settings
 import os.path
-import logging
 
-# this was to confirm that a setting from my
-# settings_local.py would be available - it was
-logging.debug(settings.ADMINS)
+install_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
+localcss = os.path.join(install_dir, 'templates_local', 'local.css')
+localjs =  os.path.join(install_dir, 'templates_local', 'local.js')
 
-try:
-    if os.path.exists('templates_local/local.css'):
-        settings.LOCAL_CSS = True
-    else:
-        #local.css is in the same dir as context.py
-        settings.LOCAL_CSS = False
-        logging.debug('Falserdash! %s is not False at all, I say!' % os.path.exists('local.css'))
-    if os.path.exists('templates_local/local.js'):
-        settings.LOCAL_JS = True
-
-    else:
-        settings.LOCAL_JS = False
-
-    logging.debug('LOCAL_CSS: %s' % settings.LOCAL_CSS)
-    logging.debug('LOCAL_JS: %s' % settings.LOCAL_JS)
-
-finally:
-    def local_static(context):
-        # Make sure to return a dictionary
-        logging.debug('returning the locals')
-        return {
-            'LOCAL_CSS': settings.LOCAL_CSS,
-            'LOCAL_JS': settings.LOCAL_JS,
-            }
+def local_static(context):
+    return {
+        'LOCAL_CSS': localcss if os.path.exists(localcss) else False,
+        'LOCAL_JS':  localjs  if os.path.exists(localjs)  else False,
+        }
 
 
