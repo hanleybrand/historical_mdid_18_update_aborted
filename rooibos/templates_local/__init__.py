@@ -1,16 +1,16 @@
 import os.path
-import settings
 import logging
+from django.conf import settings
 
-#csslocal = os.path.join(install_dir, 'rooibos', 'templates_local', 'local.css')
-#jslocal = os.path.join(install_dir, 'rooibos', 'templates_local', 'local.css')
-
-#csslocal = os.path.join(install_dir, 'rooibos', 'templates_local', 'local.css')
-
-logging.debug('templates local init' )
 
 
 if os.path.exists('local.css'):
-    settings.LOCAL_CSS += True
+    settings.LOCAL_CSS = True
+    logging.debug('LOCAL_CSS: %s' % LOCAL_CSS)
+else:
+    settings.LOCAL_CSS = False
 if os.path.exists('local.js'):
-    settings.LOCAL_JS += True
+    settings.LOCAL_JS = True
+    logging.debug('LOCAL_JS: %s' % LOCAL_JS)
+else:
+    settings.LOCAL_JS = False

@@ -51,6 +51,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "rooibos.context_processors.settings",
     "rooibos.context_processors.selected_records",
     "rooibos.context_processors.current_presentation",
+    "rooibos.templates_local.context.local_static",
 )
 
 MIDDLEWARE_CLASSES = (

@@ -6,6 +6,8 @@
 {% load userprofile %}
 {% load access_control %}
 
+
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -28,10 +30,12 @@
 {% endcompress %}
 
 
-
+    {% if LOCAL_CSS == True %}
+        <!-- local.css does not exist-->
         {% compress css  %}
             {% include "../templates_local/local.css" %}
         {% endcompress  %}
+    {% endif %}
 
 
 
@@ -49,9 +53,7 @@
     <div id="content-wrapper">
         <div id="content">
 
-
-
-
+        {{ LOCAL_CSS }}
 {% block basket %}
 {% spaceless %}
 <div id="basket-content">
@@ -769,9 +771,7 @@
 
 {% endblock %}
 
-{% compress js  %}
-    {% include "../templates_local/local.js" %}
-{% endcompress  %}
+
 
 {{ CUSTOM_TRACKER_HTML|safe }}
 
