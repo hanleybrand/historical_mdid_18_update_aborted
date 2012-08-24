@@ -7,7 +7,6 @@
 {% load access_control %}
 
 
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -29,15 +28,11 @@
     {% include "master.css" %}
 {% endcompress %}
 
-
     {% if LOCAL_CSS != False %}
-        <!-- local.css does not exist-->
         {% compress css  %}
             {% include LOCAL_CSS %}
         {% endcompress  %}
     {% endif %}
-
-
 
     <!--[if IE]>
 {% compress css %}
@@ -97,8 +92,6 @@
 {% endblock %}
 
 <div id="preview-dialog" style="display: none;" class="ui-corner-all"></div>
-
-
 
 {% block header %}
 {% spaceless %}
@@ -773,8 +766,6 @@
     {% endif %}
 
 {% endblock %}
-
-
 
 {{ CUSTOM_TRACKER_HTML|safe }}
 
