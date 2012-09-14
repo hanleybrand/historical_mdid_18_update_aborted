@@ -1,3 +1,5 @@
+.gitignore
+django_virtualenv_localMacOS.wsgi
 *.pyc
 *.pyo
 rooibos/settings_local.py
@@ -15,3 +17,16 @@ rooibos/static/flowplayer/flowplayer.commercial*
 Thumbs.db
 rooibos/static/cache/*
 2*M.mysql
+.DS_Store
+.idea/
+Dev/
+rooibos/.DS_Store
+rooibos/mdid2.xml
+rooibos/mdid2migrateOut.txt
+rooibos/pptexport/.DS_Store
+rooibos/pptexport/pptx_templates/.DS_Store
+rooibos/static/soundmanager/swf/soundmanager2_flash9_xdomain.swf
+gallery_backup/*
+mdidData/*
+dist/mac/*
+solr/nohup_solr
