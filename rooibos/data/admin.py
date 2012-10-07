@@ -6,7 +6,10 @@ class MetadataStandardAdmin(admin.ModelAdmin):
 
 
 class FieldAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ('standard', )
+    #raw_id_fields = ('equivalent')
+    list_display = ('name', 'label', 'standard', 'vocabulary', 'old_name',  )
+
 
 
 class FieldSetFieldInline(admin.TabularInline):
@@ -22,6 +25,9 @@ class FieldValueInline(admin.TabularInline):
     raw_id_fields = ['owner', 'context_type',]
 
 class RecordAdmin(admin.ModelAdmin):
+    list_display = ('name', 'created', 'modified',  )
+    list_filter = ['created', 'modified',]
+    search_fields = ['name',]
     inlines = [FieldValueInline,]
     pass
 
