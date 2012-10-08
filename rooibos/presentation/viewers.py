@@ -4,10 +4,14 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
+from django.core.files.temp import NamedTemporaryFile
+from django.core.servers.basehttp import FileWrapper
+from django.template import Context, Template
 from rooibos.access import get_effective_permissions_and_restrictions, filter_by_access
 from rooibos.viewers import register_viewer, Viewer
 from rooibos.storage import get_image_for_record
 from rooibos.data.models import Record, Collection
+from rooibos.api.views import presentation_detail
 from models import Presentation
 from reportlab.pdfgen import canvas
 from reportlab.lib import pagesizes
@@ -22,6 +26,9 @@ from reportlab.platypus.doctemplate import BaseDocTemplate, PageTemplate
 import Image
 import re
 import math
+import zipfile
+import os
+from StringIO import StringIO
 
 
 def _get_presentation(obj, request, objid):
@@ -296,3 +303,70 @@ class PrintViewViewer(Viewer):
 def printviewviewer(obj, request, objid=None):
     presentation = _get_presentation(obj, request, objid)
     return PrintViewViewer(presentation, request.user) if presentation else None
+
+
+
+class PackageFilesViewer(Viewer):
+
+    title = "Package Files"
+    weight = 25
+
+    def view(self, request):
+
+        def filename(title):
+            return re.sub('[^A-Za-z0-9_. ]+', '-', title)[:32]
+
+        def write(output, image, index, title, prefix=None):
+            if image:
+                output.write(image, ('%s%s %s%s' % (
+                    os.path.join(prefix, '') if prefix else '',
+                    str(index + 1).zfill(4),
+                    filename(title),
+                    os.path.splitext(image)[1])
+                  ).encode('ascii', 'replace'))
+
+        def metadata_file(tempfile, record):
+            t = Template("{% load data %}{% metadata record %}")
+            c = Context({'record': record, 'request': request})
+            tempfile.write(t.render(c))
+            tempfile.flush()
+            return tempfile.name
+
+        presentation = self.obj
+        passwords = request.session.get('passwords', dict())
+        items = presentation.items.filter(hidden=False)
+
+        tempfile = NamedTemporaryFile(suffix='.zip')
+        output = zipfile.ZipFile(tempfile, 'w')
+
+        tempjsonfile = NamedTemporaryFile(suffix='.json')
+        metadata = presentation_detail(request, presentation.id)
+        tempjsonfile.write(metadata.content)
+        tempjsonfile.flush()
+        output.write(tempjsonfile.name, os.path.join('metadata', 'metadata.json'))
+
+        for index, item in enumerate(items):
+            write(output, get_image_for_record(item.record, self.user, passwords=passwords),
+                  index, item.record.title)
+            write(output, get_image_for_record(item.record, self.user, 100, 100, passwords),
+                  index, item.record.title, 'thumb')
+
+            tempmetadatafile = NamedTemporaryFile(suffix='.html')
+            write(output, metadata_file(tempmetadatafile, item.record),
+                  index, item.record.title, 'metadata')
+
+        output.close()
+        tempfile.flush()
+        tempfile.seek(0)
+
+        wrapper = FileWrapper(tempfile)
+        response = HttpResponse(wrapper, mimetype='application/zip')
+        response['Content-Disposition'] = 'attachment; filename=%s.zip' % filename(presentation.title)
+        response['Content-Length'] = os.path.getsize(tempfile.name)
+        return response
+
+
+@register_viewer('packagefilesviewer', PackageFilesViewer)
+def packagefilesviewer(obj, request, objid=None):
+    presentation = _get_presentation(obj, request, objid)
+    return PackageFilesViewer(presentation, request.user) if presentation else None
