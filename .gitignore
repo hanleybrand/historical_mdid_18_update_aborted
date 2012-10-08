@@ -16,6 +16,10 @@ scratch/
 config.xml
 CACHE
 rooibos/static/flowplayer/flowplayer.commercial*
+bin-debug/
+unused_bin/
+.metadata/
 Thumbs.db
 rooibos/static/cache/*
 2*M.mysql
+bin-release-temp/
