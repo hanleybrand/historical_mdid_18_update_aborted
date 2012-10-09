@@ -4,6 +4,7 @@ rooibos/settings_local.py
 solr/logs/*.log
 solr/solr/data/
 apps/
+rooibos/rooibos-apps/
 scratch/
 rooibos/*/migrations/
 solr/wrapper.*
@@ -18,3 +19,19 @@ Thumbs.db
 rooibos/static/cache/*
 2*M.mysql
 bin-release-temp/
+Thumbs.db
+rooibos/static/cache/*
+2*M.mysql
+dist/mac/
+django_virtualenv_localMacOS.wsgi
+gallery_backup/
+mdidData/
+rooibos/createUserAndDb.sql
+rooibos/mdid2.xml
+rooibos/mdid2migrateOut.txt
+rooibos/mediaviewer-read-only/
+rooibos/static/soundmanager/swf/soundmanager2_flash9_xdomain.swf 
+rooibos/templates_local/
+solr/nohup_solr
+rooibos/static/soundmanager/swf/*
+
