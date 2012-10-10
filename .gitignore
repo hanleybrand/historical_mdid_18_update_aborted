@@ -4,7 +4,7 @@ rooibos/settings_local.py
 solr/logs/*.log
 solr/solr/data/
 apps/
-rooibos/rooibos-apps/
+rooibos/apps/
 scratch/
 rooibos/*/migrations/
 solr/wrapper.*
