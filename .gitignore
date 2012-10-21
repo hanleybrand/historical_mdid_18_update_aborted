@@ -33,3 +33,5 @@ rooibos/static/soundmanager/swf/soundmanager2_flash9_xdomain.swf
 rooibos/templates_local/
 solr/nohup_solr
 rooibos/static/soundmanager/swf/*
+rooibos/scratch.html
+httpd-galleryApp1.conf
