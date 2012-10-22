@@ -516,7 +516,7 @@ def data_import_file(request, file):
             mapping = value['mapping']
             options = value['options']
         else:
-            mapping = [dict(fieldname=f, mapping=v.id if v else 0, separate=True)
+            mapping = [dict(fieldname=f, mapping=v.id if v else 0, separate=False)
                        for f, v in imp.mapping.iteritems()]
             options = None
 
