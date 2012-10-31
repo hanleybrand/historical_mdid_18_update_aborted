@@ -11,6 +11,7 @@ solr/solr/data/
 solr/wrapper.*
 solr/wrapper-license.conf
 solr/nohup_solr
+solr/nohup_solr.log
 apps/
 scratch/
 config.xml
