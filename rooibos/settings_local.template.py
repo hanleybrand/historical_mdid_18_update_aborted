@@ -1,18 +1,123 @@
+import sys, os
+
+######--- Logging and Diagnostics ---######
+
+# Debug should never be true on a production system
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-#LOGGING_OUTPUT_ENABLED = True
 
-# Needed to enable compression JS and CSS files
+# set LOGGING_OUTPUT_ENABLED to True to reduce log verbosity
+# or False to disable logging
+LOGGING_OUTPUT_ENABLED = DEBUG
+LOGGING_LOG_SQL = False
+
+# CL_DEBUG when set to true this will output useful info to the terminal or logs
+# when mdid3 initializes (see CL_DEBUG section near end of file)
+CL_DEBUG = True
+
+# TESTING used for running tests to check installation
+# set to True before running tests with
+#     python manage.py test access converters data federatedsearch \
+#         artstor presentation statistics storage userprofile util viewers workers
+#
+# from this directory (project_root/rooibos/). MDID will not function correctly when Testing = True
+TESTING = False
+
+## Directory variables
+#   - project & rooibos root will always be correct even if the
+#     directory is moved
+#   - data_dir defaults to a directory in project root
+#     static_dir
+#
+#  NOTE: any of the computed os.path can be replaced by a string containing an absolute system path
+#  e.g.
+#      default_data = '/var/local/mdid-data'  # unix path
+#  or
+#      default_data = 'c:/mdid-scratch/'  # windows path - note forward slashes
+
+project_root = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
+rooibos_root = os.path.normpath(os.path.join(os.path.dirname(__file__)))
+
+# default_data defaults to an included directory for convenience and quick setup
+# but is unnecessary except as a container for other data directories
+# if your infrastructure plan does not call for all application data to be stored in
+# a central location you can delete the default_data as long as you change the paths to directories
+# inside it.
+default_data = os.path.normpath(os.path.join(project_root, 'mdid-data'))
+scratch_dir = os.path.normpath(os.path.join(default_data, 'mdid-scratch'))
+
+
+######--- Web Application settings ---######
+
+### Needed to enable compression JS and CSS files
 COMPRESS = True
+
+### Upload Limit is in kilobytes;
+UPLOAD_LIMIT = 5242880
+
 MEDIA_URL = '/static/'
-MEDIA_ROOT = 'd:/mdid/rooibos/static/'
+MEDIA_ROOT = os.path.normpath(os.path.join(rooibos_root, 'static'))
 
+SCRATCH_DIR = os.path.normpath(os.path.join(default_data, 'mdid-scratch'))
+AUTO_STORAGE_DIR = os.path.normpath(os.path.join(default_data, 'mdid-collections'))
 
+# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
+# trailing slash.
+# Examples: "http://foo.com/media/", "/media/".
+ADMIN_MEDIA_PREFIX = '/static/admin/'
+
+#  Admins will receive error messages via email when DEBUG = False  above
 ADMINS = (
 #    ('Your name', 'your@email.example'),
 )
-
 MANAGERS = ADMINS
+
+# Theme colors for use in CSS
+PRIMARY_COLOR = "rgb(152, 189, 198)"
+SECONDARY_COLOR = "rgb(118, 147, 154)"
+
+# Legacy setting for ImageViewer 2 support
+SECURE_LOGIN = False
+
+# MDID3 will redirect http requests to the
+# port specified using https (use None to disable)
+SSL_PORT = None
+#SSL_PORT = ':443'
+
+SESSION_COOKIE_AGE = 6 * 3600  # in seconds
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_URL = '/'
+
+WWW_AUTHENTICATION_REALM = "Please log in to access media from MDID at Your University"
+
+# Add your desktop machine's IP in order to be able to
+# view site with information normally restricted to the server console
+INTERNAL_IPS = ('127.0.0.1',)
+
+# The Help link in the MDID3 menu bar will go to this url
+HELP_URL = 'http://mdid.org/help/'
+
+DEFAULT_LANGUAGE = 'en-us'
+
+# Local time zone for this installation. Choices can be found here:
+# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+# although not all choices may be available on all operating systems.
+# If running in a Windows environment this must be set to the same as your
+# system time zone.
+TIME_ZONE = 'America/Chicago'
+
+# By default, video delivery links are created as symbolic links. Some streaming
+# servers (e.g. Wowza) don't deliver those, so hard links are required.
+HARD_VIDEO_DELIVERY_LINKS = False
+
+EXPOSE_TO_CONTEXT = ('STATIC_DIR', 'PRIMARY_COLOR', 'SECONDARY_COLOR', 'CUSTOM_TRACKER_HTML', 'ADMINS')
+
+
+
+######--- Database Configuration ---######
+#
 
 # Settings for MySQL
 DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
@@ -39,58 +144,54 @@ DATABASE_PORT = ''             # Set to empty string for default. Not used with 
 DEFAULT_CHARSET = 'utf-8'
 DATABASE_CHARSET = 'utf8'
 
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# If running in a Windows environment this must be set to the same as your
-# system time zone.
-TIME_ZONE = 'America/Chicago'
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = 'e#!poDuIJ}N,".K=H:T/4z5POb;Gl/N6$6a&,(DRAHUF5c",_p'
 
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/static/admin/'
+######--- External Interface & API Settings  ---######
 
+# solr must be running for MDID to function properly
 SOLR_URL = 'http://127.0.0.1:8983/solr/'
 
-SCRATCH_DIR = 'c:/mdid-scratch/'
-AUTO_STORAGE_DIR = 'c:/mdid-collections/'
-
-# Legacy setting for ImageViewer 2 support
-SECURE_LOGIN = False
-
-
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_URL = '/'
-
+# memcached or couchbase server must be running for MDID to function properly
+# see http://memcached.org or http://www.couchbase.com/couchbase-server/overview for details
 CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
 
-INTERNAL_IPS = ('127.0.0.1',)
+# Confirm path of your open office install (needed for PowerPoint import)
+#OPEN_OFFICE_PATH = 'C:/Program Files/OpenOffice.org 3/program/'
+#OPEN_OFFICE_PATH = '/usr/lib/openoffice.org3/program'
 
-HELP_URL = 'http://mdid.org/help/'
+# only change this if you are sure it needs to be done. (it probably doesn't)
+GEARMAN_SERVERS = ['127.0.0.1']
 
-DEFAULT_LANGUAGE = 'en-us'
+# Set to True to use Google Analytics, and paste your tracking code into CUSTOM_TRACKER_HTML
+# see https://developers.google.com/analytics/ for details
+GOOGLE_ANALYTICS_MODEL = False
+CUSTOM_TRACKER_HTML = ""
 
-GOOGLE_ANALYTICS_MODEL = True
-
+# a flickr api key is needed for flickr search integration
+# see http://www.flickr.com/services/api/misc.api_keys.html for details
 FLICKR_KEY = ''
 FLICKR_SECRET = ''
 
-# Set to None if you don't subscribe to ARTstor
+# Set ARTSTOR_GATEWAY to None unless you have completed the
+# ARTstor Metaserach Agreement with General Counsel and Secretary
+# of ARTstor (note: completion will likely take a few weeks)
 ARTSTOR_GATEWAY = None
+# see
+# http://www.artstor.org/what-is-artstor/w-html/features-and-tools-metasearch.shtml
+# for details of how to activate ARTstor
+# When the agreement is complete uncomment the line below and comment the one above
 #ARTSTOR_GATEWAY = 'http://sru.artstor.org/SRU/artstor.htm'
 
-OPEN_OFFICE_PATH = 'C:/Program Files/OpenOffice.org 3/program/'
 
-GEARMAN_SERVERS = ['127.0.0.1']
 
+
+######--- Authentication settings ---######
+#   MDID3 supports an internal authentication system as well as LDAP, IMAP and POP authentication
+#   Uncomment the appropriate line in AUTHENTICATION_BACKENDS to activate LDAP, IMAP and/or POP
+#   and then fill out the appropriate settings section immediately following.
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'rooibos.auth.ldapauth.LdapAuthenticationBackend',
+#    'rooibos.auth.ldapauth.LdapAuthenticationBackend',
 #    'rooibos.auth.mailauth.ImapAuthenticationBackend',
 #    'rooibos.auth.mailauth.PopAuthenticationBackend',
 )
@@ -135,7 +236,6 @@ LDAP_AUTH = (
         'bind_user': 'CN=LDAP Bind user,OU=users,DC=ad,DC=jmu,DC=edu',
         'bind_password': 'abc123',
     },
-
 )
 
 IMAP_AUTH = (
@@ -156,19 +256,18 @@ POP_AUTH = (
     },
 )
 
-SESSION_COOKIE_AGE = 6 * 3600  # in seconds
 
-SSL_PORT = None  # ':443'
 
-# Theme colors for use in CSS
-PRIMARY_COLOR = "rgb(152, 189, 198)"
-SECONDARY_COLOR = "rgb(118, 147, 154)"
+######--- License & API Keys ---######
 
-WWW_AUTHENTICATION_REALM = "Please log in to access media from MDID at Your University"
 
-CUSTOM_TRACKER_HTML = ""
 
-EXPOSE_TO_CONTEXT = ('STATIC_DIR', 'PRIMARY_COLOR', 'SECONDARY_COLOR', 'CUSTOM_TRACKER_HTML', 'ADMINS')
+# Make this unique, and don't share it with anybody.
+# generate by typing
+#     python manage.py generate_secret_key
+# in the rooibos directory
+# DON'T USE THE ONE BELOW, CHANGE AS SOON AS POSSIBLE
+SECRET_KEY = '^t94yw8uwo7afiv#-+)qakzqq@wmo1^6*am%p^8%5rjnl67*-d'
 
 # The Megazine viewer is using a third party component that has commercial
 # licensing requirements.  To enable the component you need to enter your
@@ -179,6 +278,7 @@ MEGAZINE_PUBLIC_KEY = ""
 # To use a commercial licensed flowplayer, enter your flowplayer key here
 # and add the flowplayer.commercial-3.x.x.swf file to the
 # rooibos/static/flowplayer directory
+# see http://flowplayer.org/download/ for licensing details
 FLOWPLAYER_KEY = ""
 
 # MDID uses some Yahoo APIs that require an application key
@@ -186,12 +286,41 @@ FLOWPLAYER_KEY = ""
 YAHOO_APPLICATION_ID = ""
 
 
-# By default, video delivery links are created as symbolic links. Some streaming
-# servers (e.g. Wowza) don't deliver those, so hard links are required.
-HARD_VIDEO_DELIVERY_LINKS = False
+######--- Wrap up ---######
 
 
-additional_settings = [
-#    'apps.jmutube.settings_local',
-#    'apps.svohp.settings_local',
-]
+# This will print a fair amount of information helpful for debugging an installation
+# if CL_DEBUG = True at the beginning of this file
+# see http://blog.dscpl.com.au/2010/03/improved-wsgi-script-for-use-with.html
+if CL_DEBUG:
+    print "__name__ =", __name__
+    print "__file__ =", __file__
+    print "os.getpid() =", os.getpid()
+    print "os.getcwd() =", os.getcwd()
+    print "os.curdir =", os.path.abspath(os.curdir)
+    print "sys.path =" # , repr(sys.path)
+    for forks in sys.path:
+        print forks
+    print "sys.modules.keys() =", repr(sys.modules.keys())
+    print "sys.modules.has_key('rooibos') =", sys.modules.has_key('rooibos')
+    if sys.modules.has_key('rooibos'):
+        print "sys.modules['rooibos'].__name__ =", sys.modules['rooibos'].__name__
+        print "sys.modules['rooibos'].__file__ =", sys.modules['rooibos'].__file__
+        print "os.environ['DJANGO_SETTINGS_MODULE'] =", os.environ.get('DJANGO_SETTINGS_MODULE', None)
+
+######--- Basic Testing or Custom Apps ---######
+
+if TESTING:
+    # if TESTING = True then settings_test.py will be loaded and will undo many settings here
+    # for the purpose of testing basic mdid functionality - otherwise, custom apps if any will be loaded
+    additional_settings = ['settings_test',]
+else:
+    # add any custom apps you would like to install here
+    additional_settings = [
+    #    'apps.jmutube.settings_local',
+    #    'apps.svohp.settings_local',
+    ]
+
+TEMPLATE_DIRS = (
+    os.path.join(os.path.dirname(__file__), 'contrib', 'djangologging', 'templates'),
+    )

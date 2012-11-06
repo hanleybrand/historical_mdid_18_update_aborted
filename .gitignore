@@ -30,3 +30,9 @@ rooibos/mediaviewer-read-only/
 rooibos/static/soundmanager/swf/soundmanager2_flash9_xdomain.swf
 rooibos/templates_local/
 solr/nohup_solr
+*.sqlite
+
+dist/pycharm/
+dist/pycharm/*
+
+.gitignore
