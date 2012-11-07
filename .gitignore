@@ -18,3 +18,6 @@ Thumbs.db
 rooibos/static/cache/*
 2*M.mysql
 bin-release-temp/
+sass/static/*
+
+sass/.sass-cache/99d18d2121da56603438762a133251642aad15b5/master.scssc
