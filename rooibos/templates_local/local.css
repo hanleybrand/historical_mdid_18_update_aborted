@@ -29,7 +29,7 @@
 {% load ui %}
 {% var as localcolors %}
 {
-"background":                   "rgb(229, 225, 214)",
+"background":                   "rgb(244, 243, 241)",
 "header_background":            "{{ PRIMARY_COLOR }}",
 "dropdownmenu_text":            "{{ SECONDARY_COLOR }}"
 }
@@ -46,7 +46,7 @@ html {}
 
 body.master {
 background-color: {{ localcolors.background }};
-background-image: url({% url static 'static_local/custom_background_img.png' %});
+background-image: url({% url static 'static_local/custom_background_img.jpg' %});
     }
 </style>
 
