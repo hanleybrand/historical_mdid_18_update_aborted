@@ -56,7 +56,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 MIDDLEWARE_CLASSES = (
     'rooibos.middleware.Middleware',
     'rooibos.help.middleware.PageHelp',
-#    'rooibos.profile_middleware.ProfileMiddleware',
+    'rooibos.Interactive_Profiling_Middleware.ProfileMiddleware',
+    'rooibos.profile_middleware.ProfileMiddleware',
     'rooibos.sslredirect.SSLRedirect',
     'rooibos.ui.middleware.PageTitles',
     'django.middleware.common.CommonMiddleware',
