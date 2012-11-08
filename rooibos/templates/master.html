@@ -20,8 +20,8 @@
     <link rel="shortcut icon" href="{% url static 'images/favicon.ico' %}" />
 {% block stylesheets %}
 {% compress css %}
-    <link href="{% url static 'css/reset.css' %}" rel="stylesheet" type="text/css" media="screen">
-    <link href="{% url static 'css/typography.css' %}" rel="stylesheet" type="text/css" media="screen">
+    <link href="{% url static 'zfoundation/css/app.css' %}" rel="stylesheet" type="text/css" media="screen">
+{#    <link href="{% url static 'zfoundation/css/master.css' %}" rel="stylesheet" type="text/css" media="screen"> #}
     <link href="{% url static 'jquery/jquery.autocomplete.css' %}" rel="stylesheet" type="text/css" media="screen">
     <link href="{% url static 'jquery/jquery-ui-1.8.11.custom.css' %}" rel="stylesheet" type="text/css" media="screen">
     {% include "master.css" %}
