@@ -21,3 +21,4 @@ bin-release-temp/
 sass/static/*
 sass/.sass-cache/*
 mdidData/logs/*
+mdidData/anything

@@ -24,7 +24,7 @@
 {#    <link href="{% url static 'zfoundation/css/master.css' %}" rel="stylesheet" type="text/css" media="screen"> #}
     <link href="{% url static 'jquery/jquery.autocomplete.css' %}" rel="stylesheet" type="text/css" media="screen">
     <link href="{% url static 'jquery/jquery-ui-1.8.11.custom.css' %}" rel="stylesheet" type="text/css" media="screen">
-    {% include "master.css" %}
+{#    {% include "master.css" %}#}
 {% endcompress %}
 <!--[if IE]>
 {% compress css %}
@@ -36,21 +36,108 @@
 
 <body class="ui-reset master">
 
-{% block raw-content %}
-    <div id="content-wrapper">
-        <div id="content">
-
-
-
-
 {% block basket %}
-{% spaceless %}
-<div id="basket-content">
-    <div id="basket-scroll-right"></div>
-    <div id="basket-scroll-left"></div>
-    <div id="basket-thumbs">{% include "ui_basket.html" %}</div>
-</div>
-{% endspaceless %}
+    {% spaceless %}
+        <div id="basket-content">
+            <div id="basket-scroll-right"></div>
+            <div id="basket-scroll-left"></div>
+            <div id="basket-thumbs">{% include "ui_basket.html" %}</div>
+        </div>
+    {% endspaceless %}
+{% endblock %}
+
+{% block header %}
+    {% spaceless %}
+        <div id="topmenu">
+            <ul>
+                {% if user.is_authenticated %}
+                    <li>Welcome{% if user.first_name %}, {{ user.first_name }}{% endif %}</li>
+                    <li><a href="{% url logout %}?next={% url main %}">Log out</a></li>
+                    <li><a href="{% url ui-options %}">Options</a></li>
+                    <li><a href="{% url ui-management %}">Management</a></li>
+                {% else %}
+                    <li><a href="{% url login %}?next={{ request.get_full_path }}">Log in</a></li>
+                {% endif %}
+                <li>{% with request.pagehelp|default:"" as help %}{% pagehelp help %}{% endwith %}</li>
+                {% if ADMINS %}
+                    <li><a href="{% url ui-report-problem %}">Report a Problem</a></li>
+                {% endif %}
+            </ul>
+            <span id="javascriptwarning">You have JavaScript disabled.  MDID works better with JavaScript enabled.</span>
+        </div>
+    {% endspaceless %}
+{% endblock  %}
+
+
+
+{% block raw-content %}
+    <div id="content-wrapper" class="row">
+
+    <div id="content" class="row">
+
+            <div id="header-bar" class="row">
+{#                <div class="spacer">#}
+                    <div id="header">
+
+                        <a href="{% url main %}" id="logo"></a>
+                        <ul style="float: right;">
+                            <li><div id="basket-header">{% include "ui_basket_header.html" %}</div>
+                                <ul class="menu">
+                                    <li><a id="basket-toggle" href="#">Hide</a></li>
+                                    <li><a href="{% url solr-selected %}">Explore</a></li>
+                                    <li><a href="{% url ui-clear-selected %}?next={{ request.get_full_path|urlencode }}">Clear</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <ul>
+                            <li><a href="{% url solr-search %}">Discover</a>
+                                <ul class="menu">
+                                    <li><a href="{% url solr-search %}">Explore</a></li>
+                                    <li><a href="{% url solr-searchform %}">Advanced Search</a></li>
+                                    <li><a href="{% url solr-browse %}">Browse</a></li>
+                                    <li><a href="{% url solr-overview %}">Overview</a></li>
+                                </ul>
+                            </li>
+                            {% if user.is_authenticated %}
+                                <li><a href="{% url presentation-manage %}">Organize</a>
+                                    <ul class="menu">
+                                        {% if current_presentation.id %}
+                                            <li><a href="{% url presentation-edit current_presentation.id, current_presentation.name %}">Edit {{ current_presentation.title }}</a></li>
+                                        {% endif %}
+                                        <li><a href="{% url presentation-manage %}">Your Presentations</a></li>
+                                        <li><a href="{% url solr-search %}?c=ownedtag:{{ user.id }}-favorite">Your Favorites</a></li>
+                                        <li><a href="{% url solr-search %}?c=owner:{{ user.id }}">Your Content</a></li>
+                                        {% if user|accessible_objects:"data.Collection,r"|length %}
+                                            <li><a href="{% url data-record-new-personal %}">Create Item</a></li>
+                                        {% endif %}
+                                        {% if user|accessible_objects:"data.Collection,rw"|length %}
+                                            <li><a href="{% url data-record-new %}">Create Collection Item</a></li>
+                                        {% endif %}
+                                        <li><a href="{% url presentation-create %}">Create Presentation</a></li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+                            <li><a href="{% url presentation-browse %}">Experience</a>
+                                <ul class="menu">
+                                    <li><a href="{% url presentation-browse %}">Browse Presentations</a></li>
+                                    <li><a href="{% url showcases %}">Showcases</a></li>
+                                    {% if user.is_authenticated %}
+                                        <li><a href="{% url mediaviewer-install %}">MediaViewer</a></li>
+                                    {% endif %}
+                                    <li><a href="{% url about %}">About</a></li>
+                                </ul>
+                            </li>
+                            <li class="search" style="padding-right: 20px;"><span>Search</span>
+                                <form method="GET" action="{% url solr-search %}">
+                                    <input id="quicksearch" name="kw" type="text" title="Search" /><input type="image" src="{% url static 'images/go.png' %}" id="search-go" />
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+{#                </div>#}
+            </div>
+
 {% endblock %}
 
 <div style="height: 15px;"></div>
@@ -67,6 +154,7 @@
 {% block content-top %}
 {% endblock %}
 
+
 <div id="sidebar">
 {% block sidebar %}
 {% include "ui_related_pages.html" %}
@@ -74,13 +162,14 @@
 </div>
 
 {% block content %}
+
 {% endblock %}
 
 {% block footer %}
             <div id="footer">
                 Copyright 1997-2012 James Madison University
             </div>
-{% endblock %}
+
 
         </div>
     </div>
@@ -89,90 +178,6 @@
 <div id="preview-dialog" style="display: none;" class="ui-corner-all"></div>
 
 
-
-{% block header %}
-{% spaceless %}
-    <div id="topmenu">
-        <ul>
-            {% if user.is_authenticated %}
-            <li>Welcome{% if user.first_name %}, {{ user.first_name }}{% endif %}</li>
-            <li><a href="{% url logout %}?next={% url main %}">Log out</a></li>
-            <li><a href="{% url ui-options %}">Options</a></li>
-            <li><a href="{% url ui-management %}">Management</a></li>
-            {% else %}
-            <li><a href="{% url login %}?next={{ request.get_full_path }}">Log in</a></li>
-            {% endif %}
-            <li>{% with request.pagehelp|default:"" as help %}{% pagehelp help %}{% endwith %}</li>
-            {% if ADMINS %}
-            <li><a href="{% url ui-report-problem %}">Report a Problem</a></li>
-            {% endif %}
-        </ul>
-        <span id="javascriptwarning">You have JavaScript disabled.  MDID works better with JavaScript enabled.</span>
-    </div>
-
-    <div id="header-bar">
-        <div class="spacer">
-            <div id="header">
-                <a href="{% url main %}" id="logo"></a>
-                <ul style="float: right;">
-                    <li><div id="basket-header">{% include "ui_basket_header.html" %}</div>
-                        <ul class="menu">
-                            <li><a id="basket-toggle" href="#">Hide</a></li>
-                            <li><a href="{% url solr-selected %}">Explore</a></li>
-                            <li><a href="{% url ui-clear-selected %}?next={{ request.get_full_path|urlencode }}">Clear</a></li>
-                        </ul>
-                    </li>
-                </ul>
-
-                <ul>
-                    <li><a href="{% url solr-search %}">Discover</a>
-                        <ul class="menu">
-                            <li><a href="{% url solr-search %}">Explore</a></li>
-                            <li><a href="{% url solr-searchform %}">Advanced Search</a></li>
-                            <li><a href="{% url solr-browse %}">Browse</a></li>
-                            <li><a href="{% url solr-overview %}">Overview</a></li>
-                        </ul>
-                    </li>
-                    {% if user.is_authenticated %}
-                    <li><a href="{% url presentation-manage %}">Organize</a>
-                        <ul class="menu">
-                            {% if current_presentation.id %}
-                            <li><a href="{% url presentation-edit current_presentation.id, current_presentation.name %}">Edit {{ current_presentation.title }}</a></li>
-                            {% endif %}
-                            <li><a href="{% url presentation-manage %}">Your Presentations</a></li>
-                            <li><a href="{% url solr-search %}?c=ownedtag:{{ user.id }}-favorite">Your Favorites</a></li>
-                            <li><a href="{% url solr-search %}?c=owner:{{ user.id }}">Your Content</a></li>
-                            {% if user|accessible_objects:"data.Collection,r"|length %}
-                            <li><a href="{% url data-record-new-personal %}">Create Item</a></li>
-                            {% endif %}
-                            {% if user|accessible_objects:"data.Collection,rw"|length %}
-                            <li><a href="{% url data-record-new %}">Create Collection Item</a></li>
-                            {% endif %}
-                            <li><a href="{% url presentation-create %}">Create Presentation</a></li>
-                        </ul>
-                    </li>
-                    {% endif %}
-                    <li><a href="{% url presentation-browse %}">Experience</a>
-                        <ul class="menu">
-                            <li><a href="{% url presentation-browse %}">Browse Presentations</a></li>
-                            <li><a href="{% url showcases %}">Showcases</a></li>
-                            {% if user.is_authenticated %}
-                            <li><a href="{% url mediaviewer-install %}">MediaViewer</a></li>
-                            {% endif %}
-                            <li><a href="{% url about %}">About</a></li>
-                        </ul>
-                    </li>
-                    <li class="search" style="padding-right: 20px;"><span>Search</span>
-                        <form method="GET" action="{% url solr-search %}">
-                            <input id="quicksearch" name="kw" type="text" title="Search" /><input type="image" src="{% url static 'images/go.png' %}" id="search-go" />
-                        </form>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-{% endspaceless %}
-{% endblock %}
 
 <!--
 <div id="related-images-bar" style="display: none;">
