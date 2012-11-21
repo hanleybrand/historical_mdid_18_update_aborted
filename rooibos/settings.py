@@ -40,6 +40,7 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
     'django.template.loaders.app_directories.load_template_source',
 #     'django.template.loaders.eggs.load_template_source',
+#    'rooibos.debug_toolbar.templates',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -67,7 +68,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     'pagination.middleware.PaginationMiddleware',
     'djangologging.middleware.LoggingMiddleware',
     'djangologging.middleware.SuppressLoggingOnAjaxRequestsMiddleware',
@@ -76,6 +76,8 @@ MIDDLEWARE_CLASSES = (
     'rooibos.storage.middleware.StorageOnStart',
     'rooibos.access.middleware.AccessOnStart',
     'rooibos.middleware.HistoryMiddleware',
+#    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
 
 ROOT_URLCONF = 'rooibos.urls'
@@ -107,7 +109,7 @@ INSTALLED_APPS = (
     'rooibos.federatedsearch',
     'rooibos.federatedsearch.artstor',
     'rooibos.federatedsearch.flickr',
-    'rooibos.federatedsearch.nasa',
+#    'rooibos.federatedsearch.nasa',
     'rooibos.converters',
     'rooibos.contrib.tagging',
     'rooibos.workers',
@@ -122,6 +124,7 @@ INSTALLED_APPS = (
     'impersonate',
     'compressor',
     'south',
+#    'debug_toolbar',
 )
 
 STORAGE_SYSTEMS = {
@@ -131,7 +134,7 @@ STORAGE_SYSTEMS = {
 }
 
 GROUP_MANAGERS = {
-    'nasaimageexchange': 'rooibos.federatedsearch.nasa.nix.NasaImageExchange',
+ #   'nasaimageexchange': 'rooibos.federatedsearch.nasa.nix.NasaImageExchange',
 }
 
 AUTH_PROFILE_MODULE = 'userprofile.UserProfile'
@@ -167,9 +170,6 @@ additional_settings = [
 
 additional_settings.extend(filter(None, os.environ.get('ROOIBOS_ADDITIONAL_SETTINGS', '').split(';')))
 
-# Load settings for additional applications
-
-
 while additional_settings:
     settings = additional_settings.pop(0)
     module = __import__(settings, globals(), locals(), 'rooibos')
@@ -189,3 +189,5 @@ while additional_settings:
         elif setting == 'remove_settings':
             for remove_setting in getattr(module, setting):
                 del locals()[remove_setting]
+
+
