@@ -14,18 +14,23 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = 'Attempts to import a Presentation from another mdid3 server\nAvailable commands: serverurl \nex: python manage.py presImport http://mdid3.server.edu'
+    help = 'Attempts to import a Presentation from another mdid3 server\nAvailable commands: serverurl \nex: python manage.py presImport http://mdid3.server.edu/ '
     args = 'command'
 
     def handle(self, *commands, **options):
+
+        mdidBaseURL = None
+
         if not commands:
             print self.help
         else:
             for command in commands:
-                print('Currently, the url is hardcoded but in the future %s will be used instead' % command)
+                # this is the server url entered when the command was typed e.g.:
+                # $> python manage.py import_pres https://mdid3.uni.edu/
+                mdidBaseURL = command
 
-            # change to your mdid3 server
-            mdidBaseURL = 'http://127.0.0.1/'
+
+        def connect(mdidBaseURL):
 
             mdidAPI = {
                 'auth'          : mdidBaseURL + 'api/login/' ,
@@ -33,12 +38,9 @@ class Command(BaseCommand):
                 'presentation'  : mdidBaseURL + 'api/presentation/',
             }
 
-            #username = raw_input('enter username')
-            #promptPass = 'enter password for %s (unmasked)>' % username
-            #password = raw_input(promptPass)
-
-            username  = 'admin'
-            password  = 'admin'
+            username = raw_input('enter username -> ')
+            promptPass = 'enter password for %s (unmasked)-> ' % username
+            password = raw_input(promptPass)
 
             creds = {'username': username, 'password': password}
             r = requests.post(mdidAPI['auth'], data=creds)
@@ -46,88 +48,98 @@ class Command(BaseCommand):
             if r.status_code == requests.codes.ok:
                 print 'looks ok', r.status_code
                 rc = r.cookies
-                p = requests.get(mdidAPI['presentations'], cookies=rc)
-                print p.status_code
-
-                if p.status_code == requests.codes.ok:
-                    j = simplejson.loads(p.content)
-                    print('========Slideshows for user %s ========================' % username)
-
-                    for presentation in j['presentations']:
-                        print presentation['id'], presentation['title'], presentation['tags']
+                presentation_select(r,rc, username)
+            else:
+                print 'Huh, some kind of weird error - let\'s try again...\n'
+                try_again()
 
 
+        def try_again():
+            mdidNewUrl = raw_input('enter the server url with a trailing slash (https://mdid3.uni.edu/) -> ')
+            connect(mdidNewUrl)
+
+
+        def presentation_select(r, rc, username):
+            p = requests.get(r.mdidAPI['presentations'], cookies = rc)
+            print p.status_code
+
+            if p.status_code == requests.codes.ok:
+                j = simplejson.loads(p.content)
+                print('========Slideshows for user %s ========================' % username)
+
+                for presentation in j['presentations']:
+                    print presentation['id'], presentation['title'], presentation['tags']
 
                 slideCount = 0
                 whichShow = raw_input('enter a slide show id > ')
-                target_user = chooser(raw_input("enter the username that will own the slideshow being created. Press Enter for %s > " % username), username)
-                presUrl = mdidAPI['presentation'] + whichShow
+                target_user = chooser(raw_input("enter username to own the slideshow being imported. Press Enter for %s > " % username), username)
+
+                presUrl = r.mdidAPI['presentation'] + whichShow
 
                 print 'retrieving: %s for %s' %  (presUrl, target_user)
 
                 theShow = requests.get(presUrl, cookies = rc)
 
                 # build a list of slides to import
+                print theShow.content
 
                 if theShow.status_code == requests.codes.ok:
-                    jp = simplejson.loads(theShow.content)
-#                    print '==============json dump========================'
-#                    print jp
-#                    print '==============json dump========================'
+                    presentation_import(simplejson.loads(theShow.content), target_user, r)
+                else:
+                    print("Whoops, some sort of error... let's try that again... ")
 
 
-#                    for slides in jp['content']:
-#
+        def presentation_import(jp, target_user, r):
+            #       for slides in jp['content']:
+
+            useSlides = []
+            slidesCheck = []
+            dcidfield = standardfield('identifier')
+
+            # iterate through the slide list being imported (jp['content'])
+            # to get the dc.identifier of each slide for mapping to the local server
+            # useSlides[] stores these identifiers
+
+            for order, slide in enumerate(jp['content']):
+                for subDict in slide['metadata']:
+                    if subDict['label'] == 'Identifier':
+                        useSlides.append(subDict['value'])
+
+            if len(useSlides) == 0:
+
+                idChoices = {}
+
+                print "Warning - Identifier mismatch - please specify an ID from the list list"
+
+                for order, slide in enumerate(jp['content'][0]['metadata']):
+                    idChoices[str(order)] = slide
+
+                for k in range(len(idChoices)):
+                    #for k,v in idChoices.iteritems():
+                    print '    ' , str(k), '-', idChoices[str(k)].values()
+
+                useID = raw_input('enter the number of the field used as an identifier the local system > ');
+                otherID = jp['content'][0]['metadata'][int(useID)]['label']
+
+                print 'using' , otherID , 'as remote Identifier'
+
+                for order, slide in enumerate(jp['content']):
+                    for subDict in slide['metadata']:
+                        if subDict['label'] == otherID:
+                            useSlides.append(subDict['value'])
+
+                print useSlides
 
 
-                    useSlides = []
-                    slidesCheck = []
-                    dcidfield = standardfield('identifier')
+            for identifier in useSlides:
+                #czechRec = Record.by_fieldvalue(dcidfield, identifier)
+                try:
+                    czechRec = Record.get_or_404(Record.objects.get(name=identifier), target_user)
+                    print  '%s - this record exists: %s' % (identifier, czechRec)
+                except Record.DoesNotExist:
+                    print identifier, 'does not exist'
 
-                    # iterate through the slide list being imported (jp['content'])
-                    # to get the dc.identifier of each slide for mapping to the local server
-                    # useSlides[] stores these identifiers
-                    for order, slide in enumerate(jp['content']):
-                        for subDict in slide['metadata']:
-                            if subDict['label'] == 'Identifier':
-                                useSlides.append(subDict['value'])
-
-                    if len(useSlides) == 0:
-
-                        idChoices = {}
-
-                        print "Warning - Identifier mismatch - please specify record identifier in slide list"
-
-                        for order, slide in enumerate(jp['content'][0]['metadata']):
-                            idChoices[str(order)] = slide
-
-                        for k in range(len(idChoices)):
-                            #for k,v in idChoices.iteritems():
-                            print '    ' , str(k), '-', idChoices[str(k)].values()
-
-                        useID = raw_input('enter the number of the field used as an identifier the local system > ');
-                        otherID = jp['content'][0]['metadata'][int(useID)]['label']
-
-                        print 'using' , otherID , 'as remote Identifier'
-
-                        for order, slide in enumerate(jp['content']):
-                            for subDict in slide['metadata']:
-                                if subDict['label'] == otherID:
-                                    useSlides.append(subDict['value'])
-
-                        print useSlides
-
-
-
-                    for identifier in useSlides:
-                        #czechRec = Record.by_fieldvalue(dcidfield, identifier)
-                        try:
-                            czechRec = Record.get_or_404(Record.objects.get(name=identifier), target_user)
-                            print  '%s - this record exists: %s' % (identifier, czechRec)
-                        except Record.DoesNotExist:
-                            print identifier, 'does not exist'
-
-#                        useSlides.append({ "thumbnail"  : slides['thumbnail'],
+#       useSlides.append({ "thumbnail"  : slides['thumbnail'],
 #                                           "image"      : slides['image'] ,
 #                                           "title"      : slides['title'],
 #                                           "name"       : slides['name'],
@@ -150,6 +162,10 @@ class Command(BaseCommand):
             else:
                 print r.text
 
+        if mdidBaseURL:
+            connect(mdidBaseURL)
+        else:
+            try_again()
 
 def chooser(anotherUser, me, inception = 0):
     # inception is to keep track of recursive calls to chooser
