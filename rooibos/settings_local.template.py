@@ -185,6 +185,8 @@ FLOWPLAYER_KEY = ""
 # You can get one at https://developer.apps.yahoo.com/dashboard/createKey.html
 YAHOO_APPLICATION_ID = ""
 
+# if you want to use your own fieldset as a default
+# DEFAULT_FIELDSET = "dc"
 
 # By default, video delivery links are created as symbolic links. Some streaming
 # servers (e.g. Wowza) don't deliver those, so hard links are required.
