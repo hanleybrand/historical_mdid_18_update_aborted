@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.core.files.temp import NamedTemporaryFile
 from django.core.servers.basehttp import FileWrapper
 from django.template import Context, Template
+from django.utils.encoding import smart_str, smart_unicode
 from rooibos.access import get_effective_permissions_and_restrictions, filter_by_access
 from rooibos.viewers import register_viewer, Viewer
 from rooibos.storage import get_image_for_record
@@ -321,14 +322,14 @@ class PackageFilesViewer(Viewer):
                 output.write(image, ('%s%s %s%s' % (
                     os.path.join(prefix, '') if prefix else '',
                     str(index + 1).zfill(4),
-                    filename(title),
+                    filename(smart_str(title)),
                     os.path.splitext(image)[1])
-                  ).encode('ascii', 'replace'))
+                    ).encode('utf-8', 'replace'))
 
         def metadata_file(tempfile, record):
             t = Template("{% load data %}{% metadata record %}")
             c = Context({'record': record, 'request': request})
-            tempfile.write(t.render(c))
+            tempfile.write(smart_str(t.render(c)))
             tempfile.flush()
             return tempfile.name
 
