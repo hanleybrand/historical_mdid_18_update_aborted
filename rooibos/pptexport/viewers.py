@@ -4,7 +4,7 @@ from django.template.loader import render_to_string
 from rooibos.viewers import register_viewer, Viewer
 from rooibos.presentation.models import Presentation
 import os
-
+import logging
 
 class PowerPointExportViewer(Viewer):
 
@@ -16,12 +16,16 @@ class PowerPointExportViewer(Viewer):
         for template in os.listdir(os.path.join(os.path.dirname(__file__),
                                    'pptx_templates'))
         if template.endswith('.pptx')
+
     ]
+    # return the templates in alpha order
+    templates_sorted = templates.sort()
 
     def get_options_form(self):
         class OptionsForm(forms.Form):
             template = forms.ChoiceField(choices=self.templates,
                 help_text="Select the PowerPoint template to use.")
+
         return OptionsForm
 
     def embed_code(self, request, options):
