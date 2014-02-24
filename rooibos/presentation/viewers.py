@@ -30,6 +30,7 @@ import math
 import zipfile
 import os
 from StringIO import StringIO
+from rooibos.contrib.BeautifulSoup import BeautifulSoup
 
 
 def _get_presentation(obj, request, objid):
@@ -42,6 +43,14 @@ def _get_presentation(obj, request, objid):
             return None
     return obj
 
+
+def _remove_bad_attrs(arbText):
+    """ Remove html tag attributes that cause errors in reportlab pdf generation """
+    soup = BeautifulSoup(arbText)
+    for tag in soup.findAll(True):
+        for attribute in ['rel']:
+            del tag[attribute]
+    return soup
 
 class PresentationViewer(Viewer):
 
@@ -145,11 +154,12 @@ class FlashCardViewer(Viewer):
                 data.append(getParagraph('%s/%s' % (index + 1, len(items)), styles['SlideNumber']))
                 values = item.get_fieldvalues(owner=request.user)
                 for value in values:
+                    _remove_bad_attrs(value.value)
                     v = value.value if len(value.value) < 100 else value.value[:100] + '...'
                     data.append(getParagraph('<b>%s:</b> %s' % (value.resolved_label, v), styles['Data']))
                 annotation = item.annotation
                 if annotation:
-                    data.append(getParagraph('<b>%s:</b> %s' % ('Annotation', annotation), styles['Data']))
+                    data.append(getParagraph('<b>%s:</b> %s' % ('Annotation', _remove_bad_attrs(annotation)), styles['Data']))
                 data = filter(None, data)
                 f.addFromList(data, p)
                 if data:
@@ -267,10 +277,11 @@ class PrintViewViewer(Viewer):
             text = []
             values = item.get_fieldvalues(owner=request.user)
             for value in values:
-                text.append('<b>%s</b>: %s<br />' % (value.resolved_label, value.value))
+                text.append('<b>%s</b>: %s<br />' % (value.resolved_label, _remove_bad_attrs(value.value)))
+                #_remove_bad_attrs(value.value)
             annotation = item.annotation
             if annotation:
-                text.append('<b>%s</b>: %s<br />' % ('Annotation', annotation))
+                text.append('<b>%s</b>: %s<br />' % ('Annotation', _remove_bad_attrs(annotation)))
             try:
                 p = Paragraph(''.join(text), styles['Normal'])
             except (AttributeError, KeyError, IndexError):
@@ -328,7 +339,7 @@ class PackageFilesViewer(Viewer):
                 output.write(image, ('%s%s %s%s' % (
                     os.path.join(prefix, '') if prefix else '',
                     str(index + 1).zfill(4),
-                    filename(title),
+                    filename(smart_str(title)),
                     os.path.splitext(image)[1])
                     ).encode('ascii', 'replace'))
 
