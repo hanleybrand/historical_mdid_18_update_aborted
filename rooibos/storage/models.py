@@ -14,6 +14,8 @@ from rooibos.access import sync_access, get_effective_permissions_and_restrictio
 import multimedia
 from functions import extractTextFromPdfStream
 
+import logging
+
 
 class Storage(models.Model):
     title = models.CharField(max_length=100)
@@ -51,7 +53,11 @@ class Storage(models.Model):
             for c in modulename.split('.')[1:]:
                 module = getattr(module, c)
             classobj = getattr(module, classname)
-            return classobj(base=self.base)
+            try:
+                return classobj(base=self.base)
+            except Exception:
+                logging.exception("Could not initialize storage %s" % classname)
+                return None
         else:
             return None
 
@@ -144,9 +150,9 @@ class Media(models.Model):
     def __unicode__(self):
         return self.url
 
-    def save(self, **kwargs):
-        unique_slug(self, slug_literal="m-%s" % random.randint(1000000, 9999999),
-                    slug_field='name', check_current_slug=kwargs.get('force_insert'))
+    def save(self, force_update_name=False, **kwargs):
+        unique_slug(self, slug_literal=os.path.splitext(os.path.basename(self.url))[0] if self.url else "m-%s" % random.randint(1000000, 9999999),
+                    slug_field='name', check_current_slug=kwargs.get('force_insert') or force_update_name)
         super(Media, self).save(kwargs)
 
     def get_absolute_url(self):
@@ -171,7 +177,8 @@ class Media(models.Model):
         if name:
             self.url = name
             self.identify(save=False)
-            self.save()
+            self.name = os.path.splitext(os.path.basename(name))[0]
+            self.save(force_update_name=True)
         else:
             raise IOError("Media file could not be stored")
 

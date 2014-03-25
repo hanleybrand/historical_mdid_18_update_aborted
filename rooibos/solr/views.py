@@ -486,7 +486,7 @@ def search(request, id=None, name=None, selected=False, json=False):
                           mode,
                           str(ids),
                           )
-    print hash
+
     facets = cache.get('search_facets_html_%s' % hash)
 
     sort = sort.startswith('random') and 'random' or sort.split()[0]
@@ -519,7 +519,7 @@ def search(request, id=None, name=None, selected=False, json=False):
                            'sort': sort,
                            'random': random.random(),
                            'viewmode': viewmode,
-                           'federated_sources': bool(available_federated_sources()),
+                           'federated_sources': bool(available_federated_sources(request.user)),
                            'federated_search': federated_search,
                            'federated_search_query': federated_search_query,
                            'pagination_helper': [None] * hits,
@@ -633,7 +633,8 @@ def browse(request, id=None, name=None):
     if fields:
         fields = list(Field.objects.filter(id__in=fields))
     else:
-        fields = list(Field.objects.filter(fieldvalue__record__collection=collection).distinct())
+        ids = list(FieldValue.objects.filter(record__collection=collection).order_by().distinct().values_list('field_id', flat=True))
+        fields = list(Field.objects.filter(id__in=ids))
         cache.set('browse_fields_%s' % collection.id, [f.id for f in fields], 60)
 
     if not fields:
