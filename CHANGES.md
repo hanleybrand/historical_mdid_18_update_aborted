@@ -31,11 +31,11 @@ List of significant changes, with the latest at the top:
 
     [!] **Summary of required tasks**
 
-    * Run `python manage.py syncdb`
+    - [ ] Run `python manage.py syncdb`
 
-    * [Install RabbitMQ](http://www.rabbitmq.com/download.html)
+    - [ ] [Install RabbitMQ](http://www.rabbitmq.com/download.html)
 
-    * Install python modules:  `pip install -r requirements.txt`
+    - [ ] Install python modules:  `pip install -r requirements.txt`
 
 
   * 2013/10/20
