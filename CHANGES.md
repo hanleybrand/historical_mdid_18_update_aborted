@@ -26,7 +26,17 @@ List of significant changes, with the latest at the top:
 
     [DEPENDENCY]
     **New Python library dependencies.** Check `requirements.txt` for newly
-    added third-party library dependencies.
+    added third-party library dependencies. Install new libraries with the command
+    `pip install -r requirements.txt` in the root directory of the mdid repo.
+
+    [!] **Summary of required tasks**
+
+    * Run `python manage.py syncdb`
+
+    * [Install RabbitMQ](http://www.rabbitmq.com/download.html)
+
+    * Install python modules:  `pip install -r requirements.txt`
+
 
   * 2013/10/20
 
