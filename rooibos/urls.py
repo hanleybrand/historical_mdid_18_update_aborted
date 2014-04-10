@@ -81,4 +81,14 @@ for app in apps:
     if not '.' in app[5:]:
         urls.append(url(r'^%s/' % app[5:], include('%s.urls' % app)))
 
+try:
+    from .urls_local import local_urls
+    if len(local_urls) > 0:
+        for url in local_urls:
+            print 'appending %s to urls' % url
+            urls.append(url)
+except Exception:
+    pass
+
+
 urlpatterns = patterns('', *urls)

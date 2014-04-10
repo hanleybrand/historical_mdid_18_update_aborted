@@ -1,6 +1,7 @@
 *.pyc
 *.pyo
 rooibos/settings_local.py
+rooibos/urls_local.py
 solr/logs/*.log
 solr/solr/data/
 apps/
@@ -20,3 +21,5 @@ rooibos/static/cache/*
 .idea/*
 bin-release-temp/
 .DS_Store
+
+
