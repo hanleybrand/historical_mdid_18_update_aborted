@@ -1,31 +1,44 @@
-# Copyright 2014 vrcHost LLC
-#
-# This file is part of MDID.
-#
-# MDID is free software: you can redistribute it and/or modify it under the
-# terms of the GNU General Public License as published by the Free Software
-# Foundation, either version 2 of the License, or (at your option) any later
-# version.
-#
-# MDID is distributed in the hope that it will be useful, but WITHOUT ANY
-# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-# details.
-#
-# You should have received a copy of the GNU General Public License along
-# with MDID. If not, see http://www.gnu.org/licenses/.
-
-werkzeug
-MySQL-Python
-python-memcached
-Pillow
-flickrapi
+# install with:  pip install -r requirements.txt
+python-dateutil
+MySQL-python
+Django
+django-grappelli
+django-extensions
+django-debug-toolbar
 python-ldap
-flup
+python-memcached
+# PIL=>1.1.7
+flickrapi
 reportlab
+Werkzeug
+Pillow
+werkzeug
+flup
 https://pyodbc.googlecode.com/files/pyodbc-3.0.7.zip
 pika
 pycrypto
 pep8-naming
 flake8-todo
 flake8-docstrings
+
+# notes
+#
+#  PIL requires libjpeg in order to process jpegs
+#  if you can't see images or you see a no jpeglib error, try:
+#  >  pip uninstall PIL
+#
+#       unbuntu:        > sudo apt-get install libjpeg8-dev
+#       rhel/centos:    > sudo yum install libjpeg8-dev
+#       mac os x:       > brew install libjpeg8-dev
+#
+#  >  pip install PIL
+#
+# non-python dependencies
+#
+#  git
+#  openjdk-6-jre-headless
+#  python-setuptools
+#  solr
+#  memcached or couchbase  http://www.couchbase.com/download
+#
+#
