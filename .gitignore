@@ -1,6 +1,6 @@
 *.pyc
 *.pyo
-rooibos/settings_local.py
+config/settings_local.py
 solr/logs/*.log
 solr/solr/data/
 apps/
