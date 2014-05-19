@@ -4,7 +4,7 @@ __author__ = "Stephen Zabel - sjzabel@gmail.com"
 __contributors__ = "Jay Parlar - parlar@gmail.com"
 
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect, get_host
+from django.http import HttpRequest, HttpResponseRedirect, HttpResponsePermanentRedirect
 
 SSL = 'SSL'
 
@@ -33,7 +33,7 @@ class SSLRedirect:
 
     def _redirect(self, request, secure):
         protocol = secure and "https" or "http"
-        newurl = "%s://%s%s%s" % (protocol,get_host(request).split(':')[0],secure and settings.SSL_PORT or '',request.get_full_path())
+        newurl = "%s://%s%s%s" % (protocol, HttpRequest.get_host(request).split(':')[0],secure and settings.SSL_PORT or '',request.get_full_path())
         if settings.DEBUG and request.method == 'POST':
             raise RuntimeError, \
         """Django can't perform a SSL redirect while maintaining POST data.
