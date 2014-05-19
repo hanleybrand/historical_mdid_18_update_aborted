@@ -102,7 +102,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.flatpages',
-    #'grappelli_extensions',
     'grappelli',
     'django.contrib.admin',
     'django.contrib.humanize',
