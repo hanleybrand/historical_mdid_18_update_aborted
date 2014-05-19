@@ -5,7 +5,7 @@
 #from rooibos.storage import Storage, Media
 #from rooibos.solr.models import SolrIndexUpdates
 #from rooibos.solr import SolrIndex
-#from rooibos.settings import FLICKR_KEY, FLICKR_SECRET
+#from config.settings import FLICKR_KEY, FLICKR_SECRET
 #from rooibos.access.models import AccessControl
 #
 #def _save_file(targeturl, base, filename):

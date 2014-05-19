@@ -282,6 +282,10 @@ GROUP_MANAGERS = {
  #   'nasaimageexchange': 'rooibos.federatedsearch.nasa.nix.NasaImageExchange',
 }
 
+## these should be overridden by settings_local
+FLICKR_KEY = ''
+FLICKR_SECRET = ''
+
 additional_settings = [
     'settings_local',
 ]

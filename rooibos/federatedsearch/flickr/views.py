@@ -9,7 +9,7 @@ from django.utils import simplejson
 #from models import FlickrUploadr, FlickrSearch, FlickrImportr, FlickrSetPhotos
 from os import makedirs
 from rooibos.data.models import Collection, CollectionItem, Record, FieldSet, Field
-from rooibos.settings import FLICKR_KEY, FLICKR_SECRET
+from config.settings import FLICKR_KEY, FLICKR_SECRET
 from rooibos.solr import SolrIndex
 #from rooibos.solr.models import SolrIndexUpdates
 from rooibos.storage import Storage, Media
