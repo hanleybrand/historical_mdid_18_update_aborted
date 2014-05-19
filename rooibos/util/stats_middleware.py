@@ -4,6 +4,7 @@ from time import time
 from operator import add
 import re
 
+
 class StatsMiddleware(object):
 
     def process_view(self, request, view_func, view_args, view_kwargs):
@@ -21,7 +22,7 @@ class StatsMiddleware(object):
         """
 
         #This stuff will only happen if debug is already on
-        if not settings.DEBUG:
+        if not settings.DEBUG or not settings.NOT_WORKING:
             return None
 
         # get number of db queries before we do anything
