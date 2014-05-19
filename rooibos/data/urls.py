@@ -1,6 +1,8 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 #from django.contrib.syndication.views import feed
-from django.views.generic.simple import direct_to_template
+#from django.views.generic.simple import direct_to_template
+from django.views.generic import TemplateView
+
 from views import *
 #from feeds import GroupFeed
 #

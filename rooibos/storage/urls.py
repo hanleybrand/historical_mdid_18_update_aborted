@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from pseudostreaming import retrieve_pseudostream
 from views import *
 #from viewers import mediaplayer_script
