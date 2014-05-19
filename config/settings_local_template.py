@@ -59,7 +59,6 @@ ADMIN_MEDIA_PREFIX = '/static/admin/'
 COMPRESS = False
 
 # Where django templates are loaded from - in general, adding to this is ok - don't remove directories
-# TODO: look into if it's possible to allow overloading django templates via ordering of directories below
 # TODO: Move unchangeable dirs to settings.py
 TEMPLATE_DIRS = (
     os.path.normpath(os.path.join(ROOIBOS_ROOT, 'templates')),
@@ -70,7 +69,7 @@ TEMPLATE_DIRS = (
     os.path.normpath(os.path.join(PROJECT_ROOT, 'templates')),
 )
 
-MASTER_TEMPLATE = 'master_root.html'
+# MASTER_TEMPLATE = 'local_root.html'
 
 ####-DEBUG/SETUP Variables-####
 # All variables in this section should be False on a production system

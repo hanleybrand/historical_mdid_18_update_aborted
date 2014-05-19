@@ -1,0 +1,15 @@
+{% extends "master_root.html" %}
+
+
+
+{% block footer %}
+
+            <div id="footer">
+                {% if COPYRIGHT %}
+                {{ COPYRIGHT|safe }}
+                {% else %}
+                Local template override active - Insert text here
+                {% endif %}
+            </div>
+
+{% endblock %}
