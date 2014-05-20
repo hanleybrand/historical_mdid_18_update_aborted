@@ -42,10 +42,10 @@ def add_content_length(func):
             elif isinstance(response._container, file):
                 if os.path.exists(response._container.name):
                     response['Content-Length'] = os.path.getsize(response._container.name)
-            else:
                 # was elif response._is_string:
-                # TODO: this doesn't seem too dangerous, right?  need to figure out what the alternatve is
-                # response._is_string was throwing an error
+                # response._is_string was throwing an error, changed in django 1.5
+            elif isinstance(response.content, basestring):
+                logging.debug('did an error just get thrown? see storage/views.py:49')
                 response['Content-Length'] = len(response.content)
         return response
     return _add_header
