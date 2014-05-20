@@ -42,7 +42,10 @@ def add_content_length(func):
             elif isinstance(response._container, file):
                 if os.path.exists(response._container.name):
                     response['Content-Length'] = os.path.getsize(response._container.name)
-            elif response._is_string:
+            #elif response._is_string:
+            else:
+                logging.debug(response)
+                logging.debug(dir(response))
                 response['Content-Length'] = len(response.content)
         return response
     return _add_header
