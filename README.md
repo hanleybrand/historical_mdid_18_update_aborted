@@ -13,17 +13,13 @@ I'm currently running it on OS X but I tried to make any settings chenges as gen
 
 ### notes
 
-1_ Switched static files to the staticfiles app, so a good start for running against an already existing database after setting up your virtualenv is:
-
-    1_ pip install -f requirements.txt
-    1_ python manage.py collectstatic
-    1_ python manage.py runserver
-    
-    
-1_ Following the newer django convention, moved the main app files to a 'project' directory, and followed (Jeff Knupp's advice)[http://www.jeffknupp.com/blog/2013/12/18/starting-a-django-16-project-the-right-way/] that this is really a 'config' directory, so settings file plus the main urls & wsgi files are in the PROJECT_ROOT/config directory, collected staticfiles are in PROJECT_ROOT/static, and local templates are in PROJECT_ROOT/templates.
-
-1_ 
-
+- Switched static files to the staticfiles app, so a good start for running against an already existing database after setting up your virtualenv is:
+``` shell 
+pip install -f requirements.txt
+python manage.py collectstatic
+python manage.py runserver
+``` 
+- Following the newer django convention, moved the main app files to a 'project' directory, and followed [Jeff Knupp's advice](http://www.jeffknupp.com/blog/2013/12/18/starting-a-django-16-project-the-right-way/) that this is really a 'config' directory, so settings file plus the main urls & wsgi files are in the PROJECT_ROOT/config directory, collected staticfiles are in PROJECT_ROOT/static, and local templates are in PROJECT_ROOT/templates.
 
 
 ## why?
