@@ -1,75 +1,8 @@
 import sys
 import os
 import logging
+
 log = logging.getLogger(__name__)
-
-###-### directory variables  #####-##### #####-##### #####-##### #####-##### #####-##### #####-##### #####-##### #####
-# self set directory paths based on local file locations
-# note: mdid_dj16 data is stored outside of the config file hierarchy, i.e.
-# /var/local/
-# |-- mdid_dj16
-# |   |-- config/
-# |   |-- rooibos/
-# |   |-- manage.py
-# |-- mdid_dj16-data
-# |   |-- rooibos/
-# |   |-- rooibos/
-# ... etc.
-
-# MDID repo root
-PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '../'))
-# the rooibos directory
-ROOIBOS_ROOT = os.path.normpath(os.path.join(PROJECT_ROOT, 'rooibos'))
-
-# STATIC_FILES
-# where non-dynamic files are stored (i.e. javascript libraries, css, etc.)
-STATIC_ROOT = os.path.normpath(os.path.join(PROJECT_ROOT, 'static'))
-STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    os.path.normpath(os.path.join(ROOIBOS_ROOT, 'static')),
-)
-
-
-#####-##### Local Data #####-##### #####-##### #####-##### #####-##### #####-##### #####-##### #####-##### #####-#####
-
-# this defines where files will be stored - by default it will be a directory
-# called mdid_dj16-data that is in the same directory as PROJECT_ROOT (stored outside of the application)
-#DEFAULT_DATA_DIR = os.path.normpath(os.path.join(PROJECT_ROOT, '../', 'mdid_dj16-data/'))
-DEFAULT_DATA_DIR = os.path.normpath(os.path.join(PROJECT_ROOT, '../', 'mdid-data/', 'mdid3-data'))
-DEFAULT_CUSTOM_DIR = os.path.normpath(os.path.join(PROJECT_ROOT, '../', 'mdid-data/', 'local_static'))
-
-# scratch_dir is where non-permanent files (including image thumbnails) are stored
-SCRATCH_DIR = os.path.normpath(os.path.join(DEFAULT_DATA_DIR, 'mdid-scratch'))
-# storage for files not defined by storage?
-# TODO: get better definition for what AUTO_STORAGE_DIR is for
-AUTO_STORAGE_DIR = os.path.normpath(os.path.join(DEFAULT_DATA_DIR, 'mdid_dj16-collections'))
-
-###-### MEDIA settings
-#  (i.e. media associated with records)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = DEFAULT_DATA_DIR
-UPLOAD_LIMIT = 1024 * 1024
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/static/admin/'
-
-# enable compression (i.e. minification) JS and CSS files - set to True or False
-COMPRESS = False
-
-# Where django templates are loaded from - in general, adding to this is ok - don't remove directories
-# TODO: Move unchangeable dirs to settings.py
-TEMPLATE_DIRS = (
-    os.path.normpath(os.path.join(ROOIBOS_ROOT, 'templates')),
-    os.path.normpath(os.path.join(ROOIBOS_ROOT, 'access', 'templates')),
-    os.path.normpath(os.path.join(ROOIBOS_ROOT, 'ui', 'templates')),
-    os.path.normpath(os.path.join(ROOIBOS_ROOT, 'contrib', 'google_analytics', 'templates')),
-    # empty by default
-    os.path.normpath(os.path.join(PROJECT_ROOT, 'templates')),
-)
-
-# MASTER_TEMPLATE = 'local_root.html'
 
 ####-DEBUG/SETUP Variables-####
 # All variables in this section should be False on a production system
@@ -97,9 +30,60 @@ CL_DEBUG = True
 # MDID will not function correctly when Testing = True
 TESTING = False
 
+###-### directory variables  #####-##### #####-##### #####-##### #####-##### #####-##### #####-##### #####-##### #####
+# self set directory paths based on local file locations
+# note: mdid_dj16 data is stored outside of the config file hierarchy, i.e.
+# /var/local/
+# |-- mdid_dj16
+# |   |-- config/
+# |   |-- rooibos/
+# |   |-- manage.py
+# |-- mdid_dj16-data
+# |   |-- rooibos/
+# |   |-- rooibos/
+# ... etc.
+
+# MDID repo root
+PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '../'))
+# the rooibos directory
+ROOIBOS_ROOT = os.path.normpath(os.path.join(PROJECT_ROOT, 'rooibos'))
+
+#####-##### Local Data #####-##### #####-##### #####-##### #####-##### #####-##### #####-##### #####-##### #####-#####
+# this defines where files will be stored - by default it will be a directory
+# called mdid_dj16-data that is in the same directory as PROJECT_ROOT (stored outside of the application)
+#DEFAULT_DATA_DIR = os.path.normpath(os.path.join(PROJECT_ROOT, '../', 'mdid_dj16-data/'))
+DEFAULT_DATA_DIR = os.path.normpath(os.path.join(PROJECT_ROOT, '../', 'mdid-data/'))
+DEFAULT_CUSTOM_DIR = os.path.normpath(os.path.join(DEFAULT_DATA_DIR, 'local_static'))
+# scratch_dir is where non-permanent files (including image thumbnails) are stored
+SCRATCH_DIR = os.path.normpath(os.path.join(DEFAULT_DATA_DIR, 'mdid-scratch'))
+# storage for files not defined by storage?
+# TODO: get better definition for what AUTO_STORAGE_DIR is for
+AUTO_STORAGE_DIR = os.path.normpath(os.path.join(DEFAULT_DATA_DIR, 'collections', 'auto'))
+
+###-### MEDIA settings
+#  (i.e. media associated with records)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = DEFAULT_DATA_DIR
+UPLOAD_LIMIT = 1024 * 1024
+
+# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
+# trailing slash.
+# Examples: "http://foo.com/media/", "/media/".
+ADMIN_MEDIA_PREFIX = '/static/admin/'
+
+# enable compression (i.e. minification) JS and CSS files - set to True or False
+COMPRESS = False
+
+###-### local templates
+TEMPLATE_DIRS = (
+    # if you wish to override the default mdid templates, uncomment this line and MASTER_TEMPLATE below
+    # See PROJECT_ROOT/templates/local_root.html for an example template
+    os.path.normpath(os.path.join(PROJECT_ROOT, 'templates')),
+)
+
+# MASTER_TEMPLATE = 'local_root.html'
 
 #####-##### Local MDID Settings #####-##### #####-##### #####-##### #####-##### #####-##### #####-##### #####-#####
-
 # Settings in this section allow customization of your MDID installation
 # You can put local files in mdid_dj16-data/local_static and
 # add reference them like:
@@ -107,7 +91,9 @@ TESTING = False
 # FAVICON_URL = os.path.normpath(os.path.join(DEFAULT_CUSTOM_DIR, 'favico.ico'))
 
 LOGO_URL = None
-FAVICON_URL = os.path.normpath(os.path.join(STATIC_URL, 'images', 'favicon.ico'))
+
+# TODO: figure out best practice for overriding FAVICON_URL
+# FAVICON_URL = os.path.normpath(os.path.join(STATIC_URL, 'images', 'favicon.ico'))
 COPYRIGHT = None
 TITLE = None
 
@@ -163,7 +149,6 @@ LOGOUT_URL = '/'
 
 ## Settings for MySQL are included
 ## see https://docs.djangoproject.com/en/1.6/ref/databases/#oracle-notes for Oracle Setup
-
 #  settings below  will work if you exec MYSQL_INIT in
 
     # CREATE DATABASE rooibos CHARACTER SET utf8;
@@ -190,6 +175,7 @@ DATABASES = {
         # 'CONN_MAX_AGE': 'None',
         'OPTIONS': {
             # change init_command if you want to specify what mysql engine to use
+            # this is useful if you started your db on an older version of mysql but then you upgrade
             # 'init_command': 'SET storage_engine=INNODB',
         },
     }

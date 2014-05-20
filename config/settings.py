@@ -264,8 +264,10 @@ LOGIN_CHECKS = (
 )
 
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'rooibos', 'templates'),
-    os.path.join(BASE_DIR, 'templates'),
+    os.path.normpath(os.path.join(ROOIBOS_ROOT, 'templates')),
+    os.path.normpath(os.path.join(ROOIBOS_ROOT, 'access', 'templates')),
+    os.path.normpath(os.path.join(ROOIBOS_ROOT, 'ui', 'templates')),
+    os.path.normpath(os.path.join(ROOIBOS_ROOT, 'contrib', 'google_analytics', 'templates')),
 )
 
 PDF_PAGESIZE = 'letter'  # 'A4'
