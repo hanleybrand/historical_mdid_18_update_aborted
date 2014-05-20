@@ -3,8 +3,8 @@
 {% load humanize %}
 {% load pagination_tags %}
 {% load viewers %}
-
-
+{% load staticfiles %}
+{% load static from staticfiles %}
 {% block javascript %}
 {{ block.super }}
 <script type="text/javascript">
@@ -33,7 +33,7 @@
     <div class="facet-header">Keywords</div>
     <div class="facet-body">
         <input type="hidden" name="okw" value="{{ keywords }}"/>
-        <input type="text" id="keywords" name="kw" value="{{ keywords }}"/><input type="image" class="image" src="{% url static 'images/med_go_button.png' %}" value="Go" name="keywords_go" />
+        <input type="text" id="keywords" name="kw" value="{{ keywords }}"/><input type="image" class="image" src="{% static  'images/med_go_button.png' %}" value="Go" name="keywords_go" />
     </div>
   </div>
 {% endif %}
@@ -44,21 +44,21 @@
 
 {% if active_presenter %}
   <div class="facet active-facet">
-    <div class="facet-header"><a href="{{ request.path }}?kw={{ keywords|urlencode }}&amp;t={{ active_tags|join:"||"|urlencode }}&amp;ut={{ untagged }}" title="Remove this criteria"><img src="{% url static 'images/facet_close.png' %}" alt="Remove" title="Remove" class="facet-close" /></a>Presenter</div>
+    <div class="facet-header"><a href="{{ request.path }}?kw={{ keywords|urlencode }}&amp;t={{ active_tags|join:"||"|urlencode }}&amp;ut={{ untagged }}" title="Remove this criteria"><img src="{% static  'images/facet_close.png' %}" alt="Remove" title="Remove" class="facet-close" /></a>Presenter</div>
     <div class="facet-body">{% if active_presenter.last_name %}{{ active_presenter.last_name }}, {{ active_presenter.first_name }}{% else %}{{ active_presenter.username }}{% endif %}</div>
   </div>
 {% endif %}
 
 {% if request.user.is_authenticated and untagged %}
   <div class="facet active-facet">
-    <div class="facet-header"><a href="{{ refine.url }}ut=" title="Remove this criteria"><img src="{% url static 'images/facet_close.png' %}" alt="Remove" title="Remove" class="facet-close" /></a>Untagged</div>
+    <div class="facet-header"><a href="{{ refine.url }}ut=" title="Remove this criteria"><img src="{% static  'images/facet_close.png' %}" alt="Remove" title="Remove" class="facet-close" /></a>Untagged</div>
     <div class="facet-body">Showing only presentations you have not tagged</div>
   </div>
 {% endif %}
 
 {% for tag in active_tags %}
   <div class="facet active-facet">
-    <div class="facet-header"><a href="{{ refine.url }}rt={{ tag|urlencode }}"  title="Remove this criteria"><img src="{% url static 'images/facet_close.png' %}" alt="Remove" title="Remove" class="facet-close" /></a>Tag</div>
+    <div class="facet-header"><a href="{{ refine.url }}rt={{ tag|urlencode }}"  title="Remove this criteria"><img src="{% static  'images/facet_close.png' %}" alt="Remove" title="Remove" class="facet-close" /></a>Tag</div>
     <div class="facet-body">{{ tag }}</div>
   </div>
 {% endfor %}
@@ -140,7 +140,7 @@
 <ul class="actionbar">
 
 {% if manage %}
-<li><a href="{% url presentation-create %}?next={% url presentation-manage %}">Create new presentation</a></li>
+<li><a href="{% url 'presentation-create' %}?next={% url 'presentation-manage' %}">Create new presentation</a></li>
 {% endif %}
 
 {% with usertags as actionbar_tags %}
@@ -196,7 +196,7 @@
         <td><input type="checkbox" name="h" value="{{ presentation.id }}" /></td>
         <td>
             {% if manage %}
-            <a href="{% url presentation-edit presentation.id, presentation.name %}">{{ presentation.title }}</a>
+            <a href="{% url 'presentation-edit' presentation.id presentation.name %}">{{ presentation.title }}</a>
             {% else %}
             {{ presentation.title }}
             {% endif %}
@@ -227,21 +227,21 @@
 
           {% if presentation.password %}
                 {% if presentation.unlocked %}
-                <img src="{% url static "images/unlocked.png" %}" />
+                <img src="{% static  "images/unlocked.png" %}" />
                 {% else %}
-                <img src="{% url static "images/locked.png" %}" />
+                <img src="{% static  "images/locked.png" %}" />
                 {% endif %}
             {% endif %}
         </td>
         <td class="item-actions">
             {% if manage %}
-            <a href="{% url presentation-edit presentation.id, presentation.name %}" class="nocopylink item-action-important">Edit</a>
+            <a href="{% url 'presentation-edit' presentation.id presentation.name %}" class="nocopylink item-action-important">Edit</a>
             <input type="submit" name="add-selected-items-{{ presentation.id }}" value="Add selected items" class=" item-action-important" />
             {% endif %}
             {% if not presentation.password or presentation.unlocked or presentation.owner == request.user %}
             {% list_viewers presentation request.get_full_path ' ' %}
             {% else %}
-            <a href="{% url presentation-password presentation.id, presentation.name %}?next={{ request.get_full_path|urlencode }}">Unlock</a>
+            <a href="{% url 'presentation-password' presentation.id presentation.name %}?next={{ request.get_full_path|urlencode }}">Unlock</a>
             {% endif %}
         </td>
     </tr>
