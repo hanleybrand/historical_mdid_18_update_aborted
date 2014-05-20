@@ -3,13 +3,15 @@ import pika
 import traceback
 import logging
 from collections import namedtuple
-from django.db import transaction, close_connection
+from django.db import transaction,  close_old_connections
 
 
 logger = logging.getLogger('rooibos_workers_registration')
 
 
-@transaction.commit_manually
+# transaction management changed in django 1.6
+# see http://www.realpython.com/blog/python/transaction-management-with-django-1-6/
+# and https://docs.djangoproject.com/en/1.6/topics/db/transactions/#id5
 def flush_transaction():
     """
     Flush the current transaction so we don't read stale data
@@ -20,12 +22,16 @@ def flush_transaction():
     "transaction-isolation = READ-COMMITTED" in my.cnf or by calling
     this function at the appropriate moment
     """
+    transaction.set_autocommit(False)
     try:
         transaction.commit()
     except Exception:
         # database connection probably closed, open a new one
         logger.exception("Forcing connection close")
-        close_connection()
+        # close_connection()
+        close_old_connections()
+    finally:
+        transaction.set_autocommit(True)
 
 
 workers = dict()
