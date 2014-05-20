@@ -4,7 +4,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-####-DEBUG/SETUP Variables-####
+# ###-DEBUG/SETUP Variables-####
 # All variables in this section should be False on a production system
 #
 DEBUG = True
@@ -19,11 +19,11 @@ NOT_WORKING = False
 # when config initializes, including python paths, etc.
 # possible values are: True, False or Full
 # (see CL_DEBUG section near end of file for what will happen)
-CL_DEBUG = True
+CL_DEBUG = False
 
 # TESTING used for running tests to check installation
 # set to True before running tests with
-#     python manage.py test access converters data federatedsearch \
+# python manage.py test access converters data federatedsearch \
 #         artstor presentation statistics storage userprofile util viewers workers
 #
 # from this directory (PROJECT_ROOT/rooibos/).
@@ -59,6 +59,8 @@ SCRATCH_DIR = os.path.normpath(os.path.join(DEFAULT_DATA_DIR, 'mdid-scratch'))
 # storage for files not defined by storage?
 # TODO: get better definition for what AUTO_STORAGE_DIR is for
 AUTO_STORAGE_DIR = os.path.normpath(os.path.join(DEFAULT_DATA_DIR, 'collections', 'auto'))
+# copied from settings.py
+STATIC_ROOT = os.path.normpath(os.path.join(PROJECT_ROOT, 'static'))
 
 ###-### MEDIA settings
 #  (i.e. media associated with records)
@@ -75,17 +77,18 @@ ADMIN_MEDIA_PREFIX = '/static/admin/'
 COMPRESS = False
 
 ###-### local templates
+# TODO: confirm local_root works if activated or fix
 TEMPLATE_DIRS = (
     # if you wish to override the default mdid templates, uncomment this line and MASTER_TEMPLATE below
     # See PROJECT_ROOT/templates/local_root.html for an example template
-    os.path.normpath(os.path.join(PROJECT_ROOT, 'templates')),
+    # os.path.normpath(os.path.join(PROJECT_ROOT, 'templates')),
 )
 
 # MASTER_TEMPLATE = 'local_root.html'
 
 #####-##### Local MDID Settings #####-##### #####-##### #####-##### #####-##### #####-##### #####-##### #####-#####
 # Settings in this section allow customization of your MDID installation
-# You can put local files in mdid_dj16-data/local_static and
+# You can put local files in ../mdid-data/local_static and
 # add reference them like:
 # LOGO_URL = os.path.normpath(os.path.join(DEFAULT_CUSTOM_DIR, 'logo.png'))
 # FAVICON_URL = os.path.normpath(os.path.join(DEFAULT_CUSTOM_DIR, 'favico.ico'))
@@ -101,7 +104,7 @@ WWW_AUTHENTICATION_REALM = "Please log in to access media from MDID at Your Univ
 SHOW_FRONTPAGE_LOGIN = 'yes'
 
 ADMINS = (
-#    ('Your name', 'your@email.example'),
+    #    ('Your name', 'your@email.example'),
 )
 MANAGERS = ADMINS
 # accessing mdid_dj16 from any ip listed below will change the following behaviors:
@@ -125,8 +128,8 @@ SECRET_KEY = 'Make this unique, and don\'t share it with anybody.'
 
 SESSION_COOKIE_AGE = 6 * 3600  # in seconds
 
-# Requires valid ssl cert, otherwise set to None
-SSL_PORT = None  # ':443'
+# Requires valid ssl cert, otherwise set to None.
+SSL_PORT = None  # set to port like this when cert is installed: ':443'
 # Legacy setting for ImageViewer 2 support
 SECURE_LOGIN = False
 
@@ -151,13 +154,13 @@ LOGOUT_URL = '/'
 ## see https://docs.djangoproject.com/en/1.6/ref/databases/#oracle-notes for Oracle Setup
 #  settings below  will work if you exec MYSQL_INIT in
 
-    # CREATE DATABASE rooibos CHARACTER SET utf8;
-    # GRANT ALL PRIVILEGES ON rooibos.* TO rooibos@localhost
-    # IDENTIFIED BY 'rooibos';
-    # UPDATE mysql.user SET Select_priv='Y',Insert_priv='Y', Update_priv='Y',Delete_priv='Y',
-    # Create_priv='Y', Drop_priv='Y',Index_priv='Y',Alter_priv='Y'
-    # WHERE Host='localhost' AND User='rooibos';
-    # FLUSH PRIVILEGES;
+# CREATE DATABASE rooibos CHARACTER SET utf8;
+# GRANT ALL PRIVILEGES ON rooibos.* TO rooibos@localhost
+# IDENTIFIED BY 'rooibos';
+# UPDATE mysql.user SET Select_priv='Y',Insert_priv='Y', Update_priv='Y',Delete_priv='Y',
+# Create_priv='Y', Drop_priv='Y',Index_priv='Y',Alter_priv='Y'
+# WHERE Host='localhost' AND User='rooibos';
+# FLUSH PRIVILEGES;
 
 DATABASES = {
     'default': {
@@ -208,11 +211,13 @@ GEARMAN_SERVERS = ['127.0.0.1']
 
 # TODO: write a windows/posix branch statement to set windows vs. posix paths
 OPEN_OFFICE_PATH = 'C:/Program Files/OpenOffice.org 3/program/'
-# or
+# or linux
 # OPEN_OFFICE_PATH = '/usr/lib/openoffice/program/'
+# OS X:
+# OPEN_OFFICE_PATH = '/Applications/OpenOffice.app/Contents/program'
 
 FFMPEG_EXECUTABLE = os.path.normpath(os.path.join(PROJECT_ROOT, 'dist', 'windows', 'ffmpeg', 'bin', 'ffmpeg.exe'))
-# or
+# or linux/OS X
 # FFMPEG_EXECUTABLE = os.path.normpath('/usr/local/bin/ffmpeg')
 
 #####-#####
@@ -240,23 +245,23 @@ ARTSTOR_GATEWAY = None
 # licensing requirements.  To enable the component you need to enter your
 # license key, which is available for free for educational institutions.
 # See static/megazine/COPYING.
-MEGAZINE_PUBLIC_KEY = ""
+MEGAZINE_PUBLIC_KEY = ''
 
 # To use a commercial licensed flowplayer, enter your flowplayer key here
 # and add the flowplayer.commercial-3.x.x.swf file to the
 # rooibos/static/flowplayer directory
-FLOWPLAYER_KEY = ""
+FLOWPLAYER_KEY = ''
 
 # MDID uses some Yahoo APIs that require an application key
 # You can get one at https://developer.apps.yahoo.com/dashboard/createKey.html
-YAHOO_APPLICATION_ID = ""
+YAHOO_APPLICATION_ID = ''
 
 CLOUDFILES_API_KEY = ''
 
 
 #####- Authentication Settings -##### #####-##### #####-##### #####-##### #####-##### #####-##### #####-##### #####-###
 
-# By default
+# Uncomment any authentication type you wish to use
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     #'rooibos.auth.ldapauth.LdapAuthenticationBackend',
@@ -273,40 +278,36 @@ AUTHENTICATION_BACKENDS = (
 # servers (e.g. Wowza) don't deliver those, so hard links are required.
 HARD_VIDEO_DELIVERY_LINKS = False
 
+# Use this to add additional apps to your MDID installation
 additional_settings = [
-#    'apps.jmutube.settings_local',
-#    'apps.svohp.settings_local',
+    #    'apps.jmutube.settings_local',
+    #    'apps.svohp.settings_local',
 ]
 
-if DEBUG:
-    MIDDLEWARE_CLASSES = (
-        'debug_toolbar.middleware.DebugToolbarMiddleware',
-    )
+######--- DEBUG_TOOLBAR Config --###### #####-##### #####-##### #####-##### #####-##### #####-##### #####-##### #####-##
 
-    INSTALLED_APPS = (
-        'debug_toolbar',
-    )
+DEBUG_TOOLBAR_PANELS = [
+    'debug_toolbar.panels.versions.VersionsPanel',
+    'debug_toolbar.panels.timer.TimerPanel',
+    'debug_toolbar.panels.settings.SettingsPanel',
+    'debug_toolbar.panels.headers.HeadersPanel',
+    'debug_toolbar.panels.request.RequestPanel',
+    'debug_toolbar.panels.sql.SQLPanel',
+    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+    'debug_toolbar.panels.templates.TemplatesPanel',
+    'debug_toolbar.panels.cache.CachePanel',
+    'debug_toolbar.panels.signals.SignalsPanel',
+    'debug_toolbar.panels.logging.LoggingPanel',
+    'debug_toolbar.panels.redirects.RedirectsPanel',
+]
 
-    DEBUG_TOOLBAR_PANELS = (
-        'debug_toolbar.panels.version.VersionDebugPanel',
-        'debug_toolbar.panels.timer.TimerDebugPanel',
-        #'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-        'debug_toolbar.panels.headers.HeaderDebugPanel',
-        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-        'debug_toolbar.panels.template.TemplateDebugPanel',
-        'debug_toolbar.panels.sql.SQLDebugPanel',
-        'debug_toolbar.panels.signals.SignalDebugPanel',
-        #'debug_toolbar.panels.logger.LoggingPanel',
-    )
-
-    DEBUG_TOOLBAR_CONFIG = (
-        {
-            'INTERCEPT_REDIRECTS': False
-        }
-    )
+DEBUG_TOOLBAR_CONFIG = (
+    {
+        'RENDER_PANELS': True,
+    }
+)
 
 ######--- CL_DEBUG Stuff ---###### #####-##### #####-##### #####-##### #####-##### #####-##### #####-##### #####-#####
-
 # This will print a fair amount of information helpful for debugging an installation
 # if CL_DEBUG = True at the beginning of this file
 # see http://blog.dscpl.com.au/2010/03/improved-wsgi-script-for-use-with.html
@@ -345,34 +346,34 @@ LOGGING = {
     'disable_existing_loggers': True,
     'formatters': {
         'standard': {
-            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt' : "%d/%b/%Y %H:%M:%S"
+            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt': "%d/%b/%Y %H:%M:%S"
         },
     },
     'handlers': {
         'null': {
-            'level':'DEBUG',
-            'class':'django.utils.log.NullHandler',
+            'level': 'DEBUG',
+            'class': 'django.utils.log.NullHandler',
         },
         'logfile': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
             'filename': DEFAULT_DATA_DIR + "/logs/rooibos.log",
             'maxBytes': 50000,
             'backupCount': 2,
             'formatter': 'standard',
         },
-        'console':{
-            'level':'INFO',
-            'class':'logging.StreamHandler',
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
             'formatter': 'standard'
         },
     },
     'loggers': {
         'django': {
-            'handlers':['console'],
+            'handlers': ['console'],
             'propagate': True,
-            'level':'WARN',
+            'level': 'WARN',
         },
         'django.db.backends': {
             'handlers': ['console'],
@@ -385,12 +386,10 @@ LOGGING = {
         },
     }
 }
-
-if DEBUG:
-    def show_toolbar(request):
-        return True
-    SHOW_TOOLBAR_CALLBACK = show_toolbar
-
-
+# if debug-toolbar isn't showing up, try un-commenting the next 4 lines:
+# if DEBUG:
+#     def show_toolbar(request):
+#         return True
+#     SHOW_TOOLBAR_CALLBACK = show_toolbar
 
 ############# end settings_local #####-##### #####-##### #####-##### #####-##### #####-##### #####-##### #####-#####
