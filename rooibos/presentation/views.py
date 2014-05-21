@@ -1,4 +1,4 @@
-from django.http import HttpResponse, HttpResponseRedirect, QueryDict
+from django.http import HttpResponse, HttpResponseRedirect, QueryDict, Http404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, render_to_response
@@ -34,9 +34,9 @@ from django.contrib import messages
 
 @login_required
 def create(request):
-
     existing_tags = Tag.objects.usage_for_model(OwnedWrapper,
-                        filters=dict(user=request.user, content_type=OwnedWrapper.t(Presentation)))
+                                                filters=dict(user=request.user,
+                                                             content_type=OwnedWrapper.t(Presentation)))
 
     selected = request.session.get('selected_records', ())
     next = request.GET.get('next', '') or reverse('presentation-manage')
@@ -61,17 +61,18 @@ def create(request):
 
             update_actionbar_tags(request, presentation)
 
-            return HttpResponseRedirect(reverse('presentation-edit', kwargs={'id': presentation.id, 'name': presentation.name}))
+            return HttpResponseRedirect(
+                reverse('presentation-edit', kwargs={'id': presentation.id, 'name': presentation.name}))
     else:
         form = CreatePresentationForm()
 
     return render_to_response('presentation_create.html',
-                          {'form': form,
-                           'next': next,
-                           'selected': selected,
-                           'existing_tags': existing_tags,
-                           },
-                          context_instance=RequestContext(request))
+                              {'form': form,
+                               'next': next,
+                               'selected': selected,
+                               'existing_tags': existing_tags,
+                              },
+                              context_instance=RequestContext(request))
 
 
 def add_selected_items(request, presentation):
@@ -86,7 +87,6 @@ def add_selected_items(request, presentation):
 
 @login_required
 def edit(request, id, name):
-
     presentation = get_object_or_404(filter_by_access(
         request.user, Presentation, write=True, manage=True).filter(id=id))
     existing_tags = [t.name for t in Tag.objects.usage_for_model(
@@ -96,8 +96,8 @@ def edit(request, id, name):
 
     class PropertiesForm(forms.Form):
         title = forms.CharField(label='Title', max_length=Presentation._meta.get_field('title').max_length)
-#        tags = SplitTaggingField(label='Tags', choices=[(t, t) for t in existing_tags],
-#                                         required=False, add_label='Additional tags')
+        # tags = SplitTaggingField(label='Tags', choices=[(t, t) for t in existing_tags],
+        # required=False, add_label='Additional tags')
         hidden = forms.BooleanField(label='Hidden', required=False)
         description = forms.CharField(label='Description',
                                       widget=forms.Textarea(attrs={'rows': 5}), required=False)
@@ -162,31 +162,32 @@ def edit(request, id, name):
                 presentation.hidden = form.cleaned_data['hidden']
             presentation.description = form.cleaned_data['description']
             presentation.password = form.cleaned_data['password']
-            presentation.fieldset = FieldSet.for_user(presentation.owner).get(id=form.cleaned_data['fieldset']) if form.cleaned_data['fieldset'] else None
+            presentation.fieldset = FieldSet.for_user(presentation.owner).get(id=form.cleaned_data['fieldset']) if \
+            form.cleaned_data['fieldset'] else None
             presentation.hide_default_data = form.cleaned_data['hide_default_data']
             presentation.save()
             messages.success(request, message="Changes to presentation saved successfully.")
             return self_page
     else:
         form = PropertiesForm(initial={'title': presentation.title,
-                               'hidden': presentation.hidden,
-                               'description': presentation.description,
-                               'password': presentation.password,
-                               'hidden': presentation.hidden,
-                               'fieldset': presentation.fieldset.id if presentation.fieldset else None,
-                               'hide_default_data': presentation.hide_default_data,
-                               })
+                                       'hidden': presentation.hidden,
+                                       'description': presentation.description,
+                                       'password': presentation.password,
+                                       'hidden': presentation.hidden,
+                                       'fieldset': presentation.fieldset.id if presentation.fieldset else None,
+                                       'hide_default_data': presentation.hide_default_data,
+        })
 
     contenttype = ContentType.objects.get_for_model(Presentation)
     return render_to_response('presentation_properties.html',
-                      {'presentation': presentation,
-                       'contenttype': "%s.%s" % (contenttype.app_label, contenttype.model),
-                       'formset': formset,
-                       'form': form,
-                       'selected_tags': [tag.name for tag in tags],
-                       'usertags': existing_tags if len(existing_tags) > 0 else None,
-                       },
-                      context_instance=RequestContext(request))
+                              {'presentation': presentation,
+                               'contenttype': "%s.%s" % (contenttype.app_label, contenttype.model),
+                               'formset': formset,
+                               'form': form,
+                               'selected_tags': [tag.name for tag in tags],
+                               'usertags': existing_tags if len(existing_tags) > 0 else None,
+                              },
+                              context_instance=RequestContext(request))
 
 
 @login_required
@@ -195,9 +196,8 @@ def manage(request):
 
 
 def browse(request, manage=False):
-
     if manage and not request.user.is_authenticated():
-        raise Http404()
+        raise Http404
 
     if request.user.is_authenticated() and not request.GET.items():
         # retrieve past settings
@@ -206,7 +206,7 @@ def browse(request, manage=False):
             return HttpResponseRedirect('%s?%s' % (
                 reverse('presentation-manage' if manage else 'presentation-browse'),
                 qs['presentation_browse_querystring'][0],
-                ))
+            ))
 
     presenter = request.GET.get('presenter')
     tags = filter(None, request.GET.getlist('t'))
@@ -228,19 +228,21 @@ def browse(request, manage=False):
 
     if request.user.is_authenticated():
         existing_tags = Tag.objects.usage_for_model(OwnedWrapper,
-                        filters=dict(user=request.user, content_type=OwnedWrapper.t(Presentation)))
+                                                    filters=dict(user=request.user,
+                                                                 content_type=OwnedWrapper.t(Presentation)))
     else:
         existing_tags = ()
 
-
     if untagged and request.user.is_authenticated():
         qs = TaggedItem.objects.filter(content_type=OwnedWrapper.t(OwnedWrapper)).values('object_id').distinct()
-        qs = OwnedWrapper.objects.filter(user=request.user, content_type=OwnedWrapper.t(Presentation), id__in=qs).values('object_id')
+        qs = OwnedWrapper.objects.filter(user=request.user, content_type=OwnedWrapper.t(Presentation),
+                                         id__in=qs).values('object_id')
         q = ~Q(id__in=qs)
     elif tags:
         qs = OwnedWrapper.objects.filter(content_type=OwnedWrapper.t(Presentation))
         # get list of matching IDs for each individual tag, since tags may be attached by different owners
-        ids = [list(TaggedItem.objects.get_by_model(qs, '"%s"' % tag).values_list('object_id', flat=True)) for tag in tags]
+        ids = [list(TaggedItem.objects.get_by_model(qs, '"%s"' % tag).values_list('object_id', flat=True)) for tag in
+               tags]
         q = Q(*(Q(id__in=x) for x in ids))
     else:
         q = Q()
@@ -269,7 +271,8 @@ def browse(request, manage=False):
 
     if request.method == "POST":
 
-        if manage and (request.POST.get('hide') or request.POST.get('unhide')) and request.user.has_perm('presentation.publish_presentations'):
+        if manage and (request.POST.get('hide') or request.POST.get('unhide')) and request.user.has_perm(
+                'presentation.publish_presentations'):
             hide = request.POST.get('hide') or False
             ids = map(int, request.POST.getlist('h'))
             for presentation in Presentation.objects.filter(owner=request.user, id__in=ids):
@@ -299,12 +302,12 @@ def browse(request, manage=False):
 
         return HttpResponseRedirect(request.path + '?' + get.urlencode())
 
-
     active_tags = tags
     active_presenter = presenter
 
     def col(model, field):
-        qn = backend.DatabaseOperations().quote_name
+        #
+        qn = backend.DatabaseOperations(model).quote_name
         return '%s.%s' % (qn(model._meta.db_table), qn(model._meta.get_field(field).column))
 
     if presentations and not manage:
@@ -323,14 +326,15 @@ def browse(request, manage=False):
 
     if presentations and request.user.is_authenticated():
         usertags = Tag.objects.usage_for_queryset(OwnedWrapper.objects.filter(
-                        user=request.user,
-                        object_id__in=presentations.values('id'),
-                        content_type=OwnedWrapper.t(Presentation)), counts=True)
+            user=request.user,
+            object_id__in=presentations.values('id'),
+            content_type=OwnedWrapper.t(Presentation)), counts=True)
     else:
         usertags = ()
 
-    presenters = User.objects.filter(presentation__in=presentations) \
-                     .annotate(presentations=Count('presentation')).order_by('last_name', 'first_name')
+    presenters = User.objects.filter(
+        presentation__in=presentations
+    ).annotate(presentations=Count('presentation')).order_by('last_name', 'first_name')
 
     if request.user.is_authenticated() and presentations:
         # save current settings
@@ -338,23 +342,23 @@ def browse(request, manage=False):
         store_settings(request.user, 'presentation_browse_querystring', querystring)
 
     return render_to_response('presentation_browse.html',
-                          {'manage': manage,
-                           'tags': tags if len(tags) > 0 else None,
-                           'untagged': untagged,
-                           'usertags': usertags if len(usertags) > 0 else None,
-                           'active_tags': active_tags,
-                           'active_presenter': presenter,
-                           'presentations': presentations,
-                           'presenters': presenters if len(presenters) > 1 else None,
-                           'keywords': keywords,
-                           },
-                          context_instance=RequestContext(request))
+                              {'manage': manage,
+                               'tags': tags if len(tags) > 0 else None,
+                               'untagged': untagged,
+                               'usertags': usertags if len(usertags) > 0 else None,
+                               'active_tags': active_tags,
+                               'active_presenter': presenter,
+                               'presentations': presentations,
+                               'presenters': presenters if len(presenters) > 1 else None,
+                               'keywords': keywords,
+                              },
+                              context_instance=RequestContext(request))
+
 
 def password(request, id, name):
-
     presentation = get_object_or_404(
         filter_by_access(request.user, Presentation).filter(
-        Presentation.published_Q(request.user), id=id))
+            Presentation.published_Q(request.user), id=id))
 
     class PasswordForm(forms.Form):
         password = forms.CharField(widget=forms.PasswordInput)
@@ -375,11 +379,11 @@ def password(request, id, name):
         form = PasswordForm()
 
     return render_to_response('presentation_password.html',
-                          {'form': form,
-                           'presentation': presentation,
-                           'next': request.GET.get('next', reverse('presentation-browse')),
-                           },
-                          context_instance=RequestContext(request))
+                              {'form': form,
+                               'presentation': presentation,
+                               'next': request.GET.get('next', reverse('presentation-browse')),
+                              },
+                              context_instance=RequestContext(request))
 
 
 @require_POST
@@ -399,7 +403,7 @@ def record_usage(request, id, name):
     presentations = Presentation.objects.filter(items__record=record).distinct().order_by('title')
 
     return render_to_response('presentation_record_usage.html',
-                       {'record': record,
-                        'presentations': presentations,
-                        },
-                       context_instance=RequestContext(request))
+                              {'record': record,
+                               'presentations': presentations,
+                              },
+                              context_instance=RequestContext(request))
