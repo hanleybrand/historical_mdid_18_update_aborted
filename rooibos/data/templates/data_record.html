@@ -236,7 +236,7 @@ Please save the record before uploading media.
 
 {% if can_manage %}
   <div class="facet active-facet" id="data_record_sidebar_permissions">
-    <div class="facet-header">Permissions <a href="{% permissions_modify_url record %}"><img src="{% url static 'images/edit.png' %}" class="facet-button" /></a></div>
+    <div class="facet-header">Permissions <a href="{% permissions_modify_url record %}"><img src="{% static 'images/edit.png' %}" class="facet-button" /></a></div>
     <div class="facet-body">
         {% permissions_display record "Inherited from collection" %}
     </div>

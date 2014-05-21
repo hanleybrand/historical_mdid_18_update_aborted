@@ -43,7 +43,7 @@
 {% block javascript %}
 {{ block.super }}
 
-    <script type="text/javascript" src="{% url static 'soundmanager/script/soundmanager2.js' %}"></script>
+    <script type="text/javascript" src="{% static 'soundmanager/script/soundmanager2.js' %}"></script>
 
     <script type="text/javascript">
 
@@ -52,7 +52,7 @@
         var lastscroll;
         var scrolltargets;
 
-        soundManager.url = '{% url static 'soundmanager/swf' %}';
+        soundManager.url = '{% static 'soundmanager/swf' %}';
         soundManager.waitForWindowLoad = true;
         soundManager.allowPolling = true;
         soundManager.debugMode = false;

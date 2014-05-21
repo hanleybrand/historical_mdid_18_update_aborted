@@ -29,7 +29,7 @@
 
 {% if collection.id %}
   <div class="facet active-facet" id="collection_sidebar_permissions">
-    <div class="facet-header">Permissions <a href="{% permissions_modify_url collection %}"><img src="{% url static 'images/edit.png' %}" class="facet-button" /></a></div>
+    <div class="facet-header">Permissions <a href="{% permissions_modify_url collection %}"><img src="{% static 'images/edit.png' %}" class="facet-button" /></a></div>
     <div class="facet-body">
         {% permissions_display collection %}
     </div>

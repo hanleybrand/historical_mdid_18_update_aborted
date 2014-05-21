@@ -33,12 +33,12 @@ var attributes = {
 
 
 function insert_megazine() {
-    swfobject.embedSWF("{{ server_url }}{% url static 'megazine/preloader.swf' %}",
+    swfobject.embedSWF("{{ server_url }}{% static 'megazine/preloader.swf' %}",
                        "{{ anchor_id }}",
                        "{{ width }}",
                        "{{ height }}",
                        "9.0.115",
-                       "{{ server_url }}{% url static 'js/expressInstall.swf' %}",
+                       "{{ server_url }}{% static 'js/expressInstall.swf' %}",
                        flashvars,
                        params,
                        attributes);
@@ -48,9 +48,9 @@ if (typeof(MegaZine) != "undefined") {
     insert_megazine();
 } else {
     load_scripts([
-        "{{ server_url }}{% url static 'megazine/swfobject.js' %}",
-        "{{ server_url }}{% url static 'megazine/swfaddress.js' %}",
-        "{{ server_url }}{% url static 'megazine/megazine.js' %}"
+        "{{ server_url }}{% static 'megazine/swfobject.js' %}",
+        "{{ server_url }}{% static 'megazine/swfaddress.js' %}",
+        "{{ server_url }}{% static 'megazine/megazine.js' %}"
         ], insert_megazine);
 }
 })();

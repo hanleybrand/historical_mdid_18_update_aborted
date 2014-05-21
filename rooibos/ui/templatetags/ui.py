@@ -178,7 +178,7 @@ def fileversion(file):
 
     Example:
 
-    {% url static '/flowplayer/flowplayer-*.swf'|fileversion %}
+    {% static '/flowplayer/flowplayer-*.swf'|fileversion %}
 
     results in
 
