@@ -15,7 +15,7 @@ from rooibos.presentation.models import Presentation, PresentationItem
 import subprocess, re, os, sys, shutil
 import logging
 import tempfile
-
+from django.contrib import messages
 
 def convert_ppt(owner, title, collection, storage, tempdir, filename):
     # Call Open Office via the command line in order to convert Power Point Slides to Images
@@ -98,9 +98,9 @@ def powerpoint(request):
                 filename)
             shutil.rmtree(tempdir)
             if not presentation:
-                request.user.message_set.create(message="An error occurred while importing the presentation.")
+                messages.error(request, message="An error occurred while importing the presentation.")
             else:
-                request.user.message_set.create(message="Presentation created successfully.")
+                messages.success(request, message="Presentation created successfully.")
                 return HttpResponseRedirect(reverse('presentation-edit',
                                                     kwargs=dict(id=presentation.id, name=presentation.name)))
     else:

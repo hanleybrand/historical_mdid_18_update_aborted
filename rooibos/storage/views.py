@@ -28,6 +28,8 @@ import logging
 import os
 import uuid
 import mimetypes
+from django.contrib import messages
+
 
 #def expire_header(seconds=3600):
 #    return (datetime.utcnow() + timedelta(0, seconds)).strftime('%a, %d %b %Y %H:%M:%S GMT')
@@ -148,7 +150,7 @@ def media_upload(request, recordid, record):
 
             limit = storage.get_upload_limit(request.user)
             if limit > 0 and file.size > limit * 1024:
-                request.user.message_set.create(message="The uploaded file is too large.")
+                messages.error(request, message="The uploaded file is too large.")
                 return HttpResponseRedirect(request.GET.get('next', reverse('main')))
 
             media = Media.objects.create(record=record,
@@ -292,7 +294,7 @@ def manage_storage(request, storageid=None, storagename=None):
         if request.POST.get('delete-storage'):
             if not request.user.is_superuser:
                 raise HttpResponseForbidden()
-            request.user.message_set.create(message="Storage '%s' has been deleted." % storage.title)
+            messages.success(request, message="Storage '%s' has been deleted." % storage.title)
             storage.delete()
             return HttpResponseRedirect(reverse('storage-manage'))
         else:
@@ -434,7 +436,7 @@ def import_files(request):
                 return HttpResponse(content=simplejson.dumps(dict(status='ok', html=html)),
                                     mimetype='application/json')
 
-            request.user.message_set.create(message=result)
+            messages.info(request, message=result)
             next = request.GET.get('next', request.get_full_path())
             return HttpResponseRedirect(next)
 
@@ -479,7 +481,7 @@ def match_up_files(request):
                 collection=collection.id, storage=storage.id)))
             job.run()
 
-            request.user.message_set.create(message='Match up media job has been submitted.')
+            messages.success(request, message='Match up media job has been submitted.')
             return HttpResponseRedirect("%s?highlight=%s" % (reverse('workers-jobs'), job.id))
     else:
         form = MatchUpForm(request.GET)

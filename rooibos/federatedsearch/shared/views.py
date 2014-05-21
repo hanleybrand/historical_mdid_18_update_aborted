@@ -24,7 +24,7 @@ import socket
 from django.utils import simplejson as json
 import logging
 import os
-
+from django.contrib import messages
 
 class SmartRedirectHandler(urllib2.HTTPRedirectHandler):
     def http_error_301(self, req, fp, code, msg, headers):
@@ -359,9 +359,7 @@ def edit(request, id=None, name=None):
 
     if request.method == "POST":
         if request.POST.get('delete-collection'):
-            request.user.message_set.create(
-                message=("Shared collection '%s' has been removed." %
-                         collection.title))
+            messages.success(request, message="Shared collection '%s' has been removed." % collection.title)
             collection.delete()
             return HttpResponseRedirect(reverse('shared-manage'))
         else:

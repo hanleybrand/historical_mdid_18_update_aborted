@@ -14,6 +14,7 @@ from models import AccessControl
 from . import check_access, get_effective_permissions_and_restrictions, get_accesscontrols_for_object
 from rooibos.statistics.models import Activity
 import re
+from django.contrib import messages
 
 
 def login(request, login_url=None, redirect_field_name=REDIRECT_FIELD_NAME,
@@ -71,7 +72,7 @@ def effective_permissions(request, app_label, model, id, name):
             acluser = acluser[0]
             acl = get_effective_permissions_and_restrictions(acluser, object, assume_authenticated=True)
         else:
-            request.user.message_set.create(message="No user with username '%s' exists." % username)
+            messages.error(request, message="No user with username '%s' exists." % username)
             acl = None
     else:
         acluser = None
@@ -146,7 +147,7 @@ def modify_permissions(request, app_label, model, id, name):
                         else:
                             set_ac(AccessControl(user=user, content_type=contenttype, object_id=id))
                     except User.DoesNotExist:
-                        request.user.message_set.create(message="No user with username '%s' exists." % username)
+                        messages.error(request, message="No user with username '%s' exists." % username)
 
                 groupname = request.POST.get('addgroup')
                 if groupname:
@@ -158,7 +159,7 @@ def modify_permissions(request, app_label, model, id, name):
                         else:
                             set_ac(AccessControl(usergroup=group, content_type=contenttype, object_id=id))
                     except Group.DoesNotExist:
-                        request.user.message_set.create(message="No group with name '%s' exists." % groupname)
+                        messages.error(request, message="No group with name '%s' exists." % groupname)
 
                 return HttpResponseRedirect(request.get_full_path())
     else:

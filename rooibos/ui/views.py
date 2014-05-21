@@ -23,7 +23,7 @@ from rooibos.context_processors import selected_records as ctx_selected_records
 from rooibos.presentation.models import Presentation
 from rooibos.userprofile.views import load_settings, store_settings
 import random
-
+from django.contrib import messages
 
 @cache_control(max_age=24 * 3600)
 def css(request, stylesheet):
@@ -108,7 +108,7 @@ def remove_tag(request, type, id):
         if request.is_ajax():
             return HttpResponse(simplejson.dumps(dict(result='ok')), content_type='application/javascript')
         else:
-            request.user.message_set.create(message="Tag removed successfully.")
+            messages.success(request, message="Tag removed successfully.")
             return HttpResponseRedirect(request.GET.get('next') or '/')
 
     return render_to_response('ui_tag_remove.html',
@@ -166,7 +166,7 @@ def options(request):
         if ui_form.is_valid():
             for key in option_defaults.keys():
                 store_settings(request.user, 'options_%s' % key, ui_form.cleaned_data[key])
-            request.user.message_set.create(message="Updated settings have been saved.")
+            messages.success(request, message="Updated settings have been saved.")
             return HttpResponseRedirect(request.get_full_path())
     else:
         initial = option_defaults.copy()

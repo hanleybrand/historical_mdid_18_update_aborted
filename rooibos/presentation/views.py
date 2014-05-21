@@ -29,6 +29,7 @@ from models import Presentation, PresentationItem
 from functions import duplicate_presentation
 import logging
 import base64
+from django.contrib import messages
 
 
 @login_required
@@ -140,7 +141,7 @@ def edit(request, id, name):
             for instance in instances:
                 instance.presentation = presentation
                 instance.save()
-            request.user.message_set.create(message="Changes to presentation items saved successfully.")
+            messages.success(request, message="Changes to presentation items saved successfully.")
             return self_page
     else:
         formset = OrderingFormSet(queryset=queryset)
@@ -164,7 +165,7 @@ def edit(request, id, name):
             presentation.fieldset = FieldSet.for_user(presentation.owner).get(id=form.cleaned_data['fieldset']) if form.cleaned_data['fieldset'] else None
             presentation.hide_default_data = form.cleaned_data['hide_default_data']
             presentation.save()
-            request.user.message_set.create(message="Changes to presentation saved successfully.")
+            messages.success(request, message="Changes to presentation saved successfully.")
             return self_page
     else:
         form = PropertiesForm(initial={'title': presentation.title,
