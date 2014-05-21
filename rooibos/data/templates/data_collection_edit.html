@@ -46,7 +46,7 @@
     <div class="facet-header">Child Collections</div>
     <div class="facet-body">
         {% for child in collection.children.all %}
-        <a href="{% url 'data-collection-manage' child.id, child.name %}">{{ child.title }}</a><br />
+        <a href="{% url 'data-collection-manage' child.id child.name %}">{{ child.title }}</a><br />
         {% endfor %}
     </div>
   </div>

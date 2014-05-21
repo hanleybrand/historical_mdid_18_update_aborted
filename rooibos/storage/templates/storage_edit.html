@@ -2,7 +2,7 @@
 {% load humanize %}
 {% load access_control %}
 {% load ui %}
-
+{% load static %}
 
 {% block javascript %}
 {{ block.super }}
@@ -23,7 +23,7 @@
     {"url": "{% url 'storage-manage' %}", "title": "Storage Management"}
     {% if storage.id %},
     {"url": "{% url 'storage-match-up-files' %}?storage={{ storage.id }}", "title": "Match Up Media"},
-    {"url": "{% url 'storage-analyze' storage.id, storage.name %}", "title": "Analyze"},
+    {"url": "{% url 'storage-analyze' storage.id storage.name %}", "title": "Analyze"},
     {"url": "{% url 'storage-find-records-without-media' %}?storage={{ storage.id }}", "title": "Find Empty Records"}
     {% endif %}
 ]}
