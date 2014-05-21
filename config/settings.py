@@ -227,7 +227,7 @@ STORAGE_SYSTEMS = {
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = 'rooibos.urls'
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
