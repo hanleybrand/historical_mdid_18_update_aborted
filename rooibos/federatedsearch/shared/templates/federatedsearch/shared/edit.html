@@ -20,8 +20,8 @@
 {% block sidebar %}
 {% var as related_pages %}
 {"pages": [
-    {"url": "{% url ui-management %}", "title": "Management"},
-    {"url": "{% url shared-manage %}", "title": "Shared Collection Management"}
+    {"url": "{% url 'ui-management' %}", "title": "Management"},
+    {"url": "{% url 'shared-manage' %}", "title": "Shared Collection Management"}
 ]}
 {% endvar %}
 
@@ -74,7 +74,7 @@
 <div class="row">
     <br />
     <input type="submit" value="{% if collection.id %}Update{% else %}Create{% endif %}" />
-    <a href="{% url shared-manage %}">Cancel</a>
+    <a href="{% url 'shared-manage' %}">Cancel</a>
 </div>
 
 </form>

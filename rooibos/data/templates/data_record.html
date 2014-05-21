@@ -3,7 +3,7 @@
 {% load viewers %}
 {% load data %}
 {% load access_control %}
-
+{% load static %}
 {% block javascript %}
 {{ block.super }}
 
@@ -39,7 +39,7 @@
             });
         $(".autocomplete :input").each(function() {
             var f = $('#' + this.id.substring(0, this.id.length - 5) + "field");
-            $(this).autocomplete('{% url api-solr-autocomplete %}', {
+            $(this).autocomplete('{% url 'api-solr-autocomplete' %}', {
                 extraParams: {field: function() { return f.val(); }},
                 formatItem: function(row, pos, num, query) { return decodeURIComponent(row); },
                 formatResult: function(row, pos, num) { return decodeURIComponent(row); },
@@ -95,20 +95,20 @@ $(document).ready(function() {
     <div class="facet-body">
         <div>
 {% if can_edit and record.id and not fv_formset %}
-        <a href="{% url data-record-edit record.id record.name %}">Edit Record</a><br />
-        <a href="{% url data-record-copy record.id record.name %}">Duplicate Record</a><br />
+        <a href="{% url 'data-record-edit' record.id record.name %}">Edit Record</a><br />
+        <a href="{% url 'data-record-copy' record.id record.name %}">Duplicate Record</a><br />
 {% endif %}
 {% if record.id and not fv_formset %}
-        <a href="{% url data-record-edit-customize record.id record.name %}">Customize Record</a><br />
+        <a href="{% url 'data-record-edit-customize' record.id record.name %}">Customize Record</a><br />
 {% endif %}
 {% if fv_formset and record.id %}
-        <a href="{% if next %}{{ next }}{% else %}{% url data-record record.id record.name %}{% endif %}">Cancel Editing</a><br />
+        <a href="{% if next %}{{ next }}{% else %}{% url 'data-record' record.id record.name %}{% endif %}">Cancel Editing</a><br />
 {% endif %}
 {% if record.owner %}{% ifequal record.owner request.user %}
   {% add_tags_form record "suggested" "Suggest" %}
 {% endifequal %}{% endif %}
 {% if can_edit and record.id and not fv_formset %}
-    <form class="delete-record-form" method="post" action="{% url data-record-delete record.id, record.name %}">{% csrf_token %}
+    <form class="delete-record-form" method="post" action="{% url 'data-record-delete' record.id record.name %}">{% csrf_token %}
         <input type="submit" name="delete_record" value="Delete Record" />
     </form>
 {% endif %}
@@ -122,7 +122,7 @@ $(document).ready(function() {
 <div class="facet active-facet" id="data_record_usage">
     <div class="facet-header">Usage</div>
     <div class="facet-body">
-        <a href="{% url presentation-record-usage record.id, record.name %}">
+        <a href="{% url 'presentation-record-usage' record.id record.name %}">
             Used in {{ record_usage|default:"no" }} presentation{{ record_usage|pluralize }}
         </a>
     </div>
@@ -206,7 +206,7 @@ $(document).ready(function() {
                 {{ m.width }}x{{ m.height }}
             {% endif %}
             {% if m.editable_in_template %}
-            <form class="delete-media-form" method="POST" action="{% url storage-media-delete m.id, m.name %}?next={{ request.get_full_path }}">{% csrf_token %}
+            <form class="delete-media-form" method="POST" action="{% url 'storage-media-delete' m.id m.name %}?next={{ request.get_full_path }}">{% csrf_token %}
                 <input type="submit" value="Delete Media" />
             </form>
             {% endif %}

@@ -5,7 +5,7 @@
 {% load solr %}
 {% load access_control %}
 {% load pagination_tags %}
-
+{% load static %}
 
 {% block javascript %}
 <script type="text/javascript">
@@ -96,7 +96,7 @@
         {% if not federated_search.cache_hit and federated_search_query %}
         ajaxManager.add({
             type: 'GET',
-            url: '{% url federatedsearch-sidebar-api %}?q={{ federated_search_query|urlencode }}',
+            url: '{% url 'federatedsearch-sidebar-api' %}?q={{ federated_search_query|urlencode }}',
             dataType: 'json',
             success: function(r) {
                 $("#external-results").html(r.html);
@@ -238,9 +238,9 @@
 <li><span class="dropdown-anchor">Selected Items <img src="{% static 'images/down_arrow.png' %}" /></span>
   <div class="dropdown">
   {% if user|accessible_objects:"data.Collection,m"|length %}
-  <a href="{% url ui-delete-selected %}">Delete</a><br />
+  <a href="{% url 'ui-delete-selected' %}">Delete</a><br />
   {% endif %}
-  <a href="{% url presentation-manage %}">Add to Presentation</a><br />
+  <a href="{% url 'presentation-manage' %}">Add to Presentation</a><br />
   </div>
 </li>
 {% endif %}

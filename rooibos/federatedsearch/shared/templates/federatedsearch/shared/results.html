@@ -14,7 +14,7 @@
         if (ids.constructor != Array) ids = [ids];
         ajaxManager.add({
             type: method,
-            url: '{% url shared-select shared.id, shared.name %}',
+            url: '{% url 'shared-select' shared.id, shared.name %}',
             data: {'id': JSON.stringify(ids), 'checked': checked},
             dataType: 'json',
             success: function(r) {
@@ -38,7 +38,7 @@
 
 {% var as related_pages %}
 {"pages": [
-    {"url": "{% url solr-search %}?kw={{ query|urlencode }}", "title": "Back to Explore"}
+    {"url": "{% url 'solr-search' %}?kw={{ query|urlencode }}", "title": "Back to Explore"}
 ]}
 {% endvar %}
 

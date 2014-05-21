@@ -7,7 +7,7 @@ var flashvars = {
     //basePath: "http://www.example.com/megazine/",
 
     /* Used to pass the name of the xml file to use. Path is RELATIVE to basePath, or, if not set, to the megazine.swf file. */
-    xmlFile: "{{ server_url }}{% url megazine-content presentation.id %}?width={{ width }}"
+    xmlFile: "{{ server_url }}{% url 'megazine-content' presentation.id %}?width={{ width }}"
 
     /* When set to true, log messages are printed to the JavaScript console (using the console.log() function) */
     //logToJsConsole: "true"
