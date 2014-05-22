@@ -12,12 +12,9 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 import sys
 
-# install_dir = os.path.dirname(os.path.dirname(__file__))
+# MDID repo root - BASE_DIR is required by some django-extensions
+PROJECT_ROOT, BASE_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), '../'))
 
-# MDID repo root
-PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '../'))
-# setting for django-extensions
-BASE_DIR = PROJECT_ROOT
 # the rooibos directory
 CONTRIB_DIR = os.path.join(PROJECT_ROOT, 'rooibos', 'contrib')
 ROOIBOS_ROOT = os.path.normpath(os.path.join(PROJECT_ROOT, 'rooibos'))
@@ -190,8 +187,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'rooibos.util.stats_middleware.StatsMiddleware',
     'rooibos.contrib.pagination.middleware.PaginationMiddleware',
-    'rooibos.contrib.djangologging.middleware.LoggingMiddleware',
-    'rooibos.contrib.djangologging.middleware.SuppressLoggingOnAjaxRequestsMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'rooibos.storage.middleware.StorageOnStart',
