@@ -14,7 +14,8 @@ def create_site_fixtures(*args, **kwargs):
     try:
         # the test database may contain an initial site 'example.com'
         s = sites_app.Site.objects.get(id=1)
-        s.domain, s.name = 'localhost'
+        s.domain = 'localhost'
+        s.name = 'localhost'
     except ObjectDoesNotExist:
         s = sites_app.Site.objects.get_or_create(domain='localhost', name='localhost',)
 
