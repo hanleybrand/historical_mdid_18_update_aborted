@@ -74,7 +74,7 @@ UPLOAD_LIMIT = 1024 * 1024
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # enable compression (i.e. minification) JS and CSS files - set to True or False
-COMPRESS = False
+COMPRESS_ENABLED = False
 
 ###-### local templates
 # TODO: confirm local_root works if activated or fix

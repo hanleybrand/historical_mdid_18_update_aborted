@@ -4,6 +4,7 @@ MySQL-python
 Django
 django-grappelli
 django-extensions
+django_compressor
 django-debug-toolbar
 python-ldap
 python-memcached

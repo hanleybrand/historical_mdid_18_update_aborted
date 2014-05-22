@@ -12,9 +12,12 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 import sys
 
-# MDID repo root - BASE_DIR is required by some django-extensions
-PROJECT_ROOT, BASE_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), '../'))
+# install_dir = os.path.dirname(os.path.dirname(__file__))
 
+# MDID repo root
+PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '../'))
+# setting for django-extensions
+BASE_DIR = PROJECT_ROOT
 # the rooibos directory
 CONTRIB_DIR = os.path.join(PROJECT_ROOT, 'rooibos', 'contrib')
 ROOIBOS_ROOT = os.path.normpath(os.path.join(PROJECT_ROOT, 'rooibos'))
@@ -32,9 +35,13 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'django.contrib.staticfiles.finders.FileSystemFinder',
+    'compressor.finders.CompressorFinder',
 )
 #TODO: find references to STATIC_DIR and change to STATIC_ROOT
 STATIC_DIR = STATIC_ROOT
+
+COMPRESS_OUTPUT_DIR = 'CACHE'
+
 
 FAVICON_URL = os.path.normpath(os.path.join(STATIC_URL, 'images', 'favicon.ico'))
 
@@ -137,7 +144,7 @@ INSTALLED_APPS = (
     'rooibos.contrib.google_analytics',
     'rooibos.contrib.pagination',
     'rooibos.contrib.impersonate',
-    'rooibos.contrib.compressor',
+    'compressor',
     'rooibos.contrib.south',
     'debug_toolbar',
 )
