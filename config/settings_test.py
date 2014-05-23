@@ -18,6 +18,16 @@ DATABASES = {
     }
 }
 
+# I checked to make sure that the problems weren't with mysql vs sqlite but sqlite throws amazing errors
+# due to how it handles atomic requests and manual transaction management
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': 'test.sqllite',
+#         'ATOMIC_REQUESTS': True
+#     }
+# }
+
 CACHE_BACKEND = 'dummy://'
 
 import tempfile

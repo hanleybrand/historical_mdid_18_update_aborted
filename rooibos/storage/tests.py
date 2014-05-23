@@ -1,5 +1,4 @@
 from __future__ import with_statement
-import unittest
 import tempfile
 import os.path
 import Image
@@ -7,6 +6,8 @@ import shutil
 from threading import Thread
 from StringIO import StringIO
 from django.test.client import Client
+from django.utils import unittest
+from django.test import SimpleTestCase, TransactionTestCase
 from django.core.files import File
 from django.utils import simplejson
 from django.conf import settings
@@ -20,7 +21,7 @@ from rooibos.presentation.models import Presentation, PresentationItem
 from sqlite3 import OperationalError
 
 
-class LocalFileSystemStorageSystemTestCase(unittest.TestCase):
+class LocalFileSystemStorageSystemTestCase(TransactionTestCase):
 
     def setUp(self):
         self.tempdir = tempfile.mkdtemp()
@@ -222,7 +223,7 @@ class ImageCompareTest(unittest.TestCase):
         self.assertEqual(data[3].height, 5)
 
 
-class ProxyUrlTest(unittest.TestCase):
+class ProxyUrlTest(TransactionTestCase):
 
     def setUp(self):
         self.user, created = User.objects.get_or_create(username='proxytest')
@@ -293,7 +294,7 @@ class ProxyUrlTest(unittest.TestCase):
         self.assertNotEqual(proxy_url.uuid, proxy_url2.uuid)
 
 
-class OnlineStorageSystemTestCase(unittest.TestCase):
+class OnlineStorageSystemTestCase(TransactionTestCase):
 
     def setUp(self):
         self.collection = Collection.objects.create(title='Test')
@@ -318,8 +319,8 @@ class OnlineStorageSystemTestCase(unittest.TestCase):
 
         media.delete()
 
-
-class PseudoStreamingStorageSystemTestCase(unittest.TestCase):
+@transaction.non_atomic_requests
+class PseudoStreamingStorageSystemTestCase(TransactionTestCase):
 
     def setUp(self):
         self.tempdir = tempfile.mkdtemp()
@@ -333,12 +334,14 @@ class PseudoStreamingStorageSystemTestCase(unittest.TestCase):
         AccessControl.objects.create(content_object=self.storage, read=True)
         AccessControl.objects.create(content_object=self.collection, read=True)
 
+
     def tearDown(self):
         shutil.rmtree(self.tempdir, ignore_errors=True)
         self.record.delete()
         self.storage.delete()
         self.collection.delete()
 
+    @transaction.non_atomic_requests
     def test_pseudostreaming(self):
         TEST_STRING = 'Hello world'
         content = StringIO(TEST_STRING)
@@ -347,8 +350,8 @@ class PseudoStreamingStorageSystemTestCase(unittest.TestCase):
         response = c.get(self.media.get_absolute_url())
         self.assertEqual(TEST_STRING, response.content)
 
-
-class ProtectedContentDownloadTestCase(unittest.TestCase):
+@transaction.non_atomic_requests
+class ProtectedContentDownloadTestCase(TransactionTestCase):
 
     def setUp(self):
         self.tempdir = tempfile.mkdtemp()
@@ -394,7 +397,7 @@ class ProtectedContentDownloadTestCase(unittest.TestCase):
         self.assertEqual('hello world', response.content)
 
 
-class AutoConnectMediaTestCase(unittest.TestCase):
+class AutoConnectMediaTestCase(TransactionTestCase):
 
     def setUp(self):
         self.tempdir = tempfile.mkdtemp()
@@ -598,7 +601,7 @@ class GetMediaForRecordTestCase(unittest.TestCase):
         self.assertEqual(1, get_media_for_record(self.record_standalone, user=self.user).count())
 
 
-class MediaNameTestCase(unittest.TestCase):
+class MediaNameTestCase(TransactionTestCase):
 
     def setUp(self):
         self.tempdir = tempfile.mkdtemp()
