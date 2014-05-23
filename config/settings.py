@@ -42,10 +42,7 @@ STATIC_DIR = STATIC_ROOT
 
 COMPRESS_OUTPUT_DIR = 'CACHE'
 
-
 FAVICON_URL = os.path.normpath(os.path.join(STATIC_URL, 'images', 'favicon.ico'))
-
-
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -195,7 +192,6 @@ MIDDLEWARE_CLASSES = (
     'rooibos.util.stats_middleware.StatsMiddleware',
     'rooibos.contrib.pagination.middleware.PaginationMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-    'django.middleware.transaction.TransactionMiddleware',
     'rooibos.storage.middleware.StorageOnStart',
     'rooibos.access.middleware.AccessOnStart',
     'rooibos.data.middleware.DataOnStart',
