@@ -20,8 +20,6 @@ class FieldValueTestCase(unittest.TestCase):
         self.user2, created2 = User.objects.get_or_create(username='FieldValueTestCase-test2')
         self.user3, created3 = User.objects.get_or_create(username='FieldValueTestCase-test3')
 
-        print User.objects.all()
-
     def tearDown(self):
         self.collection.delete()
         self.titleField.delete()
@@ -164,6 +162,7 @@ A001,a001.jpg,Test,"Knab, Andreas","Harrisonburg, VA"
 A002,a002.jpg,Another Test,Andreas Knab;John Doe,Virginia
 """
 
+
 class CsvImportTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -173,8 +172,6 @@ class CsvImportTestCase(unittest.TestCase):
         self.locationField = Field.objects.create(label='Location', name='location')
         self.user, created = User.objects.get_or_create(username='CsvImportTestCase-test')
         self.records = []
-
-        print User.objects.all()
 
     def tearDown(self):
         for record in self.records:
