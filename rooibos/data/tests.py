@@ -1,4 +1,5 @@
-import unittest
+#import unittest
+from django.utils import unittest
 from models import Collection, CollectionItem, Record, Field, FieldValue, \
     get_system_field, standardfield
 from datetime import datetime, timedelta
@@ -15,9 +16,11 @@ class FieldValueTestCase(unittest.TestCase):
         self.titleField = Field.objects.create(label='Title', name='title')
         self.creatorField = Field.objects.create(label='Creator', name='creator')
         self.locationField = Field.objects.create(label='Location', name='location')
-        self.user = User.objects.create(username='FieldValueTestCase-test')
-        self.user2 = User.objects.create(username='FieldValueTestCase-test2')
-        self.user3 = User.objects.create(username='FieldValueTestCase-test3')
+        self.user, created = User.objects.get_or_create(username='FieldValueTestCase-test')
+        self.user2, created2 = User.objects.get_or_create(username='FieldValueTestCase-test2')
+        self.user3, created3 = User.objects.get_or_create(username='FieldValueTestCase-test3')
+
+        print User.objects.all()
 
     def tearDown(self):
         self.collection.delete()
@@ -168,8 +171,10 @@ class CsvImportTestCase(unittest.TestCase):
         self.titleField = Field.objects.create(label='Title', name='title')
         self.creatorField = Field.objects.create(label='Creator', name='creator')
         self.locationField = Field.objects.create(label='Location', name='location')
-        self.user = User.objects.create(username='CsvImportTestCase-test')
+        self.user, created = User.objects.get_or_create(username='CsvImportTestCase-test')
         self.records = []
+
+        print User.objects.all()
 
     def tearDown(self):
         for record in self.records:
@@ -552,12 +557,12 @@ class RecordAccessTestCase(unittest.TestCase):
     def setUp(self):
         self.collection = Collection.objects.create(title='Test Collection', name='accesstest')
         self.collection2 = Collection.objects.create(title='Test Collection', name='accesstest2')
-        self.collectionreader = User.objects.create(username='accesstest-reader')
-        self.collectionwriter = User.objects.create(username='accesstest-writer')
-        self.collectionmanager = User.objects.create(username='accesstest-manager')
-        self.owner = User.objects.create(username='accesstest-owner')
+        self.collectionreader, created = User.objects.get_or_create(username='accesstest-reader')
+        self.collectionwriter, created2 = User.objects.get_or_create(username='accesstest-writer')
+        self.collectionmanager, created3 = User.objects.get_or_create(username='accesstest-manager')
+        self.owner, created = User.objects.get_or_create(username='accesstest-owner')
         self.admin = User.objects.get(username='admin')
-        self.user = User.objects.create(username='accesstest-user')
+        self.user, created = User.objects.get_or_create(username='accesstest-user')
         AccessControl.objects.create(content_object=self.collection,
                                      user=self.collectionreader,
                                      read=True)

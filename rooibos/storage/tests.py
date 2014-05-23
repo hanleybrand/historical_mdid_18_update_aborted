@@ -225,7 +225,7 @@ class ImageCompareTest(unittest.TestCase):
 class ProxyUrlTest(unittest.TestCase):
 
     def setUp(self):
-        self.user = User.objects.create(username='proxytest')
+        self.user, created = User.objects.get_or_create(username='proxytest')
         self.user.set_password('test')
         self.user.save()
         self.tempdir = tempfile.mkdtemp()
@@ -324,9 +324,7 @@ class PseudoStreamingStorageSystemTestCase(unittest.TestCase):
     def setUp(self):
         self.tempdir = tempfile.mkdtemp()
         self.collection = Collection.objects.create(title='Test')
-        self.storage = Storage.objects.create(title='Test',
-                                              name='test',
-                                              system='pseudostreaming',
+        self.storage = Storage.objects.create(title='Test', name='test', system='rooibos.storage.pseudostreaming',
                                               base=self.tempdir,
                                               urlbase='file:///' + self.tempdir.replace('\\', '/'))
         self.record = Record.objects.create(name='record')
@@ -523,9 +521,9 @@ class GetMediaForRecordTestCase(unittest.TestCase):
         self.record = Record.objects.create(name='monalisa')
         self.record.media_set.create(name='getmediatest', url='getmediatest', storage=self.storage)
         CollectionItem.objects.create(collection=self.collection, record=self.record)
-        self.user = User.objects.create(username='getmediatest1')
-        self.owner_can_read = User.objects.create(username='getmediatest2')
-        self.owner_cant_read = User.objects.create(username='getmediatest3')
+        self.user, created = User.objects.get_or_create(username='getmediatest1')
+        self.owner_can_read, created2 = User.objects.get_or_create(username='getmediatest2')
+        self.owner_cant_read, created3 = User.objects.get_or_create(username='getmediatest3')
         AccessControl.objects.create(user=self.owner_can_read, content_object=self.collection, read=True)
         self.record_standalone = Record.objects.create(name='no_collection', owner=self.owner_can_read)
         self.record_standalone.media_set.create(name='getmediatest', url='getmediatest', storage=self.storage)
