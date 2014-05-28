@@ -20,10 +20,17 @@ from rooibos.access import get_effective_permissions
 from rooibos.presentation.models import Presentation, PresentationItem
 from sqlite3 import OperationalError
 
+# changes to django transactions create signal problems
+# tests that would normally cause post_save or post_delete
+# signals to happen should cal no_signals() to prevent
+# TransactionManagementError: This is forbidden when an 'atomic' block is active.
+from rooibos.solr.models import disconnect_signals as no_signals
+
 
 class LocalFileSystemStorageSystemTestCase(TransactionTestCase):
 
     def setUp(self):
+        no_signals()
         self.tempdir = tempfile.mkdtemp()
         self.collection = Collection.objects.create(title='Test')
         self.storage = Storage.objects.create(title='Test', name='test', system='local', base=self.tempdir)
@@ -33,12 +40,14 @@ class LocalFileSystemStorageSystemTestCase(TransactionTestCase):
         AccessControl.objects.create(content_object=self.collection, read=True)
 
     def tearDown(self):
+        no_signals()
         self.record.delete()
         self.storage.delete()
         self.collection.delete()
         shutil.rmtree(self.tempdir, ignore_errors=True)
 
     def test_save_and_retrieve_file(self):
+        no_signals()
         Media.objects.filter(record=self.record).delete()
         media = Media.objects.create(record=self.record, name='image', storage=self.storage)
         content = StringIO('hello world')
@@ -52,6 +61,7 @@ class LocalFileSystemStorageSystemTestCase(TransactionTestCase):
         media.delete()
 
     def test_save_over_existing_file(self):
+        no_signals()
         Media.objects.filter(record=self.record).delete()
         media = Media.objects.create(record=self.record, name='image', storage=self.storage)
         content = StringIO('hello world')
@@ -69,6 +79,7 @@ class LocalFileSystemStorageSystemTestCase(TransactionTestCase):
 
 
     def test_thumbnail(self):
+        no_signals()
         Media.objects.filter(record=self.record).delete()
         media = Media.objects.create(record=self.record, name='tiff', mimetype='image/tiff', storage=self.storage)
         with open(os.path.join(os.path.dirname(__file__), 'test_data', 'dcmetro.tif'), 'rb') as f:
@@ -83,7 +94,7 @@ class LocalFileSystemStorageSystemTestCase(TransactionTestCase):
 
 
     def test_crop_to_square(self):
-
+        no_signals()
         Media.objects.filter(record=self.record).delete()
         media = Media.objects.create(record=self.record, name='tiff', mimetype='image/tiff', storage=self.storage)
         with open(os.path.join(os.path.dirname(__file__), 'test_data', 'dcmetro.tif'), 'rb') as f:
@@ -98,6 +109,7 @@ class LocalFileSystemStorageSystemTestCase(TransactionTestCase):
 
 
     def test_derivative_permissions(self):
+        no_signals()
         Media.objects.filter(record=self.record).delete()
         media = Media.objects.create(record=self.record, name='tiff', mimetype='image/tiff', storage=self.storage)
         with open(os.path.join(os.path.dirname(__file__), 'test_data', 'dcmetro.tif'), 'rb') as f:
@@ -126,6 +138,7 @@ class LocalFileSystemStorageSystemTestCase(TransactionTestCase):
 
 
     def test_access_through_presentation(self):
+        no_signals()
         Media.objects.filter(record=self.record).delete()
         media = Media.objects.create(record=self.record, name='tiff', mimetype='image/tiff', storage=self.storage)
         with open(os.path.join(os.path.dirname(__file__), 'test_data', 'dcmetro.tif'), 'rb') as f:
@@ -181,6 +194,7 @@ class LocalFileSystemStorageSystemTestCase(TransactionTestCase):
 
 
     def testDeliveryUrl(self):
+        no_signals()
         s = Storage.objects.create(title='TestDelivery',
                                    system='local',
                                    base='t:/streaming/directory',
@@ -226,30 +240,32 @@ class ImageCompareTest(unittest.TestCase):
 class ProxyUrlTest(TransactionTestCase):
 
     def setUp(self):
-        self.user, created = User.objects.get_or_create(username='proxytest')
-        self.user.set_password('test')
-        self.user.save()
+        no_signals()
+        self.proxytest_user, created = User.objects.get_or_create(username='proxytest')
+        self.proxytest_user.set_password('test')
+        self.proxytest_user.save()
         self.tempdir = tempfile.mkdtemp()
         self.collection = Collection.objects.create(title='Test')
         self.storage = Storage.objects.create(title='Test', name='test', system='local', base=self.tempdir)
         self.record = Record.objects.create(name='monalisa')
         CollectionItem.objects.create(collection=self.collection, record=self.record)
-        AccessControl.objects.create(content_object=self.storage, user=self.user, read=True,
+        AccessControl.objects.create(content_object=self.storage, user=self.proxytest_user, read=True,
                                      restrictions=dict(width=50, height=50))
-        AccessControl.objects.create(content_object=self.collection, user=self.user, read=True)
+        AccessControl.objects.create(content_object=self.collection, user=self.proxytest_user, read=True)
         media = Media.objects.create(record=self.record, name='tiff', mimetype='image/tiff', storage=self.storage)
         with open(os.path.join(os.path.dirname(__file__), 'test_data', 'dcmetro.tif'), 'rb') as f:
             media.save_file('dcmetro.tif', f)
 
     def tearDown(self):
+        no_signals()
         self.record.delete()
         self.storage.delete()
         self.collection.delete()
-        self.user.delete()
+        self.proxytest_user.delete()
         shutil.rmtree(self.tempdir, ignore_errors=True)
 
     def test_proxy_url(self):
-
+        no_signals()
         c = Client()
         response = c.post('/media/proxy/create/')
         # Response is JSON, should always be 200
@@ -285,11 +301,12 @@ class ProxyUrlTest(TransactionTestCase):
 
 
     def test_duplicate_proxy_url(self):
+        no_signals()
 
         TrustedSubnet.objects.create(subnet='127.0.0.1')
-        proxy_url = ProxyUrl.create_proxy_url('/some/url', 'ctx1', '127.0.0.1', self.user)
-        proxy_url2 = ProxyUrl.create_proxy_url('/some/url', 'ctx2', '127.0.0.1', self.user)
-        proxy_url3 = ProxyUrl.create_proxy_url('/some/url', 'ctx1', '127.0.0.1', self.user)
+        proxy_url = ProxyUrl.create_proxy_url('/some/url', 'ctx1', '127.0.0.1', self.proxytest_user)
+        proxy_url2 = ProxyUrl.create_proxy_url('/some/url', 'ctx2', '127.0.0.1', self.proxytest_user)
+        proxy_url3 = ProxyUrl.create_proxy_url('/some/url', 'ctx1', '127.0.0.1', self.proxytest_user)
         self.assertEqual(proxy_url.uuid, proxy_url3.uuid)
         self.assertNotEqual(proxy_url.uuid, proxy_url2.uuid)
 
@@ -297,6 +314,7 @@ class ProxyUrlTest(TransactionTestCase):
 class OnlineStorageSystemTestCase(TransactionTestCase):
 
     def setUp(self):
+        no_signals()
         self.collection = Collection.objects.create(title='Test')
         self.storage = Storage.objects.create(title='Test', name='test', system='online')
         self.record = Record.objects.create(name='monalisa')
@@ -305,11 +323,13 @@ class OnlineStorageSystemTestCase(TransactionTestCase):
         AccessControl.objects.create(content_object=self.collection, read=True)
 
     def tearDown(self):
+        no_signals()
         self.record.delete()
         self.storage.delete()
         self.collection.delete()
 
     def test_retrieval(self):
+        no_signals()
         url = "file:///" + os.path.join(os.path.dirname(__file__), 'test_data', 'dcmetro.tif').replace('\\', '/')
         media = Media.objects.create(record=self.record, storage=self.storage, url=url, mimetype='image/tiff')
         thumbnail = get_thumbnail_for_record(self.record)
@@ -319,10 +339,11 @@ class OnlineStorageSystemTestCase(TransactionTestCase):
 
         media.delete()
 
-@transaction.non_atomic_requests
+#@transaction.non_atomic_requests
 class PseudoStreamingStorageSystemTestCase(TransactionTestCase):
 
     def setUp(self):
+        no_signals()
         self.tempdir = tempfile.mkdtemp()
         self.collection = Collection.objects.create(title='Test')
         self.storage = Storage.objects.create(title='Test', name='test', system='rooibos.storage.pseudostreaming',
@@ -336,13 +357,15 @@ class PseudoStreamingStorageSystemTestCase(TransactionTestCase):
 
 
     def tearDown(self):
+        no_signals()
         shutil.rmtree(self.tempdir, ignore_errors=True)
         self.record.delete()
         self.storage.delete()
         self.collection.delete()
 
-    @transaction.non_atomic_requests
+    #@transaction.non_atomic_requests
     def test_pseudostreaming(self):
+        no_signals()
         TEST_STRING = 'Hello world'
         content = StringIO(TEST_STRING)
         self.media.save_file('test.txt', content)
@@ -350,10 +373,11 @@ class PseudoStreamingStorageSystemTestCase(TransactionTestCase):
         response = c.get(self.media.get_absolute_url())
         self.assertEqual(TEST_STRING, response.content)
 
-@transaction.non_atomic_requests
+#@transaction.non_atomic_requests
 class ProtectedContentDownloadTestCase(TransactionTestCase):
 
     def setUp(self):
+        no_signals()
         self.tempdir = tempfile.mkdtemp()
         self.collection = Collection.objects.create(title='ProtectedTest')
         self.storage = Storage.objects.create(title='ProtectedTest', name='protectedtest', system='local', base=self.tempdir)
@@ -368,6 +392,7 @@ class ProtectedContentDownloadTestCase(TransactionTestCase):
         self.media.save_file('test.txt', content)
 
     def tearDown(self):
+        no_signals()
         self.media.delete()
         self.record.delete()
         self.storage.delete()
@@ -376,7 +401,7 @@ class ProtectedContentDownloadTestCase(TransactionTestCase):
         shutil.rmtree(self.tempdir, ignore_errors=True)
 
     def test_save_and_retrieve_file(self):
-
+        no_signals()
         if not any(map(lambda c: c.endswith('.auth.middleware.BasicAuthenticationMiddleware'), settings.MIDDLEWARE_CLASSES)):
             return
 
@@ -400,6 +425,7 @@ class ProtectedContentDownloadTestCase(TransactionTestCase):
 class AutoConnectMediaTestCase(TransactionTestCase):
 
     def setUp(self):
+        no_signals()
         self.tempdir = tempfile.mkdtemp()
         os.mkdir(os.path.join(self.tempdir, 'sub'))
         self.collection = Collection.objects.create(title='AutoconnectMediaTest')
@@ -409,7 +435,9 @@ class AutoConnectMediaTestCase(TransactionTestCase):
         self.create_file('id_2')
         self.create_file(os.path.join('sub', 'id_99'))
 
+    @transaction.non_atomic_requests
     def tearDown(self):
+        no_signals()
         for record in self.records:
             record.delete()
         self.storage.delete()
@@ -417,6 +445,7 @@ class AutoConnectMediaTestCase(TransactionTestCase):
         shutil.rmtree(self.tempdir, ignore_errors=True)
 
     def create_record(self, id):
+        no_signals()
         record = Record.objects.create(name='id')
         CollectionItem.objects.create(collection=self.collection, record=record)
         FieldValue.objects.create(record=record, field=standardfield('identifier'), value=id)
@@ -424,11 +453,13 @@ class AutoConnectMediaTestCase(TransactionTestCase):
         return record
 
     def create_file(self, id):
+        no_signals()
         file = open(os.path.join(self.tempdir, '%s.txt' % id), 'w')
         file.write('test')
         file.close()
 
     def test_get_files(self):
+        no_signals()
         files = sorted(self.storage.get_files())
         self.assertEqual(3, len(files))
         self.assertEqual('id_1.txt', files[0])
@@ -439,6 +470,7 @@ class AutoConnectMediaTestCase(TransactionTestCase):
         pass
 
     def test_connect_files(self):
+        no_signals()
         r1 = self.create_record('id_1')
         r2 = self.create_record('id_2')
         r3 = self.create_record('id_3')
@@ -456,6 +488,7 @@ class AutoConnectMediaTestCase(TransactionTestCase):
 class AnalyzeTestCase(unittest.TestCase):
 
     def setUp(self):
+        no_signals()
         self.tempdir = tempfile.mkdtemp()
         os.mkdir(os.path.join(self.tempdir, 'sub'))
         self.collection = Collection.objects.create(title='AnalyzeTest')
@@ -471,6 +504,7 @@ class AnalyzeTestCase(unittest.TestCase):
         self.create_record('id_missing_other', 'id_missing_other', self.other_storage)
 
     def tearDown(self):
+        no_signals()
         for record in self.records:
             record.delete()
         self.storage.delete()
@@ -478,6 +512,7 @@ class AnalyzeTestCase(unittest.TestCase):
         shutil.rmtree(self.tempdir, ignore_errors=True)
 
     def create_record(self, id, media, storage=None):
+        no_signals()
         record = Record.objects.create(name='id')
         CollectionItem.objects.create(collection=self.collection, record=record)
         FieldValue.objects.create(record=record, field=standardfield('identifier'), value=id)
@@ -488,12 +523,13 @@ class AnalyzeTestCase(unittest.TestCase):
         return record
 
     def create_file(self, id):
+        no_signals()
         file = open(os.path.join(self.tempdir, '%s.txt' % id), 'w')
         file.write('test')
         file.close()
 
     def testAnalyzeCollection(self):
-
+        no_signals()
         empty = analyze_records(self.collection, self.storage)
 
         self.assertEqual(2, len(empty))
@@ -502,7 +538,7 @@ class AnalyzeTestCase(unittest.TestCase):
         self.assertEqual('id_no_media', titles[1])
 
     def testAnalyzeMedia(self):
-
+        no_signals()
         broken, extra = analyze_media(self.storage)
 
         self.assertEqual(1, len(broken))
@@ -514,10 +550,10 @@ class AnalyzeTestCase(unittest.TestCase):
         self.assertEqual(os.path.join('sub', 'id_99.txt'), extra[1])
 
 
-
 class GetMediaForRecordTestCase(unittest.TestCase):
 
     def setUp(self):
+        no_signals()
         self.tempdir = tempfile.mkdtemp()
         self.collection = Collection.objects.create(title='GetMediaTest')
         self.storage = Storage.objects.create(title='GetMediaTest', name='getmediatest', system='local', base=self.tempdir)
@@ -544,6 +580,7 @@ class GetMediaForRecordTestCase(unittest.TestCase):
         AccessControl.objects.create(user=self.user, content_object=self.storage, read=True)
 
     def tearDown(self):
+        no_signals()
         self.presentation_ok.delete()
         self.presentation_broken.delete()
         self.presentation_standalone_record.delete()
@@ -557,12 +594,14 @@ class GetMediaForRecordTestCase(unittest.TestCase):
         shutil.rmtree(self.tempdir, ignore_errors=True)
 
     def test_direct_access(self):
+        no_signals()
         self.assertEqual(0, get_media_for_record(self.record, user=self.user).count())
         AccessControl.objects.create(user=self.user, content_object=self.collection, read=True)
         self.assertEqual(1, get_media_for_record(self.record, user=self.user).count())
         AccessControl.objects.filter(user=self.user).delete()
 
     def test_simple_presentation_access(self):
+        no_signals()
         self.assertEqual(0, get_media_for_record(self.record, user=self.user).count())
         AccessControl.objects.create(user=self.user, content_object=self.presentation_broken, read=True)
         self.assertEqual(0, get_media_for_record(self.record, user=self.user).count())
@@ -571,6 +610,7 @@ class GetMediaForRecordTestCase(unittest.TestCase):
         AccessControl.objects.filter(user=self.user).delete()
 
     def test_password_access(self):
+        no_signals()
         self.assertEqual(0, get_media_for_record(self.record, user=self.user).count())
         AccessControl.objects.create(user=self.user, content_object=self.presentation_password, read=True)
         self.assertEqual(0, get_media_for_record(self.record, user=self.user).count())
@@ -579,12 +619,14 @@ class GetMediaForRecordTestCase(unittest.TestCase):
         AccessControl.objects.filter(user=self.user).delete()
 
     def test_presentation_must_contain_record(self):
+        no_signals()
         self.assertEqual(0, get_media_for_record(self.record, user=self.user).count())
         AccessControl.objects.create(user=self.user, content_object=self.presentation_no_record, read=True)
         self.assertEqual(0, get_media_for_record(self.record, user=self.user).count())
         AccessControl.objects.filter(user=self.user).delete()
 
     def test_hidden_presentation_access(self):
+        no_signals()
         self.assertEqual(0, get_media_for_record(self.record, user=self.user).count())
         AccessControl.objects.create(user=self.user, content_object=self.presentation_hidden, read=True)
         self.assertEqual(0, get_media_for_record(self.record, user=self.user).count())
@@ -596,6 +638,7 @@ class GetMediaForRecordTestCase(unittest.TestCase):
         self.presentation_hidden.save()
 
     def test_standalone_record_access(self):
+        no_signals()
         self.assertEqual(0, get_media_for_record(self.record_standalone, user=self.user).count())
         AccessControl.objects.create(user=self.user, content_object=self.presentation_standalone_record, read=True)
         self.assertEqual(1, get_media_for_record(self.record_standalone, user=self.user).count())
@@ -604,24 +647,29 @@ class GetMediaForRecordTestCase(unittest.TestCase):
 class MediaNameTestCase(TransactionTestCase):
 
     def setUp(self):
+        no_signals()
         self.tempdir = tempfile.mkdtemp()
         self.storage = Storage.objects.create(title='MediaNameTest', name='medianametest', system='local', base=self.tempdir)
         self.record = Record.objects.create()
 
     def tearDown(self):
+        no_signals()
         self.record.delete()
         self.storage.delete()
         shutil.rmtree(self.tempdir, ignore_errors=True)
 
     def testDefaultMediaName(self):
+        no_signals()
         media = self.record.media_set.create(storage=self.storage)
         self.assertTrue(media.name.startswith('m-'))
 
     def testMediaNameFromUrl(self):
+        no_signals()
         media = self.record.media_set.create(url='test.txt', storage=self.storage)
         self.assertEqual('test', media.name)
 
     def testMediaNameFromSave(self):
+        no_signals()
         media = self.record.media_set.create(storage=self.storage)
         self.assertTrue(media.name.startswith('m-'))
 
