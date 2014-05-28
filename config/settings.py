@@ -37,7 +37,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'compressor.finders.CompressorFinder',
 )
-#TODO: find references to STATIC_DIR and change to STATIC_ROOT
+# TODO: find references to STATIC_DIR and change to STATIC_ROOT
 STATIC_DIR = STATIC_ROOT
 
 COMPRESS_OUTPUT_DIR = 'CACHE'
@@ -92,14 +92,14 @@ EXPOSE_TO_CONTEXT = (
     'TITLE',
     'SHOW_FRONTPAGE_LOGIN',
     'MASTER_TEMPLATE',
-    )
+)
 
 
 # Application definition
 
 INSTALLED_APPS = (
-    'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.auth',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.flatpages',
@@ -160,7 +160,6 @@ TEMPLATE_LOADERS = (
     )),
 )
 
-
 TEMPLATE_CONTEXT_PROCESSORS = (
     # "django.core.context_processors.",
     "django.core.context_processors.debug",
@@ -173,7 +172,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
 )
-
 
 MIDDLEWARE_CLASSES = (
     'rooibos.middleware.Middleware',
@@ -223,7 +221,6 @@ STORAGE_SYSTEMS = {
 }
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
-
 
 ROOT_URLCONF = 'rooibos.urls'
 
@@ -279,7 +276,7 @@ MASTER_TEMPLATE = 'master_root.html'
 
 
 GROUP_MANAGERS = {
- #   'nasaimageexchange': 'rooibos.federatedsearch.nasa.nix.NasaImageExchange',
+    #   'nasaimageexchange': 'rooibos.federatedsearch.nasa.nix.NasaImageExchange',
 }
 
 ## these should be overridden by settings_local
