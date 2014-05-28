@@ -1,5 +1,5 @@
 from __future__ import with_statement
-from pyPdf.pdf import PdfFileReader
+from rooibos.contrib.pyPdf.pdf import PdfFileReader
 
 
 def extractTextFromPdfStream(stream):
