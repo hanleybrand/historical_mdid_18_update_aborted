@@ -355,7 +355,6 @@ class PseudoStreamingStorageSystemTestCase(TransactionTestCase):
         AccessControl.objects.create(content_object=self.storage, read=True)
         AccessControl.objects.create(content_object=self.collection, read=True)
 
-
     def tearDown(self):
         no_signals()
         shutil.rmtree(self.tempdir, ignore_errors=True)
@@ -363,17 +362,18 @@ class PseudoStreamingStorageSystemTestCase(TransactionTestCase):
         self.storage.delete()
         self.collection.delete()
 
-    #@transaction.non_atomic_requests
     def test_pseudostreaming(self):
         no_signals()
+        print 'Storage : %s - %s \n %s' % (self.storage.title, self.storage.system, self.storage.urlbase)
         TEST_STRING = 'Hello world'
         content = StringIO(TEST_STRING)
-        self.media.save_file('test.txt', content)
+        print 'content - %s' % content.getvalue()
+        self.media.save_file('testpsuedostream.txt', content)
         c = Client()
         response = c.get(self.media.get_absolute_url())
         self.assertEqual(TEST_STRING, response.content)
 
-#@transaction.non_atomic_requests
+
 class ProtectedContentDownloadTestCase(TransactionTestCase):
 
     def setUp(self):
