@@ -7,7 +7,7 @@ LOGGING_OUTPUT_ENABLED = DEBUG
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'test_test_mdid',
+        'NAME': 'test_mdid',
         'USER': 'rooibos',
         'PASSWORD': 'rooibos',
         'HOST': '127.0.0.1',
