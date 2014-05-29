@@ -180,7 +180,8 @@ class Media(models.Model):
             self.name = os.path.splitext(os.path.basename(name))[0]
             self.save(force_update_name=True)
         else:
-            raise IOError("Media file could not be stored")
+            raise IOError("storage.models.media.save_file: "
+                          "file %s could not be stored in %s" % (name, self.storage.title))
 
     def load_file(self):
         return self.storage and self.storage.load_file(self.url) or None
