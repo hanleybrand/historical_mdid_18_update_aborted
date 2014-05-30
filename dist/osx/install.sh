@@ -63,7 +63,7 @@ install-mysql
 install-memcached
 #install-pyldap
 
-#pip install -r requirements.txt
+#pip install -r base.txt
 
 if $(python -c "import ldap") 2>/dev/null; then
     echo 'Hey, no error'
