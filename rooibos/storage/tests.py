@@ -7,7 +7,7 @@ from threading import Thread
 from StringIO import StringIO
 from django.test.client import Client
 from django.utils import unittest
-from django.test import SimpleTestCase, TransactionTestCase
+from django.test import TestCase, SimpleTestCase, TransactionTestCase
 from django.core.files import File
 from django.utils import simplejson
 from django.conf import settings
@@ -26,8 +26,10 @@ from sqlite3 import OperationalError
 # TransactionManagementError: This is forbidden when an 'atomic' block is active.
 from rooibos.solr.models import disconnect_signals as no_signals
 
+# also note that tests of django functionality have been refactored to use django.test.TestCase(s)
+# to
 
-class LocalFileSystemStorageSystemTestCase(TransactionTestCase):
+class LocalFileSystemStorageSystemTestCase(TestCase):
 
     def setUp(self):
         no_signals()
@@ -237,7 +239,7 @@ class ImageCompareTest(unittest.TestCase):
         self.assertEqual(data[3].height, 5)
 
 
-class ProxyUrlTest(TransactionTestCase):
+class ProxyUrlTest(TestCase):
 
     def setUp(self):
         no_signals()
@@ -339,14 +341,13 @@ class OnlineStorageSystemTestCase(TransactionTestCase):
 
         media.delete()
 
-#@transaction.non_atomic_requests
-class PseudoStreamingStorageSystemTestCase(TransactionTestCase):
+class PseudoStreamingStorageSystemTestCase(TestCase):
 
     def setUp(self):
         no_signals()
         self.tempdir = tempfile.mkdtemp()
         self.collection = Collection.objects.create(title='Test')
-        self.storage = Storage.objects.create(title='Test', name='test', system='rooibos.storage.pseudostreaming',
+        self.storage = Storage.objects.create(title='PseudoStreamTest', name='pseudostreamtest', system='rooibos.storage.pseudostreaming',
                                               base=self.tempdir,
                                               urlbase='file:///' + self.tempdir.replace('\\', '/'))
         self.record = Record.objects.create(name='record')
@@ -354,6 +355,10 @@ class PseudoStreamingStorageSystemTestCase(TransactionTestCase):
         CollectionItem.objects.create(collection=self.collection, record=self.record)
         AccessControl.objects.create(content_object=self.storage, read=True)
         AccessControl.objects.create(content_object=self.collection, read=True)
+
+        print "\nstorage title: %s \nstorage base: %s" % (self.storage.title, self.storage.base)
+        print "\nstorage urlbase: %s \nstorage storage system: %s" % (self.storage.urlbase, self.storage.system)
+        print "PseudoStreamingStorageSystemTestCase setup complete"
 
     def tearDown(self):
         no_signals()
@@ -364,14 +369,34 @@ class PseudoStreamingStorageSystemTestCase(TransactionTestCase):
 
     def test_pseudostreaming(self):
         no_signals()
-        print 'Storage : %s - %s \n %s' % (self.storage.title, self.storage.system, self.storage.urlbase)
+        print '\nStorage : %s \nsystem: %s \nurlbase: %s' % (self.storage.title, self.storage.system, self.storage.urlbase)
         TEST_STRING = 'Hello world'
         content = StringIO(TEST_STRING)
         print 'content - %s' % content.getvalue()
-        self.media.save_file('testpsuedostream.txt', content)
-        c = Client()
-        response = c.get(self.media.get_absolute_url())
-        self.assertEqual(TEST_STRING, response.content)
+        try:
+            print 'saving file to '
+            self.media.save_file('testpsuedostream.txt', content)
+
+            print "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n ____ self.media.get_absolute_url():  " \
+                  "%s" % self.media.get_absolute_url()
+        except Exception as e:
+            print e
+            print 'ok, try sending a file instead?'
+            # psf = open('content_file', 'w')
+            # psf.write(TEST_STRING)
+            #pseudofile = open(content, 'r')
+            pseudofile = File(content)
+            self.media.save_file('testpsuedostream.txt', pseudofile)
+
+        if self.media.file_exists():
+            c = Client()
+            response = c.get(self.media.get_absolute_url())
+            f = open(self.media.get_absolute_file_path(), 'r')
+            print 'test file:'
+            print f
+            self.assertEqual(TEST_STRING, response.content)
+        else:
+            raise AssertionError
 
 
 class ProtectedContentDownloadTestCase(TransactionTestCase):

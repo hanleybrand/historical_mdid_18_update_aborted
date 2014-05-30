@@ -18,13 +18,19 @@ class AccessOnStart:
                 AccessControl._meta.get_field('object_id'),
                 no_style(),
             )
+            print sql
             cursor = connection.cursor()
             for s in sql:
-                logging.debug("running query %s" % s)
+                logging.debug("access.middleware.AccessOnStart: Add missing index on object_id on AccessControl table"
+                              "\nrunning query %s" % s)
                 cursor.execute(s)
-                logging.debug("done")
-        except:
-            logging.exception("error running query")
+                logging.debug("access.middleware.AccessOnStart: done adding missing index %s" % s)
+        except Exception as e:
+            logging.exception("access.middleware: error running query"
+                              " is it access_accesscontrol_846f0221?"
+                              "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            logging.exception(AccessControl._meta.get_field('object_id'))
+            logging.exception(e)
             #pass
 
         try:
@@ -38,6 +44,7 @@ class AccessOnStart:
             #pass
 
         # Only need to run once
+        print "removing access.middleware.AccessOnStart via raise MiddlewareNotUsed"
         raise MiddlewareNotUsed
 
 
