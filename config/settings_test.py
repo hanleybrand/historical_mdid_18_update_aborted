@@ -1,7 +1,8 @@
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 LOGGING_OUTPUT_ENABLED = DEBUG
-
+# speed up tests by not bothering to run migrations on a freshly made test database
+SOUTH_TESTS_MIGRATE = False
 
 
 DATABASES = {
@@ -13,6 +14,7 @@ DATABASES = {
         'HOST': '127.0.0.1',
         'PORT': '',
         'OPTIONS': {
+            # MYISAM doesn't support transactions
             'init_command': 'SET storage_engine=INNODB',
         },
     }
@@ -33,6 +35,12 @@ CACHE_BACKEND = 'dummy://'
 import tempfile
 
 SCRATCH_DIR = tempfile.mkdtemp()
+
+print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+print "TESTING IS TRUE - IF SERVER ISN'T COMING UP SET TESTING = False in settings_local.py"
+print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+
 print "Scratch directory for this test session is %s" % SCRATCH_DIR
 
 print "TESTING =========== 1 =================== 2 ================== 3"
