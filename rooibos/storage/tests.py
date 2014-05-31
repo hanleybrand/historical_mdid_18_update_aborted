@@ -347,18 +347,31 @@ class PseudoStreamingStorageSystemTestCase(TestCase):
         no_signals()
         self.tempdir = tempfile.mkdtemp()
         self.collection = Collection.objects.create(title='Test')
+        self.local_storage = Storage.objects.create(title='Test', name='test', system='local', base=self.tempdir)
         self.storage = Storage.objects.create(title='PseudoStreamTest', name='pseudostreamtest', system='rooibos.storage.pseudostreaming',
                                               base=self.tempdir,
                                               urlbase='file:///' + self.tempdir.replace('\\', '/'))
         self.record = Record.objects.create(name='record')
         self.media = Media.objects.create(record=self.record, name='image', storage=self.storage)
+        self.local_media = Media.objects.create(record=self.record, name='image', storage=self.local_storage)
         CollectionItem.objects.create(collection=self.collection, record=self.record)
         AccessControl.objects.create(content_object=self.storage, read=True)
         AccessControl.objects.create(content_object=self.collection, read=True)
 
         print "\nstorage title: %s \nstorage base: %s" % (self.storage.title, self.storage.base)
+        print "\nstorage title: %s \nstorage base: %s" % (self.local_storage.title, self.local_storage.base)
         print "\nstorage urlbase: %s \nstorage storage system: %s" % (self.storage.urlbase, self.storage.system)
         print "PseudoStreamingStorageSystemTestCase setup complete"
+
+        try:
+            TEST_STRING = 'test local storage'
+            content = StringIO(TEST_STRING)
+            pseudofile = File(content)
+
+
+        except Exception as e:
+            print e
+            pass
 
     def tearDown(self):
         no_signals()
@@ -367,26 +380,43 @@ class PseudoStreamingStorageSystemTestCase(TestCase):
         self.storage.delete()
         self.collection.delete()
 
+    def test_save_and_retrieve_file(self):
+        no_signals()
+        Media.objects.filter(record=self.record).delete()
+        media2 = Media.objects.create(record=self.record, name='image', storage=self.storage)
+        content = StringIO('hello world')
+        media2.save_file('test.txt', content)
+
+        self.assertEqual('test.txt', media2.url)
+
+        content = media2.load_file()
+        self.assertEqual('hello world', content.read())
+
+        media2.delete()
+
     def test_pseudostreaming(self):
         no_signals()
         print '\nStorage : %s \nsystem: %s \nurlbase: %s' % (self.storage.title, self.storage.system, self.storage.urlbase)
         TEST_STRING = 'Hello world'
         content = StringIO(TEST_STRING)
         print 'content - %s' % content.getvalue()
-        try:
-            print 'saving file to '
-            self.media.save_file('testpsuedostream.txt', content)
-
-            print "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n ____ self.media.get_absolute_url():  " \
-                  "%s" % self.media.get_absolute_url()
-        except Exception as e:
-            print e
-            print 'ok, try sending a file instead?'
-            # psf = open('content_file', 'w')
-            # psf.write(TEST_STRING)
-            #pseudofile = open(content, 'r')
-            pseudofile = File(content)
-            self.media.save_file('testpsuedostream.txt', pseudofile)
+        pseudofile = File(content)
+        self.media.save_file('testpsuedostream.txt', pseudofile)
+        # try:
+        #     print 'saving file to '
+        #     self.media.save_file('testpsuedostream.txt', content)
+        #
+        #     print "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n ____ self.media.get_absolute_url():  " \
+        #           "%s" % self.media.get_absolute_url()
+        # except Exception as e:
+        #     print e
+        #     print 'ok, try sending a file instead?'
+        #     # psf = open('content_file', 'w')
+        #     # psf.write(TEST_STRING)
+        #     #pseudofile = open(content, 'r')
+        #     pseudofile = File(content)
+        #     self.media.save_file('testpsuedostream.txt', pseudofile)
+        #     pass
 
         if self.media.file_exists():
             c = Client()
