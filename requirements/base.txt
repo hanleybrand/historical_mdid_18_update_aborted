@@ -1,7 +1,7 @@
 # install with:  pip install -r requirements/base.txt
 python-dateutil
 MySQL-python>=1.2.4
-django==1.6.5
+Django==1.6.5
 django-extensions
 django_compressor
 django-debug-toolbar

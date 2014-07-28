@@ -20,5 +20,5 @@ rooibos/static/cache/*
 .idea/*
 bin-release-temp/
 .DS_Store
+
 config/settings_local.py
-docs/_build/*
