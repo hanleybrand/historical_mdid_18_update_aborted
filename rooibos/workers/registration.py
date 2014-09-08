@@ -24,10 +24,12 @@ def flush_transaction():
     """
     transaction.set_autocommit(False)
     try:
+        logging.info("Commiting Transaction")
         transaction.commit()
-    except Exception:
+    except Exception as e:
         # database connection probably closed, open a new one
-        logger.exception("Forcing connection close")
+        logging.exception(e)
+        logging.exception("Forcing connection close")
         # close_connection()
         close_old_connections()
     finally:
@@ -102,7 +104,8 @@ def worker_callback(ch, method, properties, body):
 
 
 def run_worker(worker, arg, **kwargs):
-    flush_transaction()
+    # TODO: Is flush transaction necessary here? Is it still needed? (if not, why not?)
+    # flush_transaction()
     discover_workers()
     logger.debug("Running worker %s with arg %s" % (worker, arg))
 
