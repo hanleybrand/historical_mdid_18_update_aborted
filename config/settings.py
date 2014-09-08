@@ -142,8 +142,8 @@ INSTALLED_APPS = (
     'rooibos.contrib.pagination',
     'rooibos.contrib.impersonate',
     'compressor',
-    'rooibos.contrib.south',
-    'debug_toolbar',
+    #'rooibos.contrib.south',
+    #'debug_toolbar',
 )
 
 #TEMPLATE_LOADERS = (
