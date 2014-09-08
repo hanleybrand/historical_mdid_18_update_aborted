@@ -25,3 +25,5 @@ config/settings_local.py
 
 
 
+
+solr/nohup.out
