@@ -17,6 +17,8 @@ import logging
 import tempfile
 from django.contrib import messages
 
+log = logging.getLogger('rooibos')
+
 def convert_ppt(owner, title, collection, storage, tempdir, filename):
     # Call Open Office via the command line in order to convert Power Point Slides to Images
     cmd = '""%s" "%s" "%s" "%s" Width=1024 Format=2"' % (
@@ -25,10 +27,10 @@ def convert_ppt(owner, title, collection, storage, tempdir, filename):
         filename,
         filename + '.html',
     )
-    logging.debug("Starting PowerPoint conversion: %s" % cmd)
+    log.debug("Starting PowerPoint conversion: %s" % cmd)
     p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     for line in p.stdout.readlines():
-        logging.error(line)
+        log.error(line)
     p.wait()
 
     images = sorted(filter(lambda f: f.endswith('.jpg'), os.listdir(tempdir)), key=lambda i: int(i[3:-4]))

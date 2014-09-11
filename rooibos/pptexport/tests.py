@@ -5,10 +5,13 @@ from rooibos.data.models import Collection, CollectionItem, Record, Field, Field
 from rooibos.storage.models import Media, Storage
 from rooibos.presentation.models import Presentation, PresentationItem
 from rooibos.access.models import AccessControl
-from pptexport.functions import PowerPointGenerator
 import os
 import tempfile
 import logging
+
+from functions import PowerPointGenerator
+
+log = logging.getLogger('rooibos')
 
 class PowerpointTestCase(unittest.TestCase):
 
@@ -16,6 +19,7 @@ class PowerpointTestCase(unittest.TestCase):
         self.tempdir = tempfile.mkdtemp()
         self.storage = Storage.objects.create(title='PPTXTest', name='pptxtest', system='local', base=self.tempdir)
         AccessControl.objects.create(content_object=self.storage, read=True)
+        # Todo: what does this do over a normal log.debug() statement?
         logging.getLogger().setLevel(logging.DEBUG)
 
 
@@ -28,13 +32,13 @@ class PowerpointTestCase(unittest.TestCase):
         self.storage.delete()
 
     def testSimplePowerpointFile(self):
-#        logging.debug('testing simple.pptx')
+#        log.debug('testing simple.pptx')
         self._generate('simple.pptx')
 
 #    def testAllTemplates(self):
 #        templates = PowerPointGenerator.get_templates()
 #        for template in templates:
-##            logging.debug('testing %s' % template)
+##            log.debug('testing %s' % template)
 #            self._generate(template)
 
     def _generate(self, template):

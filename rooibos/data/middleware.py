@@ -2,6 +2,8 @@ from django.core.exceptions import MiddlewareNotUsed
 import logging
 from models import get_system_field
 
+log = logging.getLogger('rooibos')
+
 class DataOnStart:
 
     def __init__(self):

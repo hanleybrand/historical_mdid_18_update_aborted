@@ -13,10 +13,9 @@ from pysolr import Solr
 from rooibos.util.progressbar import ProgressBar
 from rooibos.access.models import AccessControl
 
-
 SOLR_EMPTY_FIELD_VALUE = 'unspecified'
 
-logger = logging.getLogger("rooibos_solr")
+log = logging.getLogger('rooibos')
 
 
 def object_acl_to_solr(obj):
@@ -24,7 +23,7 @@ def object_acl_to_solr(obj):
     acl = AccessControl.objects.filter(
         content_type=content_type,
         object_id=obj.id,
-        ).values_list('user_id', 'usergroup_id', 'read', 'write', 'manage')
+    ).values_list('user_id', 'usergroup_id', 'read', 'write', 'manage')
     result = dict(read=[], write=[], manage=[])
     for user, group, read, write, manage in acl:
         acct = 'u%d' % user if user else 'g%d' % group if group else 'anon'
@@ -44,7 +43,6 @@ def object_acl_to_solr(obj):
 
 
 class SolrIndex():
-
     def __init__(self):
         self._clean_string_re = re.compile('[\x00-\x08\x0b\x0c\x0e-\x1f]')
         self._record_type = int(ContentType.objects.get_for_model(Record).id)
@@ -73,6 +71,7 @@ class SolrIndex():
 
     def clear(self):
         from models import SolrIndexUpdates
+
         SolrIndexUpdates.objects.filter(delete=True).delete()
         conn = Solr(settings.SOLR_URL)
         conn.delete(q='*:*')
@@ -83,6 +82,7 @@ class SolrIndex():
 
     def index(self, verbose=False, all=False):
         from models import SolrIndexUpdates
+
         self._build_group_tree()
         core_fields = dict(
             (f, f.get_equivalent_fields())
@@ -109,7 +109,7 @@ class SolrIndex():
             total_count = len(to_update)
 
         if not all and not to_update and not to_delete:
-            logger.info("Nothing to update in index, returning early")
+            log.info("Nothing to update in index, returning early")
             return 0
 
         conn = Solr(settings.SOLR_URL)
@@ -148,6 +148,7 @@ class SolrIndex():
                             fieldvalues.get(record.id, []),
                             media.get(record.id, [])))
                     conn.add(docs)
+
                 return process
 
             if process_thread:
@@ -210,6 +211,7 @@ class SolrIndex():
     @staticmethod
     def mark_for_update(record_id, delete=False):
         from models import mark_for_update
+
         mark_for_update(record_id, delete)
 
     def _preload_related(self, model, record_ids, filter=Q(), related=0):
@@ -294,7 +296,7 @@ class SolrIndex():
             (1600, 'moderate'),
             (800, 'medium'),
             (400, 'small'),
-            )
+        )
         r = max(width, height)
         if not r:
             return 'unknown'
@@ -311,4 +313,4 @@ class SolrIndex():
         for collection in Collection.objects.all():
             self.parent_groups[collection.id] = [
                 g.id for g in collection.all_parent_collections
-                ]
+            ]

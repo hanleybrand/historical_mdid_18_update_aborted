@@ -16,9 +16,10 @@ import logging
 import random
 import types
 
+log = logging.getLogger('rooibos')
+
 
 class Collection(models.Model):
-
     title = models.CharField(max_length=100)
     name = models.SlugField(max_length=50, unique=True, blank=True)
     children = models.ManyToManyField('self', symmetrical=False, blank=True)
@@ -39,7 +40,7 @@ class Collection(models.Model):
     def __unicode__(self):
         return '%s (%s)' % (self.title, self.name)
 
-    #def get_absolute_url(self):
+    # def get_absolute_url(self):
     #    return reverse('data-collection', kwargs={'id': self.id, 'name': self.name})
 
     @property
@@ -125,7 +126,7 @@ class Record(models.Model):
             accessible_record_ids = map(lambda (k, v): (int(k.rsplit('-', 1)[1]), v), accessible_records.iteritems())
 
             allowed_ids = [k for k, v in accessible_record_ids if v == 't']
-            denied_ids  = [k for k, v in accessible_record_ids if v == 'f']
+            denied_ids = [k for k, v in accessible_record_ids if v == 'f']
 
             to_check = [id for id in ids if not id in allowed_ids and not id in denied_ids]
 
@@ -139,7 +140,8 @@ class Record(models.Model):
         # check which records have individual ACLs set
         individual = _records_with_individual_acl_by_ids(to_check)
         if individual:
-            allowed_ids.extend(filter_by_access(user, Record.objects.filter(id__in=individual)).values_list('id', flat=True))
+            allowed_ids.extend(
+                filter_by_access(user, Record.objects.filter(id__in=individual)).values_list('id', flat=True))
             to_check = [id for id in to_check if not id in individual]
         # check records without individual ACLs
         if to_check:
@@ -154,9 +156,9 @@ class Record(models.Model):
 
         if user:
             cache_update = dict(
-                        ('record-access-%d-%d' % (user.id or 0, id), 't' if id in checked else 'f')
-                         for id in to_check
-                    )
+                ('record-access-%d-%d' % (user.id or 0, id), 't' if id in checked else 'f')
+                for id in to_check
+            )
             cache_set_many(cache_update, model_dependencies=[Record, Collection, AccessControl])
 
         return records.filter(id__in=allowed_ids)
@@ -225,7 +227,7 @@ class Record(models.Model):
         q = q or Q()
 
         values = self.fieldvalue_set.select_related('record', 'field').filter(qc, qo, qh, q) \
-                    .order_by('order','field','group','refinement')
+            .order_by('order', 'field', 'group', 'refinement')
 
         if fieldset:
             values_to_map = []
@@ -240,7 +242,8 @@ class Record(models.Model):
                     values_to_map.append(v)
 
             for v in values_to_map:
-                eq = eq_cache.has_key(v.field) and eq_cache[v.field] or eq_cache.setdefault(v.field, v.field.get_equivalent_fields())
+                eq = eq_cache.has_key(v.field) and eq_cache[v.field] or eq_cache.setdefault(v.field,
+                                                                                            v.field.get_equivalent_fields())
                 for f in eq:
                     if f in target_fields:
                         result.setdefault(f, []).append(DisplayFieldValue.from_value(v, f))
@@ -269,10 +272,11 @@ class Record(models.Model):
                 context_type=None,
                 hidden=False)
             return titles[0].value if titles else None
+
         return get_cached_value('record-%d-title' % self.id,
                                 get_title,
                                 model_dependencies=[Field, FieldValue],
-                                ) if self.id else None
+        ) if self.id else None
 
     @property
     def shared(self):
@@ -346,7 +350,8 @@ class Field(models.Model):
         ids = list(self.equivalent.values_list('id', flat=True))
         more = len(ids) > 1
         while more:
-            more = Field.objects.filter(~Q(id__in=ids), ~Q(standard=self.standard), equivalent__id__in=ids).values_list('id', flat=True)
+            more = Field.objects.filter(~Q(id__in=ids), ~Q(standard=self.standard), equivalent__id__in=ids).values_list(
+                'id', flat=True)
             ids.extend(more)
         return Field.objects.select_related('standard').filter(id__in=ids)
 
@@ -386,7 +391,7 @@ class FieldSet(models.Model):
     @staticmethod
     def for_user(user):
         return FieldSet.objects.filter(Q(owner=None) | Q(standard=True) |
-                                        (Q(owner=user) if user and user.is_authenticated() else Q()))
+                                       (Q(owner=user) if user and user.is_authenticated() else Q()))
 
 
 class FieldSetField(models.Model):
@@ -448,6 +453,7 @@ class DisplayFieldValue(FieldValue):
     """
     Represents a mapped field value for display.  Cannot be saved.
     """
+
     def save(self, *args, **kwargs):
         raise NotImplementedError()
 
@@ -462,20 +468,20 @@ class DisplayFieldValue(FieldValue):
     @staticmethod
     def from_value(value, field):
         dfv = DisplayFieldValue(record=value.record,
-                                 field=field,
-                                 refinement=value.refinement,
-                                 owner=value.owner,
-                                 hidden=value.hidden,
-                                 order=value.order,
-                                 group=value.group,
-                                 value=value.value,
-                                 index_value=value.index_value,
-                                 date_start=value.date_start,
-                                 date_end=value.date_end,
-                                 numeric_value=value.numeric_value,
-                                 language=value.language,
-                                 context_type=value.context_type,
-                                 context_id=value.context_id)
+                                field=field,
+                                refinement=value.refinement,
+                                owner=value.owner,
+                                hidden=value.hidden,
+                                order=value.order,
+                                group=value.group,
+                                value=value.value,
+                                index_value=value.index_value,
+                                date_start=value.date_start,
+                                date_end=value.date_end,
+                                numeric_value=value.numeric_value,
+                                language=value.language,
+                                context_type=value.context_type,
+                                context_id=value.context_id)
         dfv._original_field_name = value.field.name
         return dfv
 
@@ -496,6 +502,7 @@ def standardfield_ids(field, standard='dc', equiv=False):
         else:
             ids = [f.id]
         return ids
+
     return get_cached_value('standardfield_ids-%s-%s-%s' % (field, standard, equiv),
                             get_ids,
                             model_dependencies=[Field])

@@ -8,11 +8,12 @@ from rooibos.util import guess_extension
 import logging
 import urllib2
 
+log = logging.getLogger('rooibos')
 
 @register_worker('shared_download_media')
 def shared_download_media(job):
 
-    logging.info('shared_download_media started for %s' % job)
+    log.info('shared_download_media started for %s' % job)
     jobinfo = JobInfo.objects.get(id=job.arg)
 
     try:
@@ -39,5 +40,5 @@ def shared_download_media(job):
 
     except Exception, ex:
 
-        logging.info('shared_download_media failed for %s (%s)' % (job, ex))
+        log.info('shared_download_media failed for %s (%s)' % (job, ex))
         jobinfo.update_status('Failed: %s' % ex)

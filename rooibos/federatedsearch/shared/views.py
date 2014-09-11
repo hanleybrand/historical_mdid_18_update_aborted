@@ -26,6 +26,8 @@ import logging
 import os
 from django.contrib import messages
 
+log = logging.getLogger('rooibos')
+
 class SmartRedirectHandler(urllib2.HTTPRedirectHandler):
     def http_error_301(self, req, fp, code, msg, headers):
         result = urllib2.HTTPRedirectHandler.http_error_301(
@@ -90,7 +92,7 @@ class SharedSearch(FederatedSearch):
             data = json.loads(response.read())
             return data
         except Exception:
-            logging.exception('Shared collection search failed')
+            log.exception('Shared collection search failed')
         return {}
 
     def hits_count(self, keyword):

@@ -4,6 +4,8 @@ import ldap
 from baseauth import BaseAuthenticationBackend
 import logging
 
+log = logging.getLogger('rooibos')
+
 class LdapAuthenticationBackend(BaseAuthenticationBackend):
     def authenticate(self, username=None, password=None):
         for ldap_auth in settings.LDAP_AUTH:
@@ -56,7 +58,7 @@ class LdapAuthenticationBackend(BaseAuthenticationBackend):
                     continue
                 return user
             except ldap.LDAPError, error_message:
-                logging.debug('LDAP error: %s' % error_message)
+                log.debug('LDAP error: %s' % error_message)
             finally:
                 if l:
                     l.unbind_s()

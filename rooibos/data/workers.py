@@ -9,11 +9,12 @@ import csv
 from spreadsheetimport import SpreadsheetImport
 from views import _get_scratch_dir
 
+log = logging.getLogger('rooibos')
 
 @register_worker('csvimport')
 def csvimport(job):
 
-    logging.debug('csvimport started for %s' % job)
+    log.debug('csvimport started for %s' % job)
     jobinfo = JobInfo.objects.get(id=job.arg)
 
     try:
@@ -22,7 +23,7 @@ def csvimport(job):
 
         if jobinfo.status.startswith == 'Complete':
             # job finished previously
-            logging.debug('csvimport finished previously for %s' % job)
+            log.debug('csvimport finished previously for %s' % job)
             return
 
         file = os.path.join(_get_scratch_dir(), arg['file'])
@@ -83,7 +84,7 @@ def csvimport(job):
             **handlers
         )
 
-        logging.debug('csvimport calling run() for %s' % job)
+        log.debug('csvimport calling run() for %s' % job)
 
         imp.run(arg['update'],
                 arg['add'],
@@ -91,12 +92,12 @@ def csvimport(job):
                 collections,
                 skip_rows=skip_rows)
 
-        logging.info('csvimport complete: %s' % job)
+        log.info('csvimport complete: %s' % job)
 
         jobinfo.complete('Complete', '%s rows processed' % counter.counter)
 
     except Exception, ex:
 
-        logging.exception('csvimport failed: %s' % job)
+        log.exception('csvimport failed: %s' % job)
 
         jobinfo.complete('Failed: %s' % ex, None)

@@ -15,6 +15,7 @@ from shared import SharedSearch
 
 import logging
 
+log = logging.getLogger('rooibos')
 
 #sources = {
 #    'NasaImageExchange': NasaImageExchange,
@@ -28,6 +29,7 @@ source_classes = [
     FlickrSearch,
     SharedSearch,
 ]
+
 
 def available_federated_sources(user):
     for c in source_classes:
@@ -76,7 +78,7 @@ def sidebar_api_raw(request, query, cached_only=False):
                                             valid_until=datetime.now() + timedelta(1))
                 except Exception, e:
                     import traceback
-                    logging.error("Federated Search: %s\n%s" % (e, traceback.format_exc()))
+                    log.error("Federated Search: %s\n%s" % (e, traceback.format_exc()))
                     self.hits = -1
 
 

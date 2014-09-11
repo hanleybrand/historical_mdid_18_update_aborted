@@ -26,6 +26,7 @@ import os
 import pyodbc
 import re
 
+log = logging.getLogger('rooibos')
 
 # MDID2 permissions
 P = dict(
@@ -151,7 +152,7 @@ class MigrateModel(object):
                 if compare_hash(h, hash) or self.m2m_model:
                     # object unchanged, don't need to do anything
                     # or, we're working on a many-to-many relation, don't need to do anything on the instance
-                    logging.debug('%s %s unchanged in source, skipping' % (self.model_name, self.key(row)))
+                    log.debug('%s %s unchanged in source, skipping' % (self.model_name, self.key(row)))
                     create = False
                     self.unchanged += 1
                 elif compare_hash(h, STATIC_CONTENT_HASH):
@@ -181,12 +182,12 @@ class MigrateModel(object):
                         instance = None
                     if not instance:
                         # object has been deleted, need to recreate
-                        logging.debug('%s %s changed and not in destination, recreating' % (self.model_name, row.ID))
+                        log.debug('%s %s changed and not in destination, recreating' % (self.model_name, row.ID))
                         h.delete()
                         self.recreated += 1
                     else:
                         # update existing object
-                        logging.debug('%s %s changed, updating' % (self.model_name, self.key(row)))
+                        log.debug('%s %s changed, updating' % (self.model_name, self.key(row)))
                         self.update(instance, row)
                         try:
                             instance.save()
@@ -195,12 +196,12 @@ class MigrateModel(object):
                             h.save()
                             self.updated += 1
                         except (IntegrityError, pyodbc.IntegrityError), ex:
-                            logging.error("Integrity error: %s %s" % (self.model_name, self.key(row)))
-                            logging.error(ex)
+                            log.error("Integrity error: %s %s" % (self.model_name, self.key(row)))
+                            log.error(ex)
                             self.errors += 1
             if create:
                 # object does not exist, need to create
-                logging.debug('%s %s not in destination, creating' % (self.model_name, self.key(row)))
+                log.debug('%s %s not in destination, creating' % (self.model_name, self.key(row)))
                 if not self.m2m_model:
                     try:
                         instance = self.create(row)
@@ -216,11 +217,11 @@ class MigrateModel(object):
                                 )
                                 self.added += 1
                         else:
-                            logging.error("No instance created: %s %s" % (self.model_name, self.key(row)))
+                            log.error("No instance created: %s %s" % (self.model_name, self.key(row)))
                             self.errors += 1
                     except (IntegrityError, pyodbc.IntegrityError, ValueError), ex:
-                        logging.error("%s: %s %s" % (type(ex).__name__, self.model_name, self.key(row)))
-                        logging.error(ex)
+                        log.error("%s: %s %s" % (type(ex).__name__, self.model_name, self.key(row)))
+                        log.error(ex)
                         self.errors += 1
                     except MergeObjectsException, ex:
                         merged_ids[self.key(row)] = ex.instance
@@ -239,7 +240,7 @@ class MigrateModel(object):
                         )
                         self.added += 1
                     else:
-                        logging.error("No instance created: %s %s" % (self.model_name, self.key(row)))
+                        log.error("No instance created: %s %s" % (self.model_name, self.key(row)))
                         self.errors += 1
             count += 1
             if not (count % 1000): reset_queries()
@@ -261,7 +262,7 @@ class MigrateModel(object):
                     self.model.objects.filter(id=o.object_id).delete()
                 else:
                     self.m2m_delete(object_id=o.object_id, m2m_object_id=o.m2m_object_id)
-                logging.debug('%s %s not in source, deleting' % (self.model_name, o.original_id))
+                log.debug('%s %s not in source, deleting' % (self.model_name, o.original_id))
                 self.deleted += 1
                 o.delete()
                 count += 1
@@ -1028,11 +1029,11 @@ class Command(BaseCommand):
         if not os.path.exists(logpath):
             os.makedirs(logpath)
 
-        root = logging.getLogger()
+        root = log.getLogger()
         map(root.removeHandler, root.handlers)
-        logging.basicConfig(filename=os.path.join(logpath, '%s-migration.log' % getattr(settings, 'LOGFILENAME', 'rooibos')),
-                            level=logging.DEBUG)
-        logging.info("Starting migration")
+        log.basicConfig(filename=os.path.join(logpath, '%s-migration.log' % getattr(settings, 'LOGFILENAME', 'rooibos')),
+                            level=log.DEBUG)
+        log.info("Starting migration")
 
         if len(config_files) != 1:
             print "Please specify exactly one configuration file."

@@ -5,9 +5,9 @@ import logging
 from collections import namedtuple
 from django.db import transaction,  close_old_connections
 
+# TODO: Figure out how to  flush_transaction
 
-logger = logging.getLogger('rooibos_workers_registration')
-
+log = logging.getLogger('rooibos')
 
 # transaction management changed in django 1.6
 # see http://www.realpython.com/blog/python/transaction-management-with-django-1-6/
@@ -47,11 +47,11 @@ def register_worker(id):
             try:
                 return worker(*args, **kwargs)
             except:
-                logger.exception(traceback.format_exc())
+                log.exception(traceback.format_exc())
                 raise
 
         workers[id] = wrapped_worker
-        logger.debug('Registered worker %s' % id)
+        log.debug('Registered worker %s' % id)
         return workers[id]
     return register
 
@@ -75,26 +75,26 @@ def execute_handler(handler, arg):
         handler(arg)
         return True
     except Exception:
-        logger.exception("Exception in job execution")
+        log.exception("Exception in job execution")
         return False
 
 
 def worker_callback(ch, method, properties, body):
-    logger.debug('worker_callback running')
+    log.debug('worker_callback running')
     discover_workers()
     jobname, data = body.split()
     handler = workers.get(jobname)
     if not handler:
-        logger.error('Received job with unknown method %s. '
+        log.error('Received job with unknown method %s. '
                      'Known workers are %s' % (jobname, workers.keys()))
         return
-    logger.debug('Running job %s %s' % (jobname, data))
+    log.debug('Running job %s %s' % (jobname, data))
     try:
         # Classic mode with Job record identifier
         identifier = int(data)
         job = Job(arg=identifier)  # for backwards compatibility
         result = execute_handler(handler, job)
-        logger.debug('Job %s %s completed with result %s' %
+        log.debug('Job %s %s completed with result %s' %
                      (job, identifier, result))
     except ValueError:
         # New mode with all data included in call
@@ -107,7 +107,7 @@ def run_worker(worker, arg, **kwargs):
     # TODO: Is flush transaction necessary here? Is it still needed? (if not, why not?)
     # flush_transaction()
     discover_workers()
-    logger.debug("Running worker %s with arg %s" % (worker, arg))
+    log.debug("Running worker %s with arg %s" % (worker, arg))
 
     connection = pika.BlockingConnection(pika.ConnectionParameters(
         **getattr(settings, 'RABBITMQ_OPTIONS', dict(host='localhost'))))
@@ -116,7 +116,7 @@ def run_worker(worker, arg, **kwargs):
     queue_name = 'rooibos-%s-jobs' % (
         getattr(settings, 'INSTANCE_NAME', 'default'))
     channel.queue_declare(queue=queue_name, durable=True)
-    logger.debug('Sending message to worker process')
+    log.debug('Sending message to worker process')
     try:
         channel.basic_publish(
             exchange='',
@@ -127,5 +127,5 @@ def run_worker(worker, arg, **kwargs):
             )
         )
     except Exception:
-        logger.exception('Could not publish message %s %s' % (worker, arg))
+        log.exception('Could not publish message %s %s' % (worker, arg))
     connection.close()

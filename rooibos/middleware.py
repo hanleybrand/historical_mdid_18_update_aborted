@@ -1,5 +1,8 @@
-import logging
+# import logging
 from django.conf import settings
+
+# log = logging.getLogger('rooibos')
+
 
 class Middleware:
 
@@ -13,8 +16,8 @@ class Middleware:
         # To support SWFUpload, copy the provided session key from POST into COOKIES
         # since Flash does not send browser cookies with its requests
         if (request.method == 'POST' and
-            request.POST.get('swfupload') == 'true' and
-            request.POST.has_key(settings.SESSION_COOKIE_NAME)):
+                    request.POST.get('swfupload') == 'true' and
+                request.POST.has_key(settings.SESSION_COOKIE_NAME)):
             request.COOKIES[settings.SESSION_COOKIE_NAME] = request.POST[settings.SESSION_COOKIE_NAME]
 
     def process_response(self, request, response):
@@ -27,9 +30,7 @@ class Middleware:
         return response
 
 
-
 class HistoryMiddleware:
-
     def process_response(self, request, response):
         # Keep track of most recent URLs to allow going back after certain operations
         # (e.g. deleting a record)
@@ -39,13 +40,14 @@ class HistoryMiddleware:
                 and not request.is_ajax()
                 and response.status_code == 200
                 and response.get('Content-Type', '').startswith('text/html')
-                ):
+            ):
                 history = request.session.get('page-history', [])
                 history.insert(0, request.get_full_path())
                 request.session['page-history'] = history[:10]
-        except:
+        except Exception as e:
             # for some reason, with some clients, on some pages,
             # request.session does not exist and request.user throws an error
+            log.debug('HistoryMiddleware.process_response: %s' % e)
             pass
 
         return response

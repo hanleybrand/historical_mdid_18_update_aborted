@@ -5,13 +5,15 @@ from rooibos.access.models import AccessControl, ExtendedGroup, AUTHENTICATED_GR
 from rooibos.data.models import Collection, Record, standardfield, CollectionItem, Field, FieldValue
 from rooibos.federatedsearch.models import FederatedSearch, HitCount
 from rooibos.storage.models import *
-from BeautifulSoup import BeautifulSoup
+from rooibos.contrib.BeautifulSoup import BeautifulSoup
 from rooibos.workers.models import JobInfo
 from urllib import urlencode
 import datetime
 import mimetypes
 import re
 import urllib2
+
+# TODO: Is the nasa federated search fixable, or should it be removed?
 
 class NasaImageExchange(FederatedSearch):
 

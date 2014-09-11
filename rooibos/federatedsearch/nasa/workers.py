@@ -10,10 +10,13 @@ import mimetypes
 import urllib2
 import traceback
 
+
+log = logging.getLogger('rooibos')
+
 @register_worker('nasa_download_media')
 def nasa_download_media(job):
 
-    logging.info('nasa_download_media started for %s' % job)
+    log.info('nasa_download_media started for %s' % job)
     jobinfo = JobInfo.objects.get(id=job.arg)
 
     try:
@@ -37,6 +40,5 @@ def nasa_download_media(job):
         
     except Exception, ex:
         
-        logging.info('nasa_download_media failed for %s (%s)' % (job, ex))
+        log.info('nasa_download_media failed for %s (%s)' % (job, ex))
         jobinfo.update_status('Failed: %s' % ex)
-            

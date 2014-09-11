@@ -11,8 +11,8 @@ from django.core.cache import cache
 
 DELAY_INDEXING_CACHE_KEY = '_solr_delay_record_indexing'
 
-
-logger = logging.getLogger('solr.models')
+# todo: remove logging from file? (not used)
+log = logging.getLogger('rooibos')
 
 
 class SolrIndexUpdates(models.Model):
@@ -24,18 +24,18 @@ def mark_for_update(record_id, delete=False):
     SolrIndexUpdates.objects.create(record=record_id, delete=delete)
     delay = cache.get(DELAY_INDEXING_CACHE_KEY)
     if not delay:
-        logger.debug('Record indexing is not delayed, creating indexing job')
+        log.debug('Record indexing is not delayed, creating indexing job')
         schedule_solr_index()
     else:
-        logger.debug('Record indexing is delayed, not creating indexing job')
+        log.debug('Record indexing is delayed, not creating indexing job')
 
 
 def delay_record_indexing():
-    logger.debug('Delaying record indexing')
+    log.debug('Delaying record indexing')
     cache.set(DELAY_INDEXING_CACHE_KEY, True)
 
 def resume_record_indexing():
-    logger.debug('Resuming record indexing')
+    log.debug('Resuming record indexing')
     cache.set(DELAY_INDEXING_CACHE_KEY, False)
     schedule_solr_index()
 
