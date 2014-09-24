@@ -37,7 +37,9 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'compressor.finders.CompressorFinder',
 )
+
 # TODO: find references to STATIC_DIR and change to STATIC_ROOT
+# TODO: why? STATIC_DIR over STATIC_ROOT? why?
 STATIC_DIR = STATIC_ROOT
 
 COMPRESS_OUTPUT_DIR = 'CACHE'
@@ -82,6 +84,7 @@ SECRET_KEY = 'change me in settings_local.py'
 # Settings that should be available in template rendering
 EXPOSE_TO_CONTEXT = (
     'STATIC_DIR',
+    'STATIC_ROOT'
     'PRIMARY_COLOR',
     'SECONDARY_COLOR',
     'CUSTOM_TRACKER_HTML',
