@@ -146,15 +146,8 @@ INSTALLED_APPS = (
     'rooibos.contrib.impersonate',
     'compressor',
     #'rooibos.contrib.south',
-    #'debug_toolbar',
+    'debug_toolbar',
 )
-
-#TEMPLATE_LOADERS = (
-#    #'django.template.loaders.filesystem.load_template_source',
-#    'django.template.loaders.filesystem.BaseLoader',
-#    #'django.template.loaders.app_directories.load_template_source',
-#    #'django.template.loaders.eggs.load_template_source',
-#)
 
 TEMPLATE_LOADERS = (
     ('django.template.loaders.cached.Loader', (
@@ -261,12 +254,13 @@ LOGIN_CHECKS = (
     'rooibos.access.models.update_membership_by_attributes',
 )
 
-TEMPLATE_DIRS = (
-    os.path.normpath(os.path.join(ROOIBOS_ROOT, 'templates')),
-    os.path.normpath(os.path.join(ROOIBOS_ROOT, 'access', 'templates')),
-    os.path.normpath(os.path.join(ROOIBOS_ROOT, 'ui', 'templates')),
-    os.path.normpath(os.path.join(ROOIBOS_ROOT, 'contrib', 'google_analytics', 'templates')),
-)
+# move to settings_local for system customization
+# TEMPLATE_DIRS = (
+#     os.path.normpath(os.path.join(ROOIBOS_ROOT, 'templates')),
+#     os.path.normpath(os.path.join(ROOIBOS_ROOT, 'access', 'templates')),
+#     os.path.normpath(os.path.join(ROOIBOS_ROOT, 'ui', 'templates')),
+#     os.path.normpath(os.path.join(ROOIBOS_ROOT, 'contrib', 'google_analytics', 'templates')),
+# )
 
 PDF_PAGESIZE = 'letter'  # 'A4'
 
