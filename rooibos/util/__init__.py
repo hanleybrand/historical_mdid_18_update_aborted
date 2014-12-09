@@ -1,7 +1,7 @@
 from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.http import HttpResponse
-from django.utils import simplejson
+#from django.utils import simplejson
 from django.core.mail import mail_admins
 from django.utils.translation import ugettext as _
 from django.utils.decorators import wraps
@@ -12,6 +12,7 @@ import mimetypes
 import logging
 import os
 import hashlib
+import json
 
 # Decorator to solve issues with IE/SSL/Flash caching
 def must_revalidate(func):
@@ -60,8 +61,11 @@ def json_view(func):
             response = {'result': 'error',
                         'text': msg}
 
-        json = simplejson.dumps(response)
-        return HttpResponse(json, mimetype='text/plain') # mimetype='application/json')
+        #json = json.dumps(response)
+        # getting a linting warning - changing to an explicitly separate variable name
+        json_dump = json.dumps(response)
+
+        return HttpResponse(json_dump, mimetype='text/plain') # mimetype='application/json')
     return wrap
 
 
