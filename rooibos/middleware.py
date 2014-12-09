@@ -1,7 +1,7 @@
-# import logging
+import logging
 from django.conf import settings
 
-# log = logging.getLogger('rooibos')
+log = logging.getLogger('rooibos')
 
 
 class Middleware:
