@@ -84,7 +84,7 @@ SECRET_KEY = 'change me in settings_local.py'
 # Settings that should be available in template rendering
 EXPOSE_TO_CONTEXT = (
     'STATIC_DIR',
-    'STATIC_ROOT'
+    'STATIC_ROOT',
     'PRIMARY_COLOR',
     'SECONDARY_COLOR',
     'CUSTOM_TRACKER_HTML',
