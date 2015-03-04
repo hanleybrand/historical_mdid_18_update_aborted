@@ -44,7 +44,6 @@ def _get_presentation(obj, request, objid):
 
 
 class PresentationViewer(Viewer):
-
     title = "View"
     weight = 100
 
@@ -53,8 +52,8 @@ class PresentationViewer(Viewer):
         return render_to_response('presentation_viewer.html',
                                   {'presentation': self.obj,
                                    'return_url': return_url,
-                                },
-                            context_instance=RequestContext(request))
+                                  },
+                                  context_instance=RequestContext(request))
 
 
 @register_viewer('presentationviewer', PresentationViewer)
@@ -63,9 +62,7 @@ def presentationviewer(obj, request, objid=None):
     return PresentationViewer(presentation, request.user) if presentation else None
 
 
-
 class FlashCardViewer(Viewer):
-
     title = "Flash Cards"
     weight = 18
 
@@ -97,7 +94,7 @@ class FlashCardViewer(Viewer):
                                           parent=stylesheet['Normal'],
                                           leftIndent=18,
                                           firstLineIndent=-18,
-                                          ))
+            ))
             return stylesheet
 
         styles = getStyleSheet()
@@ -139,7 +136,7 @@ class FlashCardViewer(Viewer):
                     p.drawImage(image, inch / 2, inch / 2, width=width / 2 - inch, height=height / 3 - inch,
                                 preserveAspectRatio=True)
                 f = Frame(width / 2 + inch / 2, inch / 2,
-                          width=width / 2 - inch, height = height / 3 - inch,
+                          width=width / 2 - inch, height=height / 3 - inch,
                           leftPadding=0, bottomPadding=0, rightPadding=0, topPadding=0)
                 data = []
                 data.append(getParagraph('%s/%s' % (index + 1, len(items)), styles['SlideNumber']))
@@ -177,9 +174,7 @@ def flashcardviewer(obj, request, objid=None):
     return FlashCardViewer(presentation, request.user) if presentation else None
 
 
-
 class PrintViewViewer(Viewer):
-
     title = "Print View"
     weight = 18
 
@@ -190,8 +185,6 @@ class PrintViewViewer(Viewer):
 
         response = HttpResponse(mimetype='application/pdf')
 
-
-
         pagesize = getattr(pagesizes, settings.PDF_PAGESIZE)
         width, height = pagesize
 
@@ -201,8 +194,8 @@ class PrintViewViewer(Viewer):
 
         def column_frame(left):
             return Frame(left, inch / 2,
-                           width=width / 2 - 0.75 * inch, height = height - inch,
-                          leftPadding=0, bottomPadding=0, rightPadding=0, topPadding=0, showBoundary=False)
+                         width=width / 2 - 0.75 * inch, height=height - inch,
+                         leftPadding=0, bottomPadding=0, rightPadding=0, topPadding=0, showBoundary=False)
 
 
         def prepare_first_page(canvas, document):
@@ -312,9 +305,7 @@ def printviewviewer(obj, request, objid=None):
     return PrintViewViewer(presentation, request.user) if presentation else None
 
 
-
 class PackageFilesViewer(Viewer):
-
     title = "Package Files"
     weight = 25
 
@@ -330,7 +321,7 @@ class PackageFilesViewer(Viewer):
                     str(index + 1).zfill(4),
                     filename(title or 'Slide %s' % (index + 1)),
                     os.path.splitext(image)[1])
-                    ).encode('ascii', 'replace'))
+                ).encode('ascii', 'replace'))
 
         def metadata_file(tempfile, record):
             t = Template("{% load data %}{% metadata record %}")
