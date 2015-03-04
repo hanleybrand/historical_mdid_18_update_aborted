@@ -44,7 +44,7 @@
     "drop_shadow":                  "grey"
 }
 {% endvar %}
-<style type='text/css'>
+{% with openstyle="<style type='text/css'>" %} {{ openstyle }} {% endwith %}
 
 #branding {
 
