@@ -47,7 +47,7 @@ def add_content_length(func):
                 # was elif response._is_string:
                 # response._is_string was throwing an error, changed in django 1.5
             elif isinstance(response.content, basestring):
-                logging.debug('did an error just get thrown? see storage/views.py:49')
+                #logging.debug('did an error just get thrown? see storage/views.py:49')
                 response['Content-Length'] = len(response.content)
         return response
     return _add_header
