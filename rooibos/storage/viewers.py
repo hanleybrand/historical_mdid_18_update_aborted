@@ -17,13 +17,14 @@ SUPPORTED_MIMETYPES = (
     'video/x-flv',
     'audio/mpeg',
     'audio/x-aac',
-    )
+)
+
 
 def _supported_media(obj, user):
     return obj.media_set.filter(
-                storage__in=filter_by_access(user, Storage),
-                mimetype__in=SUPPORTED_MIMETYPES,
-                )
+        storage__in=filter_by_access(user, Storage),
+        mimetype__in=SUPPORTED_MIMETYPES,
+    )
 
 
 def _check_playable(user, media):
@@ -32,7 +33,6 @@ def _check_playable(user, media):
 
 
 class MediaPlayer(Viewer):
-
     title = "Media Player"
     weight = 20
     is_embeddable = True
@@ -52,7 +52,7 @@ class MediaPlayer(Viewer):
 
         def media_choices():
             return (('', 'default'),) + tuple((media.id, media_label(media))
-                for media in _supported_media(self.obj, self.user))
+                                              for media in _supported_media(self.obj, self.user))
 
         class OptionsForm(forms.Form):
             media = forms.ChoiceField(choices=media_choices(), required=False)
@@ -79,7 +79,7 @@ class MediaPlayer(Viewer):
         streaming_media = None
 
         server = (('https' if request.META.get('HTTPS', 'off') == 'on' else 'http') +
-            '://' + request.META['HTTP_HOST'])
+                  '://' + request.META['HTTP_HOST'])
 
         if delivery_url.startswith('rtmp://'):
             try:
@@ -101,7 +101,7 @@ class MediaPlayer(Viewer):
                                    'autoplay': autoplay,
                                    'flowplayer_key': getattr(settings, "FLOWPLAYER_KEY", None),
                                    'anchor_id': divid,
-                                   },
+                                  },
                                   context_instance=RequestContext(request))
 
 
