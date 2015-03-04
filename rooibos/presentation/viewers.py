@@ -197,11 +197,12 @@ class PrintViewViewer(Viewer):
                          width=width / 2 - 0.75 * inch, height=height - inch,
                          leftPadding=0, bottomPadding=0, rightPadding=0, topPadding=0, showBoundary=False)
 
-
         def prepare_first_page(canvas, document):
             p1 = Paragraph(presentation.title, styles['Heading'])
             p2 = Paragraph(presentation.owner.get_full_name(), styles['SubHeading'])
             avail_width = width - inch
+            # TODO: determine if the complaint about height being undeclared is just pycharm or if its a problem
+            # if it is possibly a problem "it's better to be explicit" so refactor
             avail_height = height - inch
             w1, h1 = p1.wrap(avail_width, avail_height)
             w2, h2 = p2.wrap(avail_width, avail_height)
