@@ -8,7 +8,7 @@ from urlparse import urlparse
 import math
 import urllib
 import cookielib
-from django.utils import simplejson
+import json
 from rooibos.data.models import Collection, CollectionItem, Record, \
     Field, FieldValue, standardfield
 from rooibos.storage import Storage
@@ -21,7 +21,6 @@ from rooibos.access.functions import filter_by_access, sync_access
 from models import SharedCollection
 import datetime
 import socket
-from django.utils import simplejson as json
 import logging
 import os
 from django.contrib import messages
@@ -122,7 +121,7 @@ class SharedSearch(FederatedSearch):
                 )
             )
         if not created and cached.results:
-            return simplejson.loads(cached.results)
+            return json.loads(cached.results)
 
         data = self._load(keyword, page, pagesize)
 
@@ -147,7 +146,7 @@ class SharedSearch(FederatedSearch):
                     urllib.urlencode([('url', record['image'])])
                     )
 
-        cached.results = simplejson.dumps(data, separators=(',', ':'))
+        cached.results = json.dumps(data, separators=(',', ':'))
         cached.save()
         return data
 
@@ -225,7 +224,7 @@ class SharedSearch(FederatedSearch):
         # create job to download actual media file
         job = JobInfo.objects.create(
             func='shared_download_media',
-            arg=simplejson.dumps(dict(shared_id=self.shared.id,
+            arg=json.dumps(dict(shared_id=self.shared.id,
                                       record=record.id, url=image_url)))
         job.run()
 
@@ -292,7 +291,7 @@ def select(request, id, name):
 
     if request.method == "POST":
         shared = SharedSearch(id)
-        remote_ids = simplejson.loads(request.POST.get('id', '[]'))
+        remote_ids = json.loads(request.POST.get('id', '[]'))
 
         # find records that already have been created for the given URLs
         ids = dict(Record.objects.filter(
@@ -308,7 +307,7 @@ def select(request, id, name):
                 result.append(record.id)
         # rewrite request and submit to regular selection code
         r = request.POST.copy()
-        r['id'] = simplejson.dumps(result)
+        r['id'] = json.dumps(result)
         request.POST = r
 
     from rooibos.ui.views import select_record

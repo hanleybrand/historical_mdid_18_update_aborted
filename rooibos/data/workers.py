@@ -1,5 +1,5 @@
 from __future__ import with_statement
-from django.utils import simplejson
+import json
 from rooibos.workers import register_worker
 from rooibos.workers.models import JobInfo
 from rooibos.data.models import Collection, FieldSet
@@ -19,7 +19,7 @@ def csvimport(job):
 
     try:
 
-        arg = simplejson.loads(jobinfo.arg)
+        arg = json.loads(jobinfo.arg)
 
         if jobinfo.status.startswith == 'Complete':
             # job finished previously
@@ -29,6 +29,7 @@ def csvimport(job):
         file = os.path.join(_get_scratch_dir(), arg['file'])
         if not os.path.exists(file):
             # import file missing
+            log.exception('Import file %s missing', file)
             jobinfo.complete('Import file missing', 'Import failed')
 
         resultfile = file + '.result'
@@ -55,11 +56,13 @@ def csvimport(job):
                 self.counter = 0
 
         def create_handler(event, counter):
+            # TODO: pycharm is raising 'unresolved reference' errors for counter - is there a scope problem here?
             def handler(id):
                 counter.counter += 1
                 jobinfo.update_status('processing row %s' % counter.counter)
                 outwriter.writerow([';'.join(id) if id else '', event])
             return handler
+
 
         counter = Counter()
         handlers = dict(
@@ -96,8 +99,6 @@ def csvimport(job):
 
         jobinfo.complete('Complete', '%s rows processed' % counter.counter)
 
-    except Exception, ex:
-
+    except Exception as ex:
         log.exception('csvimport failed: %s' % job)
-
         jobinfo.complete('Failed: %s' % ex, None)

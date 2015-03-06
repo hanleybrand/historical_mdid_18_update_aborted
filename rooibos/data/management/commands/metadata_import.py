@@ -1,18 +1,20 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from rooibos.data.models import Collection, Field
-from rooibos.data.functions import collection_dump
+from rooibos.data.models import Field  #, Collection
+# from rooibos.data.functions import collection_dump
 from optparse import make_option
-from django.conf import settings
+# from django.conf import settings
 from rooibos.workers.models import JobInfo
 import csv
 import random
 import shutil
 import string
 import os
-from rooibos.data.views import _get_scratch_dir  # TODO: make proper function
-from django.utils import simplejson
+from rooibos.data.views import get_scratch_dir  # TODO: make proper function
+import json
+import logging
 
+log = logging.getLogger('rooibos')
 
 class Command(BaseCommand):
     help = 'Command line metadata import tool'
@@ -23,10 +25,9 @@ class Command(BaseCommand):
         make_option('--data', '-d', dest='data_file',
                     help='Data CSV file'),
         make_option('--collection', '-c', dest='collections',
-                   action='append',
+                    action='append',
                     help='Collection identifier (multiple allowed)'),
     )
-
 
     def handle(self, *args, **kwargs):
 
@@ -76,13 +77,13 @@ class Command(BaseCommand):
         )
 
         filename = "".join(random.sample(string.letters + string.digits, 32))
-        full_path = os.path.join(_get_scratch_dir(), 'cmdline=' + filename)
+        full_path = os.path.join(get_scratch_dir(), 'cmdline=' + filename)
         shutil.copy(data_file, full_path)
 
         JobInfo.objects.create(
             owner=User.objects.get(username='admin'),
             func='csvimport',
-            arg=simplejson.dumps(dict(
+            arg=json.dumps(dict(
                 file='cmdline=' + filename,
                 separator=';',
                 collections=collections,
@@ -96,6 +97,6 @@ class Command(BaseCommand):
                 labels=labels,
                 order=order,
                 hidden=hidden,
-                )))
+            )))
 
-        print "Job submitted"
+        log.debug("Job submitted - %s" % full_path)

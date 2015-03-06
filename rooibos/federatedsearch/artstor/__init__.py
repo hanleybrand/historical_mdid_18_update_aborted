@@ -1,5 +1,5 @@
 import urllib, urllib2, time, cookielib, math
-from django.utils import simplejson
+import json
 from os import makedirs
 from rooibos.data.models import Collection, CollectionItem, Record, FieldSet, Field
 from rooibos.storage import Storage, Media
@@ -14,7 +14,9 @@ from bs4 import BeautifulSoup
 import cookielib
 import datetime
 import socket
+import logging
 
+log = logging.getLogger('rooibos')
 
 class SmartRedirectHandler(urllib2.HTTPRedirectHandler):
     def http_error_301(self, req, fp, code, msg, headers):
@@ -50,7 +52,8 @@ class ArtstorSearch(FederatedSearch):
         soup = BeautifulSoup(response)
         try:
             return int(soup.find('numberofrecords').contents[0])
-        except:
+        except Exception as e:
+            log.debug('rooibos.federatedsearch.nasa:Exception = %s' % e)
             return 0
 
 
@@ -71,7 +74,7 @@ class ArtstorSearch(FederatedSearch):
             source=self.get_source_id(), query='%s [%s:%s]' % (keyword, page, pagesize),
             defaults=dict(hits=0, valid_until=datetime.datetime.now() + datetime.timedelta(1)))
         if not created and cached.results:
-            return simplejson.loads(cached.results)
+            return json.loads(cached.results)
 
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar()),
                                       SmartRedirectHandler())
@@ -112,7 +115,7 @@ class ArtstorSearch(FederatedSearch):
                 title=title,
                 record_url=url))
 
-        cached.results = simplejson.dumps(result, separators=(',', ':'))
+        cached.results = json.dumps(result, separators=(',', ':'))
         cached.save()
         return result
 

@@ -14,7 +14,7 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpRespons
 from django.shortcuts import get_object_or_404, get_list_or_404, render_to_response
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.utils import simplejson
+import json
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.views.decorators.http import require_POST
@@ -329,6 +329,13 @@ def _get_scratch_dir():
         os.makedirs(path)
     return path
 
+# TODO: Is there anything else from the todo '_get_scratch_dir  - make proper function' than this?
+def get_scratch_dir():
+    path = os.path.join(settings.SCRATCH_DIR, 'data-import')
+    if not os.path.exists(path):
+        os.makedirs(path)
+    return path
+
 
 def _get_filename(request, file):
     return request.COOKIES[settings.SESSION_COOKIE_NAME] + '-' + file
@@ -491,12 +498,12 @@ def data_import_file(request, file):
 
             store_settings(request.user,
                            'data_import_file_%s' % imp.field_hash,
-                           simplejson.dumps(dict(options=form.cleaned_data, mapping=mapping_formset.cleaned_data)))
+                           json.dumps(dict(options=form.cleaned_data, mapping=mapping_formset.cleaned_data)))
 
             if request.POST.get('import_button'):
                 j = JobInfo.objects.create(owner=request.user,
                                            func='csvimport',
-                                           arg=simplejson.dumps(dict(
+                                           arg=json.dumps(dict(
                                                file=_get_filename(request, file),
                                                separator=form.cleaned_data['separator'],
                                                collections=map(int, form.cleaned_data['collections']),
@@ -531,7 +538,7 @@ def data_import_file(request, file):
         key = 'data_import_file_%s' % imp.field_hash
         values = load_settings(request.user, key)
         if values.has_key(key):
-            value = simplejson.loads(values[key][0])
+            value = json.loads(values[key][0])
             mapping = value['mapping']
             options = value['options']
         else:

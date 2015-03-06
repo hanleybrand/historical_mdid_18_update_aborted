@@ -1,4 +1,4 @@
-from django.utils import simplejson
+import json
 from rooibos.data.models import Record
 from rooibos.storage.models import Media
 from rooibos.workers import register_worker
@@ -24,7 +24,7 @@ def nasa_download_media(job):
             # job finished previously
             return
         nasa = NasaImageExchange()
-        arg = simplejson.loads(jobinfo.arg)
+        arg = json.loads(jobinfo.arg)
         record = Record.objects.get(id=arg['record'], manager='nasaimageexchange')
         url = arg['url']
         storage = nasa.get_storage()

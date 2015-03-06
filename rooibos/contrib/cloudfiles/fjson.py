@@ -34,7 +34,7 @@ try:
 except ImportError:
     try:
         # simplejson is popular and pretty good
-        from simplejson import loads as json_loads
+        from json import loads as json_loads
     # fall back on local parser otherwise
     except ImportError:
         json_loads = _loads

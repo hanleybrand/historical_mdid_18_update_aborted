@@ -5,7 +5,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from . import NasaImageExchange
 from rooibos.ui.views import select_record
-from django.utils import simplejson
+import json
 from rooibos.data.models import Record
 
 
@@ -40,7 +40,7 @@ def nix_select_record(request):
 
     if request.method == "POST":
         nix = NasaImageExchange()
-        urls = simplejson.loads(request.POST.get('id', '[]'))
+        urls = json.loads(request.POST.get('id', '[]'))
 
         # find records that already have been created for the given URLs
         ids = dict(Record.objects.filter(source__in=urls, manager='nasaimageexchange').values_list('source', 'id'))
@@ -54,7 +54,7 @@ def nix_select_record(request):
                 result.append(record.id)
         # rewrite request and submit to regular selection code
         r = request.POST.copy()
-        r['id'] = simplejson.dumps(result)
+        r['id'] = json.dumps(result)
         request.POST = r
 
     return select_record(request)
