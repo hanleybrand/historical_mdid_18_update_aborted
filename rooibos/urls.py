@@ -12,11 +12,19 @@ from rooibos.ui.views import main
 from rooibos.access.views import login, logout
 from rooibos.legacy.views import legacy_viewer
 
+import logging
+log = logging.getLogger('rooibos')
 
 admin.autodiscover()
 
-apps = filter(lambda a: a.startswith('apps.'), settings.INSTALLED_APPS)
-apps_showcases = list(s[5:].replace('.', '-') + '-showcase.html' for s in apps)
+# TODO: should apps_prefix be set in settings_local?
+# urls were not loading for apps
+apps_prefix = 'rooibos.apps.'
+apps_pre_slice = apps_prefix.__len__()
+
+apps = filter(lambda a: a.startswith(apps_prefix), settings.INSTALLED_APPS)
+apps_showcases = list(s[apps_pre_slice:].replace('.', '-') + '-showcase.html' for s in apps)
+
 
 # Cache static files
 serve = cache_control(max_age=365 * 24 * 3600)(serve)
@@ -81,7 +89,12 @@ urls = [
 ]
 
 for app in apps:
-    if not '.' in app[5:]:
-        urls.append(url(r'^%s/' % app[5:], include('%s.urls' % app)))
+    #if not '.' in app[5:]:
+    if not '.' in app[apps_pre_slice:]:
+        # list dynamically appended app urls in  log
+        log.debug('rooibos.urls - appending urls for %s as ^/%s'
+                  ' (app added via config.settings_local.INSTALLED_APPS)' % (app, app[apps_pre_slice:]))
+        urls.append(url(r'^%s/' % app[apps_pre_slice:], include('%s.urls' % app)))
 
 urlpatterns = patterns('', *urls)
+
