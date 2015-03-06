@@ -5,7 +5,7 @@ Django==1.6.5
 python-ldap
 python-memcached
 # PIL=>1.1.7
-flickrapi
+flickrapi>=2.0
 reportlab
 Pillow
 werkzeug
