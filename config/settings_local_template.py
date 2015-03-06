@@ -76,6 +76,7 @@ TEMPLATE_DIRS = (
     os.path.normpath(os.path.join(ROOIBOS_ROOT, 'templates')),
     os.path.normpath(os.path.join(ROOIBOS_ROOT, 'access', 'templates')),
     os.path.normpath(os.path.join(ROOIBOS_ROOT, 'ui', 'templates')),
+    os.path.normpath(os.path.join(ROOIBOS_ROOT, 'federatedsearch', 'shared', 'templates')),
     os.path.normpath(os.path.join(ROOIBOS_ROOT, 'contrib', 'google_analytics', 'templates')),
 )
 

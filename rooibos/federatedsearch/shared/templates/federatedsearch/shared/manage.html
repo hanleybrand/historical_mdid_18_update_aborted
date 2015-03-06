@@ -24,7 +24,7 @@
 
 {% for collection in collections %}
 <tr class="{% cycle "" "altrow" %}"{% if master %} style="color: gray;"{% endif %}>
-    <td><a href="{% url 'shared-edit' collection.id, collection.name %}">{{ collection.title }}</a></td>
+    <td><a href="{% url 'shared-edit' collection.id collection.name %}">{{ collection.title }}</a></td>
     <td>{{ collection.url }}</td>
     <td>{{ collection.username|default:"-" }}</td>
 </tr>
