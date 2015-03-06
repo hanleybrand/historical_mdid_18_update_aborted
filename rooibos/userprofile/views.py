@@ -2,6 +2,9 @@ from django.views.decorators.cache import cache_control
 from rooibos.util import json_view
 from models import UserProfile, Preference
 
+# TODO: Migrate rooibos.userprofile to a django 1.5+ compliant userprofile
+# DeprecationWarning: The use of AUTH_PROFILE_MODULE to define user profiles has been deprecated.
+# triggered by ln 10: profile = user.get_profile()
 
 def load_settings(user, filter=None):
     if not user.is_authenticated():
