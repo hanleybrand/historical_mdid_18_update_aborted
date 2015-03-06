@@ -2,10 +2,6 @@
 python-dateutil
 MySQL-python>=1.2.4
 Django==1.6.5
-django-extensions
-django_compressor
-django-debug-toolbar
-django-grappelli
 python-ldap
 python-memcached
 # PIL=>1.1.7
@@ -14,12 +10,18 @@ reportlab
 Pillow
 werkzeug
 flup
+django-grappelli
 https://pyodbc.googlecode.com/files/pyodbc-3.0.7.zip
 pika
 pycrypto
 pep8-naming
 flake8-todo
 flake8-docstrings
+## from rooibos.contrib
+beautifulsoup4==4.3.2
+django-extensions
+django_compressor
+django-debug-toolbar
 
 
 # notes

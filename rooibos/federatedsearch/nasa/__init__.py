@@ -1,22 +1,23 @@
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.utils import simplejson
 from rooibos.access.models import AccessControl, ExtendedGroup, AUTHENTICATED_GROUP
 from rooibos.data.models import Collection, Record, standardfield, CollectionItem, Field, FieldValue
 from rooibos.federatedsearch.models import FederatedSearch, HitCount
 from rooibos.storage.models import *
-from rooibos.contrib.BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from rooibos.workers.models import JobInfo
 from urllib import urlencode
 import datetime
-import mimetypes
 import re
 import urllib2
+import logging
+import json
+
+log = logging.getLogger('rooibos')
+
 
 # TODO: Is the nasa federated search fixable, or should it be removed?
-
 class NasaImageExchange(FederatedSearch):
-
     SERVER = "http://nix.nasa.gov/"
 
     def _get_form_defaults(self, form):
@@ -47,7 +48,8 @@ class NasaImageExchange(FederatedSearch):
             return 0
         try:
             return int(soup.findAll('span')[-1].contents[0])
-        except:
+        except Exception as e:
+            log.debug('rooibos.federatedsearch.nasa:Exception = %s' % e)
             pass
         result = self._parse_result_page(soup)
         return len(result)
@@ -64,9 +66,9 @@ class NasaImageExchange(FederatedSearch):
     def get_collection(self):
         collection, created = Collection.objects.get_or_create(name='nix',
                                                                defaults=dict(
-                                                                title='NASA Image eXchange',
-                                                                hidden=True,
-                                                                description='NASA Multimedia Collection'
+                                                                   title='NASA Image eXchange',
+                                                                   hidden=True,
+                                                                   description='NASA Multimedia Collection'
                                                                ))
         if created:
             authenticated_users, created = ExtendedGroup.objects.get_or_create(type=AUTHENTICATED_GROUP)
@@ -75,13 +77,12 @@ class NasaImageExchange(FederatedSearch):
                                          read=True)
         return collection
 
-
     def get_storage(self):
         storage, created = Storage.objects.get_or_create(name='nix',
                                                          defaults=dict(
-                                                            title='NASA Image eXchange',
-                                                            system='local',
-                                                            base=os.path.join(settings.AUTO_STORAGE_DIR, 'nix')
+                                                             title='NASA Image eXchange',
+                                                             system='local',
+                                                             base=os.path.join(settings.AUTO_STORAGE_DIR, 'nix')
                                                          ))
         if created:
             authenticated_users, created = ExtendedGroup.objects.get_or_create(type=AUTHENTICATED_GROUP)
@@ -97,7 +98,7 @@ class NasaImageExchange(FederatedSearch):
             source=self.get_source_id(), query=keyword,
             defaults=dict(hits=0, valid_until=datetime.datetime.now() + datetime.timedelta(1)))
         if not created and cached.results:
-            return simplejson.loads(cached.results)
+            return json.loads(cached.results)
 
         soup = BeautifulSoup(urllib2.urlopen(self.SERVER))
         data = self._get_form_defaults(soup.form)
@@ -112,7 +113,7 @@ class NasaImageExchange(FederatedSearch):
             for page in [tag['href'] for tag in additional.parent.parent.findAll('a')]:
                 result += self._parse_result_page(BeautifulSoup(urllib2.urlopen(page)))
 
-        cached.results = simplejson.dumps(result, separators=(',', ':'))
+        cached.results = json.dumps(result, separators=(',', ':'))
         cached.save()
         return result
 
@@ -169,7 +170,7 @@ class NasaImageExchange(FederatedSearch):
         media = sorted(media, key=sort_by_dimension, reverse=True)
 
         # create job to download actual media file
-        job = JobInfo.objects.create(func='nasa_download_media', arg=simplejson.dumps(dict(
+        job = JobInfo.objects.create(func='nasa_download_media', arg=json.dumps(dict(
             record=record.id, url=media[0][0])))
         job.run()
 
