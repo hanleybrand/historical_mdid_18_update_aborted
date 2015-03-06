@@ -1,10 +1,11 @@
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import AnonymousUser, User, Group
+from django.contrib.auth.models import AnonymousUser, User #, Group
 from django.shortcuts import _get_queryset
 from rooibos.util.caching import get_cached_value, invalidate_model_cache
-import md5
+# import md5 - deprecated but also unused?
+# from hashlib import md5
 from models import AccessControl, ExtendedGroup
 
 
