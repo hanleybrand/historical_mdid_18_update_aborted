@@ -1,21 +1,22 @@
+# from forms import PeopleSearchForm
+#from models import FlickrUploadr, FlickrSearch, FlickrImportr, FlickrSetPhotos
+# from os import makedirs
+# from django.core.cache import cache
+# from django.core.urlresolvers import reverse
+# from config.settings import FLICKR_KEY, FLICKR_SECRET
+# from rooibos.solr import SolrIndex
+#from rooibos.solr.models import SolrIndexUpdates
+# from rooibos.storage import Storage, Media
+# from rooibos.util import json_view
+# import flickrapi
+# import urllib, urllib2, time
+
 from django.contrib.auth.decorators import login_required
-from django.core.cache import cache
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import Http404  # HttpResponse, HttpResponseRedirect,
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.utils import simplejson
-#from forms import PeopleSearchForm
-#from models import FlickrUploadr, FlickrSearch, FlickrImportr, FlickrSetPhotos
-from os import makedirs
-from rooibos.data.models import Collection, CollectionItem, Record, FieldSet, Field
-from config.settings import FLICKR_KEY, FLICKR_SECRET
-from rooibos.solr import SolrIndex
-#from rooibos.solr.models import SolrIndexUpdates
-from rooibos.storage import Storage, Media
-from rooibos.util import json_view
-import flickrapi
-import urllib, urllib2, time
+import json
+from rooibos.data.models import Record  # , Collection, CollectionItem, FieldSet, Field
 from . import FlickrSearch
 import math
 from django.utils.http import urlencode
@@ -24,7 +25,6 @@ from rooibos.ui.views import select_record
 
 @login_required
 def search(request):
-
     pagesize = 30  # per Flickr API TOS
 
     query = request.GET.get('q', '') or request.POST.get('q', '')
@@ -46,33 +46,28 @@ def search(request):
             r['id'] = ids.get(r['record_url'])
             r['selected'] = r['id'] in selected
 
-
     pages = int(math.ceil(float(results['hits']) / pagesize)) if results else 0
     prev_page_url = "?" + urlencode((('q', query), ('p', page - 1))) if page > 1 else None
     next_page_url = "?" + urlencode((('q', query), ('p', page + 1))) if page < pages else None
 
-
     return render_to_response('flickr-results.html',
-                          {'query': query,
-                           'results': results,
-                           'page': page,
-                           'pages': pages,
-                           'prev_page': prev_page_url,
-                           'next_page': next_page_url,
-                          },
-                          context_instance=RequestContext(request))
-
-
+                              {'query': query,
+                               'results': results,
+                               'page': page,
+                               'pages': pages,
+                               'prev_page': prev_page_url,
+                               'next_page': next_page_url,
+                              },
+                              context_instance=RequestContext(request))
 
 
 def flickr_select_record(request):
-
     if not request.user.is_authenticated():
         raise Http404()
 
     if request.method == "POST":
         f = FlickrSearch()
-        remote_ids = simplejson.loads(request.POST.get('id', '[]'))
+        remote_ids = json.loads(request.POST.get('id', '[]'))
 
         # find records that already have been created for the given URLs
         ids = dict(Record.objects.filter(source__in=remote_ids, manager='flickr').values_list('source', 'id'))
@@ -86,11 +81,10 @@ def flickr_select_record(request):
                 result.append(record.id)
         # rewrite request and submit to regular selection code
         r = request.POST.copy()
-        r['id'] = simplejson.dumps(result)
+        r['id'] = json.dumps(result)
         request.POST = r
 
     return select_record(request)
-
 
 
 #
