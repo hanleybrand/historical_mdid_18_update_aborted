@@ -1,4 +1,5 @@
 #from django.conf.urls import *
+import os.path
 from django.conf.urls import patterns, url, include, handler500, handler404
 from django.contrib import admin
 from django.conf import settings
@@ -92,9 +93,13 @@ for app in apps:
     #if not '.' in app[5:]:
     if not '.' in app[apps_pre_slice:]:
         # list dynamically appended app urls in  log
-        log.debug('rooibos.urls - appending urls for %s as ^/%s'
+        log.debug('rooibos.urls - attempting to append urls for %s as ^/%s'
                   ' (app added via config.settings_local.INSTALLED_APPS)' % (app, app[apps_pre_slice:]))
-        urls.append(url(r'^%s/' % app[apps_pre_slice:], include('%s.urls' % app)))
+        try:
+            urls.append(url(r'^%s/' % app[apps_pre_slice:], include('%s.urls' % app)))
+        except Exception as e:
+            log.debug('rooibos.urls Error loading  %s.urls -not loaded' % app)
+            continue
 
 urlpatterns = patterns('', *urls)
 
