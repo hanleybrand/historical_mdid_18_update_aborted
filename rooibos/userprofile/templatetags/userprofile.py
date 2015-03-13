@@ -1,13 +1,14 @@
-import re
+# commented out unused import
+# import re
+# from rooibos.contrib.tagging.models import Tag
+# from rooibos.data.models import Record
+# from rooibos.util.models import OwnedWrapper
+# from django.utils.html import escape
+# from django.template.loader import get_template
+# from django.template import Context, Variable, Template
+# from django.contrib.contenttypes.models import ContentType
 from django import template
-from django.utils.html import escape
-from django.template.loader import get_template
-from django.template import Context, Variable, Template
-from django.contrib.contenttypes.models import ContentType
-from django.utils import simplejson
-from rooibos.contrib.tagging.models import Tag
-from rooibos.data.models import Record
-from rooibos.util.models import OwnedWrapper
+import json
 from rooibos.userprofile.models import UserProfile
 from rooibos.userprofile.views import load_settings
 
@@ -20,7 +21,10 @@ class ProfileSettingsNode(template.Node):
         user = context['request'].user if context.has_key('request') else None
         if user and user.is_authenticated():
             try:
-                profile = user.get_profile()
+                # TODO:  change from user.get_profile to user.profile (doesn't "just work")
+                # (user.get_profile removed in django 1.7)
+                #profile = user.get_profile()
+                profile, created = UserProfile.objects.get_or_create(user=user)
             except UserProfile.DoesNotExist:
                 profile = UserProfile.objects.create(user=user)
             if self.filter:
@@ -30,7 +34,7 @@ class ProfileSettingsNode(template.Node):
             settings = dict()
             for setting in preferences:
                 settings[setting.setting] = setting.value
-            result = simplejson.dumps(settings)
+            result = json.dumps(settings)
         else:
             result = '{}';
         return result

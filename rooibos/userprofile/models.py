@@ -11,6 +11,8 @@ class Preference(models.Model):
 
 
 class UserProfile(models.Model):
+    # TODO: should this get changed?
+    # user = OneToOneField(User, related_name="profile")
     user = models.ForeignKey(User, unique=True)
     preferences = models.ManyToManyField(Preference, blank=True)
 
