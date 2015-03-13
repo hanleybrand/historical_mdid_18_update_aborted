@@ -1,41 +1,46 @@
-from django.views.decorators.cache import cache_control
+from __future__ import absolute_import
+import logging
+# from django.views.decorators.cache import cache_control
 from rooibos.util import json_view
-from models import UserProfile, Preference
+from .models import UserProfile  # , Preference
 
-# TODO: Migrate rooibos.userprofile to a django 1.5+ compliant userprofile
-# DeprecationWarning: The use of AUTH_PROFILE_MODULE to define user profiles has been deprecated.
-# triggered by ln 10: profile = user.get_profile()
+log = logging.getLogger('rooibos')
+
 
 def load_settings(user, filter=None):
     if not user.is_authenticated():
         return {}
     try:
-        profile = user.get_profile()
-    except UserProfile.DoesNotExist:
-        profile = UserProfile.objects.create(user=user)
-    settings = dict()
-    if filter:
-        preferences = profile.preferences.filter(setting__startswith=filter)
-    else:
-        preferences = profile.preferences.all()
-    for setting in preferences:
-        settings.setdefault(setting.setting, []).append(setting.value)
-    return settings
+        profile, created = UserProfile.objects.get_or_create(user=user)
+        settings = dict()
+        if filter:
+            preferences = profile.preferences.filter(setting__startswith=filter)
+        else:
+            preferences = profile.preferences.all()
+        for setting in preferences:
+            settings.setdefault(setting.setting, []).append(setting.value)
+        return settings
+
+    except Exception as e:
+        log.debug('rooibos.userprofile.views: %s' % e)
+
 
 def store_settings(user, key, value):
     if not user.is_authenticated():
         return False
     try:
-        profile = user.get_profile()
-    except UserProfile.DoesNotExist:
-        profile = UserProfile.objects.create(user=user)
+        profile, created = UserProfile.objects.get_or_create(user=user)
 
-    if key and value:
-        profile.preferences.filter(setting=key).delete()
-        profile.preferences.create(setting=key, value=value)
-        return True
+        if key and value:
+            profile.preferences.filter(setting=key).delete()
+            profile.preferences.create(setting=key, value=value)
+            return True
+
+    except Exception as e:
+        log.debug('rooibos.userprofile.views: %s' % e)
 
     return False
+
 
 @json_view
 def load_settings_view(request, filter=None):
