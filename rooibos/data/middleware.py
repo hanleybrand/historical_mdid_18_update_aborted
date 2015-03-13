@@ -1,8 +1,12 @@
-from django.core.exceptions import MiddlewareNotUsed
+from __future__ import absolute_import
 import logging
-from models import get_system_field
+
+from django.core.exceptions import MiddlewareNotUsed
+
+from .models import get_system_field
 
 log = logging.getLogger('rooibos')
+
 
 class DataOnStart:
 
