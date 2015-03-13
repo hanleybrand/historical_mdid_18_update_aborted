@@ -13,15 +13,16 @@ from django.db import connection, models
 from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
 
-from tagging import settings
-from tagging.utils import calculate_cloud, get_tag_list, get_queryset_and_model, parse_tag_input
-from tagging.utils import LOGARITHMIC
+import settings
+from utils import calculate_cloud, get_tag_list, get_queryset_and_model, parse_tag_input
+from utils import LOGARITHMIC
 
 qn = connection.ops.quote_name
 
-############
+# ###########
 # Managers #
 ############
+
 
 class TagManager(models.Manager):
     def update_tags(self, obj, tag_names):
@@ -274,8 +275,9 @@ class TagManager(models.Manager):
     def cloud_for_queryset(self, queryset, steps=4, distribution=LOGARITHMIC,
                            min_count=None):
         tags = list(self.usage_for_queryset(queryset, counts=True,
-                                         min_count=min_count))
+                                            min_count=min_count))
         return calculate_cloud(tags, steps, distribution)
+
 
 class TaggedItemManager(models.Manager):
     """
@@ -290,6 +292,7 @@ class TaggedItemManager(models.Manager):
           Now that the queryset-refactor branch is in the trunk, this can be
           tidied up significantly.
     """
+
     def get_by_model(self, queryset_or_model, tags):
         """
         Create a ``QuerySet`` containing instances of the specified
@@ -459,9 +462,11 @@ class TaggedItemManager(models.Manager):
         else:
             return []
 
+
 ##########
 # Models #
 ##########
+
 
 class Tag(models.Model):
     """
@@ -479,14 +484,15 @@ class Tag(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class TaggedItem(models.Model):
     """
     Holds the relationship between a tag and the item being tagged.
     """
-    tag          = models.ForeignKey(Tag, verbose_name=_('tag'), related_name='items')
+    tag = models.ForeignKey(Tag, verbose_name=_('tag'), related_name='items')
     content_type = models.ForeignKey(ContentType, verbose_name=_('content type'))
-    object_id    = models.PositiveIntegerField(_('object id'), db_index=True)
-    object       = generic.GenericForeignKey('content_type', 'object_id')
+    object_id = models.PositiveIntegerField(_('object id'), db_index=True)
+    object = generic.GenericForeignKey('content_type', 'object_id')
 
     objects = TaggedItemManager()
 
