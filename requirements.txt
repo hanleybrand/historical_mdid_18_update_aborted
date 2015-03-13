@@ -1,0 +1,5 @@
+# include basic requirements
+-r requirements/base.txt
+
+# include dev requirements
+-r requirements/dev.txt
