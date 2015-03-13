@@ -1,7 +1,8 @@
+from __future__ import absolute_import
 from django.contrib import admin
 from django.contrib.sites.admin import SiteAdmin
 from django.contrib.sites.models import Site
-from google_analytics.models import Analytics
+from .models import Analytics
 
 class AnalyticsAdmin(admin.TabularInline):
     model = Analytics
