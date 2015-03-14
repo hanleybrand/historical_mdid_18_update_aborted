@@ -2,10 +2,12 @@
 Custom managers for Django models registered with the tagging
 application.
 """
+from __future__ import absolute_import
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
-from models import Tag, TaggedItem
+from .models import Tag, TaggedItem
+
 
 class ModelTagManager(models.Manager):
     """
@@ -24,6 +26,7 @@ class ModelTagManager(models.Manager):
 
     def usage(self, *args, **kwargs):
         return Tag.objects.usage_for_model(self.model, *args, **kwargs)
+
 
 class ModelTaggedItemManager(models.Manager):
     """
@@ -46,6 +49,7 @@ class ModelTaggedItemManager(models.Manager):
             return TaggedItem.objects.get_union_by_model(self.model, tags)
         else:
             return TaggedItem.objects.get_union_by_model(queryset, tags)
+
 
 class TagDescriptor(object):
     """

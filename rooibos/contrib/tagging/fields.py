@@ -1,13 +1,14 @@
 """
 A custom Model Field for tagging.
 """
+from __future__ import absolute_import
 from django.db.models import signals
 from django.db.models.fields import CharField
 from django.utils.translation import ugettext_lazy as _
 
-import  settings
-from models import Tag
-from utils import edit_string_for_tags
+from .settings import settings
+from .models import Tag
+from .utils import edit_string_for_tags
 
 class TagField(CharField):
     """

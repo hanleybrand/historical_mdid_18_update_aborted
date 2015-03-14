@@ -1,21 +1,24 @@
 """
 Models and managers for generic tagging.
 """
+from __future__ import absolute_import
+
 # Python 2.3 compatibility
-try:
-    set
-except NameError:
-    from sets import Set as set
+# try:
+#     set
+# except NameError:
+#     from sets import Set as set
+
 
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.db import connection, models
-from django.db.models.query import QuerySet
+# from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
 
-import settings
-from utils import calculate_cloud, get_tag_list, get_queryset_and_model, parse_tag_input
-from utils import LOGARITHMIC
+from .settings import settings
+from .utils import calculate_cloud, get_tag_list, get_queryset_and_model, parse_tag_input
+from .utils import LOGARITHMIC
 
 qn = connection.ops.quote_name
 
