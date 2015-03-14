@@ -284,6 +284,11 @@ additional_settings = [
     'settings_local',
 ]
 
+## various app settings
+
+# required for contrib.tagging
+FORCE_LOWERCASE_TAGS = False
+
 additional_settings.extend(filter(None, os.environ.get('ROOIBOS_ADDITIONAL_SETTINGS', '').split(';')))
 
 # Load settings for additional applications
