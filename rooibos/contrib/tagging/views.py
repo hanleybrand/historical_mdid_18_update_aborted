@@ -1,15 +1,53 @@
 """
 Tagging related views.
 """
+from __future__ import absolute_import
+
 from django.http import Http404
 from django.utils.translation import ugettext as _
-from django.views.generic.list_detail import object_list
+#from django.views.generic.list_detail import object_list
+from django.views.generic.list import ListView
 
-from models import Tag, TaggedItem
-from utils import get_tag, get_queryset_and_model
+from .models import Tag, TaggedItem
+from .utils import get_tag, get_queryset_and_model
+
+
+class TaggedItems(ListView):
+    model = TaggedItem
+
+    def list(self, request, queryset_or_model=None, tag=None,
+             related_tags=False, related_tag_counts=True, **kwargs):
+
+        if queryset_or_model is None:
+            try:
+                queryset_or_model = kwargs.pop('queryset_or_model')
+            except KeyError:
+                raise AttributeError(_('tagged_object_list must be called with a queryset or a model.'))
+
+        if tag is None:
+            try:
+                tag = kwargs.pop('tag')
+            except KeyError:
+                raise AttributeError(_('tagged_object_list must be called with a tag.'))
+
+        tag_instance = get_tag(tag)
+
+        if tag_instance is None:
+            raise Http404(_('No Tag found matching "%s".') % tag)
+        queryset = TaggedItem.objects.get_by_model(queryset_or_model, tag_instance)
+        if not kwargs.has_key('extra_context'):
+            kwargs['extra_context'] = {}
+        kwargs['extra_context']['tag'] = tag_instance
+        if related_tags:
+            kwargs['extra_context']['related_tags'] = \
+                Tag.objects.related_for_model(tag_instance, queryset_or_model,
+                                              counts=related_tag_counts)
+
+        return self.object_list(request, queryset, **kwargs)
+
 
 def tagged_object_list(request, queryset_or_model=None, tag=None,
-        related_tags=False, related_tag_counts=True, **kwargs):
+                       related_tags=False, related_tag_counts=True, **kwargs):
     """
     A thin wrapper around
     ``django.views.generic.list_detail.object_list`` which creates a
@@ -26,27 +64,30 @@ def tagged_object_list(request, queryset_or_model=None, tag=None,
     tag will have a ``count`` attribute indicating the number of items
     which have it in addition to the given tag.
     """
-    if queryset_or_model is None:
-        try:
-            queryset_or_model = kwargs.pop('queryset_or_model')
-        except KeyError:
-            raise AttributeError(_('tagged_object_list must be called with a queryset or a model.'))
+    return TaggedItems.list(request, queryset_or_model=None, tag=None,
+                            related_tags=False, related_tag_counts=True, **kwargs)
 
-    if tag is None:
-        try:
-            tag = kwargs.pop('tag')
-        except KeyError:
-            raise AttributeError(_('tagged_object_list must be called with a tag.'))
-
-    tag_instance = get_tag(tag)
-    if tag_instance is None:
-        raise Http404(_('No Tag found matching "%s".') % tag)
-    queryset = TaggedItem.objects.get_by_model(queryset_or_model, tag_instance)
-    if not kwargs.has_key('extra_context'):
-        kwargs['extra_context'] = {}
-    kwargs['extra_context']['tag'] = tag_instance
-    if related_tags:
-        kwargs['extra_context']['related_tags'] = \
-            Tag.objects.related_for_model(tag_instance, queryset_or_model,
-                                          counts=related_tag_counts)
-    return object_list(request, queryset, **kwargs)
+    # if queryset_or_model is None:
+    #     try:
+    #         queryset_or_model = kwargs.pop('queryset_or_model')
+    #     except KeyError:
+    #         raise AttributeError(_('tagged_object_list must be called with a queryset or a model.'))
+    #
+    # if tag is None:
+    #     try:
+    #         tag = kwargs.pop('tag')
+    #     except KeyError:
+    #         raise AttributeError(_('tagged_object_list must be called with a tag.'))
+    #
+    # tag_instance = get_tag(tag)
+    # if tag_instance is None:
+    #     raise Http404(_('No Tag found matching "%s".') % tag)
+    # queryset = TaggedItem.objects.get_by_model(queryset_or_model, tag_instance)
+    # if not kwargs.has_key('extra_context'):
+    #     kwargs['extra_context'] = {}
+    # kwargs['extra_context']['tag'] = tag_instance
+    # if related_tags:
+    #     kwargs['extra_context']['related_tags'] = \
+    #         Tag.objects.related_for_model(tag_instance, queryset_or_model,
+    #                                       counts=related_tag_counts)
+    # return object_list(request, queryset, **kwargs)
