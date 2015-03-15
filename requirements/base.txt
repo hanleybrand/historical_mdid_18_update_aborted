@@ -23,7 +23,7 @@ beautifulsoup4==4.3.2
 django-extensions
 django_compressor
 django-debug-toolbar
-
+mock
 
 # notes
 #
