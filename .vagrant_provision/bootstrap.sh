@@ -3,17 +3,25 @@ HOME_DIR=`pwd`
 VAGRANT_DIR=/vagrant
 PROVISION_DIR=$VAGRANT_DIR/.vagrant_provision
 MDID_DIR=$HOME_DIR/mdid
-MDID_DATA_DIR=$HOME_DIR/mdid_data
+MDID_DATA_DIR=$HOME_DIR/mdid-data
+CONFIG_DIR=$MDID_DIR/config
 ROOIBOS_DIR=$MDID_DIR/rooibos
+
+sudo -u vagrant mkdir bootstrap_logs
 
 ##############################################################################
 # A Vagrant provisioning shell script to setup an MDID Development VM
 ##############################################################################
+# add ppa for ffmpeg
+sudo add-apt-repository ppa:mc3man/trusty-media
+
+
 # Update our apt sources
-apt-get update
+sudo apt-get update
 
 # Make sure we are starting from an up-to-date system
-apt-get upgrade -y
+sudo apt-get upgrade -y
+sudo apt-get dist-upgrade -y
 
 ##############################################################################
 # Install MySQL
@@ -32,34 +40,38 @@ echo mysql-server mysql-server/root_password_again password mdid | debconf-set-s
 # mysql-client: The MySQL client utilities
 # libmysqlclient-dev: MySQL developmental libraries, needed to build the python
 #   MySQL module
-apt-get install -y mysql-server mysql-client libmysqlclient-dev
+apt-get install -y mysql-server mysql-client libmysqlclient-dev 2>> bootstrap_logs/install_errors.txt
 
 ##############################################################################
 # Install other dependencies
 ##############################################################################
 # Java is needed to run Solr
-apt-get install -y openjdk-7-jre-headless
+apt-get install -y openjdk-7-jre-headless 2>> bootstrap_logs/install_errors.txt
 
 # RabbitMQ is needed to manage the worker jobs
-apt-get install -y rabbitmq-server
+apt-get install -y rabbitmq-server 2>> bootstrap_logs/install_errors.txt
 
-# Memcached is used for ???
-apt-get install -y memcached
+# Memcached is used for django's memory object cache
+apt-get install -y memcached 2>> bootstrap_logs/install_errors.txt
 
 ##############################################################################
 # Python build dependencies
 ##############################################################################
 # Need the python development libs
-apt-get install -y python-dev
+apt-get install -y python-dev 2>> bootstrap_logs/install_errors.txt
 
 # PyODBC needs the unixodbc libs
-apt-get install -y unixodbc unixodbc-dev
+apt-get install -y unixodbc unixodbc-dev 2>> bootstrap_logs/install_errors.txt
 
 # python-ldap needs ldap and sasl libraries
-apt-get install -y libldap2-dev libsasl2-dev
+apt-get install -y libldap2-dev libsasl2-dev 2>> bootstrap_logs/install_errors.txt
 
 # Pillow needs image libraries
-apt-get install -y libtiff5-dev libjpeg8-dev zlib1g-dev
+apt-get install -y libtiff5-dev libjpeg8-dev zlib1g-dev 2>> bootstrap_logs/install_errors.txt
+
+# ffmpeg
+apt-get install -y ffmpeg 2>> bootstrap_logs/install_errors.txt
+
 
 ##############################################################################
 # Setup files and directories
@@ -81,10 +93,11 @@ sudo -u vagrant ln -s $PROVISION_DIR/runserver $HOME_DIR/
 # Configure Python and setup a Virtual Environment
 ##############################################################################
 # Use PIP for python package management
-apt-get install -y python-pip
+apt-get install -y python-pip 2>> bootstrap_logs/install_errors.txt
 
 # install virtualenv
-pip install virtualenv
+pip install -y virtualenv 2>> bootstrap_logs/install_errors.txt
+pip install -y virtualenvwrapper 2>> bootstrap_logs/install_errors.txt
 
 # move into our project dir
 cd $MDID_DIR
@@ -105,9 +118,9 @@ pip install -r requirements.txt
 mysql -uroot -pmdid < .vagrant_provision/create_database.sql
 
 # create the local settings
-if [ -f $ROOIBOS_DIR/settings_local.py ]; then
+if [ -f $CONFIG_DIR/settings_local.py ]; then
   # backup any existing local settings first
-  mv $ROOIBOS_DIR/settings_local.py $ROOIBOS_DIR/settings_local.backup.py
+  mv $CONFIG_DIR/settings_local.py $ROOIBOS_DIR/settings_local.backup.py
 fi
 # Get the default gateway IP address so we can add it to INTERNAL_IPS
 GATEWAY_IP=`route -n | grep 'UG' | awk '{print $2}'`
@@ -116,8 +129,10 @@ cat $PROVISION_DIR/settings_local.vagrant.py \
   | sed -e "s/<<GATEWAY_IP>>/$GATEWAY_IP/" \
   > $ROOIBOS_DIR/settings_local.py
 
-# move into the rooibos app directory
-cd $ROOIBOS_DIR
+# move into the $MDID directory (django 1.6 now has manage.py in the top dir)
+cd $MDID_DIR
+# make manage.py executable like "./mangage.py syncdb"
+chmod +x manage.py
 
 # setup the database
 python manage.py syncdb --noinput
@@ -127,6 +142,14 @@ python manage.py createcachetable cache
 # Add Upstart scripts for Solr and the Workers
 ##############################################################################
 cp $PROVISION_DIR/mdid3-*.conf /etc/init
+
+## add git autocomplete, git prompt and a few other niceties to the cmd line
+## and stick in a .bash-profile to autosource them
+
+cp $PROVISION_DIR/.bash-completion $HOME_DIR
+cp $PROVISION_DIR/.git-prompt $HOME_DIR
+cp $PROVISION_DIR/.mdid-funcs $HOME_DIR
+cp $PROVISION_DIR/.bash-profile $HOME_DIR
 
 # start up the services
 service mdid3-solr start

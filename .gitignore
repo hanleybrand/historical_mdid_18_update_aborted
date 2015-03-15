@@ -24,3 +24,4 @@ config/settings_local.py
 *_local.py
 solr/nohup.out
 .vagrant/machines/*
+venv.vagrant/*
