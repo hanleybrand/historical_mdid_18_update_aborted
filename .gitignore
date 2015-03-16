@@ -20,8 +20,7 @@ rooibos/static/cache/*
 .idea/*
 bin-release-temp/
 .DS_Store
-config/settings_local.py
 *_local.py
 solr/nohup.out
 .vagrant/machines/*
-venv.vagrant/*
+
