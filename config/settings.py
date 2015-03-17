@@ -145,7 +145,6 @@ INSTALLED_APPS = (
     'rooibos.contrib.pagination',
     'rooibos.contrib.impersonate',
     'compressor',
-    #'rooibos.contrib.south',
     'debug_toolbar',
 )
 
