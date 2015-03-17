@@ -1,6 +1,5 @@
 *.pyc
 *.pyo
-config/settings_local.py
 solr/logs/*.log
 solr/solr/data/
 apps/
@@ -23,4 +22,4 @@ bin-release-temp/
 *_local.py
 solr/nohup.out
 .vagrant/machines/*
-
+venv.vagrant/*
