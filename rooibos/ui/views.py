@@ -1,6 +1,8 @@
+import json
+import random
+
 from django import forms
-from django.utils import simplejson
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response  #, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -8,9 +10,10 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.views.decorators.cache import cache_control
-from django.utils import simplejson
 from django.contrib.auth.forms import AuthenticationForm
 from django.views.decorators.csrf import csrf_protect
+from django.contrib import messages
+
 from rooibos.util import json_view
 from rooibos.data.models import Record, Collection
 from rooibos.storage.models import Storage
@@ -20,10 +23,9 @@ from rooibos.contrib.tagging.utils import parse_tag_input
 from rooibos.util.models import OwnedWrapper
 from rooibos.solr.views import run_search
 from rooibos.context_processors import selected_records as ctx_selected_records
-from rooibos.presentation.models import Presentation
+# from rooibos.presentation.models import Presentation
 from rooibos.userprofile.views import load_settings, store_settings
-import random
-from django.contrib import messages
+
 
 @cache_control(max_age=24 * 3600)
 def css(request, stylesheet):
@@ -68,7 +70,7 @@ def main(request):
 def select_record(request):
     selected = list(request.session.get('selected_records', ()))
     if request.method == "POST":
-        ids = simplejson.loads(request.POST.get('id', '[]'))
+        ids = json.loads(request.POST.get('id', '[]'))
         [selected.remove(id) for id in ids if id in selected]
         if request.POST.get('checked') == 'true':
             selected.extend(ids)
@@ -106,7 +108,7 @@ def remove_tag(request, type, id):
         Tag.objects.update_tags(ownedwrapper,  ' '.join(map(lambda s: '"%s"' % s,
             Tag.objects.get_for_object(ownedwrapper).exclude(name=tag).values_list('name'))))
         if request.is_ajax():
-            return HttpResponse(simplejson.dumps(dict(result='ok')), content_type='application/javascript')
+            return HttpResponse(json.dumps(dict(result='ok')), content_type='application/javascript')
         else:
             messages.success(request, message="Tag removed successfully.")
             return HttpResponseRedirect(request.GET.get('next') or '/')

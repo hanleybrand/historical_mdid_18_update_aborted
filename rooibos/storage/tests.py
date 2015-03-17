@@ -3,22 +3,24 @@ import tempfile
 import os.path
 import Image
 import shutil
-from threading import Thread
+import json
+# from threading import Thread
 from StringIO import StringIO
+
 from django.test.client import Client
 from django.utils import unittest
 from django.test import TestCase, SimpleTestCase, TransactionTestCase
 from django.core.files import File
-from django.utils import simplejson
 from django.conf import settings
+
 from rooibos.data.models import *
 from rooibos.storage.models import Media, ProxyUrl, Storage, TrustedSubnet
-from localfs import LocalFileSystemStorageSystem
+#from localfs import LocalFileSystemStorageSystem
 from rooibos.storage import get_thumbnail_for_record, get_media_for_record, get_image_for_record, match_up_media, analyze_records, analyze_media
 from rooibos.access.models import AccessControl
-from rooibos.access import get_effective_permissions
+# from rooibos.access import get_effective_permissions
 from rooibos.presentation.models import Presentation, PresentationItem
-from sqlite3 import OperationalError
+# from sqlite3 import OperationalError
 
 # changes to django transactions create signal problems
 # tests that would normally cause post_save or post_delete
@@ -273,7 +275,7 @@ class ProxyUrlTest(TestCase):
         # Response is JSON, should always be 200
         self.assertEqual(200, response.status_code)
         # Result should be error since we did not provide any credentials
-        data = simplejson.loads(response.content)
+        data = json.loads(response.content)
         self.assertEqual('error', data['result'])
 
         login = c.login(username='proxytest', password='test')
@@ -285,7 +287,7 @@ class ProxyUrlTest(TestCase):
                           {'url': self.record.get_thumbnail_url(), 'context': '_1_2'},
                           HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(200, response.status_code)
-        data = simplejson.loads(response.content)
+        data = json.loads(response.content)
         self.assertEqual('ok', data['result'])
         id = data['id']
         c.logout()

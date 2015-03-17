@@ -1,21 +1,23 @@
 import re
-from django import template
-from django.utils.html import escape
-from django.template.loader import get_template
-from django.template import Context, Variable, Template
-from django.contrib.contenttypes.models import ContentType
-from django.utils import simplejson
-from django.conf import settings
-from rooibos.contrib.tagging.models import Tag
-from rooibos.data.models import Record, Collection
-from rooibos.presentation.models import Presentation
-from rooibos.util.models import OwnedWrapper
-from rooibos.access import filter_by_access
-from rooibos.userprofile.views import load_settings, store_settings
-from rooibos.ui.functions import fetch_current_presentation, store_current_presentation
+import json
 from base64 import b32encode, b64encode
 import os
 import glob
+
+from django import template
+from django.template import Variable  # , Context, Template
+from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
+
+from rooibos.contrib.tagging.models import Tag
+from rooibos.util.models import OwnedWrapper
+from rooibos.ui.functions import fetch_current_presentation, store_current_presentation
+# from django.utils.html import escape
+# from django.template.loader import get_template
+# from rooibos.data.models import Record, Collection
+# from rooibos.presentation.models import Presentation
+# from rooibos.access import filter_by_access
+# from rooibos.userprofile.views import load_settings, store_settings
 
 register = template.Library()
 
@@ -146,7 +148,7 @@ class VariablesNode(template.Node):
 
     def render(self, context):
         source = self.nodelist.render(context)
-        context[self.var_name] = simplejson.loads(source)
+        context[self.var_name] = json.loads(source)
         return ''
 
 @register.tag(name='var')

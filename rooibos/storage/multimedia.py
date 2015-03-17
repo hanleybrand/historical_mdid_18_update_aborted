@@ -5,7 +5,7 @@ import wave
 import struct
 import re
 import logging
-from django.utils import simplejson
+import json
 from StringIO import StringIO
 from subprocess import Popen, PIPE
 from rooibos.data.models import FieldValue, get_system_field
@@ -133,7 +133,7 @@ def render_audio_waveform_by_mimetype(audiofile, mimetype):
     formatfile = os.path.join(path, mimetype + '.json')
     if not os.path.isfile(formatfile):
         formatfile = os.path.join(path, 'generic.json')
-    format = simplejson.load(open(formatfile, 'r'))
+    format = json.load(open(formatfile, 'r'))
     return render_audio_waveform(audiofile, format['color'], os.path.join(path, format['background']),
                                  format['left'], format['top'], format['height'], format['width'],
                                  format['max_only'])
