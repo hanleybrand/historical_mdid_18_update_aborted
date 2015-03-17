@@ -21,4 +21,5 @@ urlpatterns = patterns('',
     url(r'^analyze/(?P<id>\d+)/(?P<name>[-\w]+)/$', analyze, name='storage-analyze'),
     url(r'^records-without-media/$', find_records_without_media, name='storage-find-records-without-media'),
     #url(r'^mediaplayer-script/$', mediaplayer_script, name='storage-mediaplayer-script'),
+    url(r'^formtest/', formtest, name='formtest'),
 )

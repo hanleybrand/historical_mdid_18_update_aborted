@@ -1,0 +1,20 @@
+{% extends 'main.html' %}
+{% load ui %}
+
+{% block content %}
+
+{#    todo: change that id or make a new one#}
+<div id="image-preview">
+    <form method="post" action="">
+                <dl>
+                {% for field in formset %}
+                   <dt>{{ field.label_tag }} {{ field. }}</dt>
+                   <dd>{{ field }}</dd>
+                {% endfor %}
+                </dl>
+
+        <hr>
+    </form>
+</div>
+
+{% endblock %}
