@@ -1,0 +1,55 @@
+
+# install with:  pip install -r requirements/base.txt
+python-dateutil
+#MySQL-python>=1.2.4
+PyMySQL
+Django>=1.7.6
+python-ldap
+python-memcached
+# PIL=>1.1.7
+flickrapi>=2.0
+reportlab
+Pillow
+werkzeug
+flup
+django-grappelli
+https://pyodbc.googlecode.com/files/pyodbc-3.0.7.zip
+pika
+pycrypto
+pep8-naming
+flake8-todo
+flake8-docstrings
+## from rooibos.contrib
+beautifulsoup4==4.3.2
+django-extensions
+django_compressor
+django-debug-toolbar
+mock
+
+# notes
+#
+#  PIL requires libjpeg in order to process jpegs
+#  if you can't see images or you see a no jpeglib error, try:
+#  >  pip uninstall PIL
+#
+#       unbuntu:        > sudo apt-get install libjpeg8-dev
+#       rhel/centos:    > sudo yum install libjpeg8-dev
+#       mac os x:       > brew install libjpeg8-dev
+#
+#  >  pip install PIL
+#
+# non-python dependencies
+#
+#  git
+#  openjdk-6-jre-headless
+#  python-setuptools
+#  solr
+#  memcached or couchbase  http://www.couchbase.com/download
+#
+#
+
+### this is too fancy I think
+# include basic requirements
+#-r requirements/base.txt
+# include dev requirements
+#-r requirements/dev.txt
