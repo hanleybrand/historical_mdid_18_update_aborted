@@ -1,13 +1,15 @@
-from django.utils import simplejson
+import json
+import logging
+import mimetypes
+# import traceback
+import os
+
 from rooibos.storage.models import Media, Storage
 from rooibos.data.models import Collection
 from rooibos.workers import register_worker
 from rooibos.workers.models import JobInfo
 from rooibos.storage import match_up_media
-import logging
-import mimetypes
-import traceback
-import os
+
 
 @register_worker('storage_match_up_media')
 def storage_match_up_media_job(job):
@@ -15,7 +17,7 @@ def storage_match_up_media_job(job):
     logging.info('storage_match_up_media started for %s' % job)
     jobinfo = JobInfo.objects.get(id=job.arg)
 
-    arg = simplejson.loads(jobinfo.arg)
+    arg = json.loads(jobinfo.arg)
 
     logging.info('Matching up media with arguments %s', arg)
 

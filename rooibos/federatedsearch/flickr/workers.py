@@ -9,7 +9,7 @@ import urllib2
 import json
 
 # unused imports
-# from django.utils import simplejson
+# import json
 # import mimetypes
 # import traceback
 

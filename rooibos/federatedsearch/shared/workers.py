@@ -1,4 +1,4 @@
-from django.utils import simplejson
+import json
 from rooibos.data.models import Record
 from rooibos.storage.models import Media
 from rooibos.workers import register_worker
@@ -20,7 +20,7 @@ def shared_download_media(job):
         if jobinfo.status.startswith == 'Complete':
             # job finished previously
             return
-        arg = simplejson.loads(jobinfo.arg)
+        arg = json.loads(jobinfo.arg)
         shared = SharedSearch(arg['shared_id'])
         record = Record.objects.get(id=arg['record'],
                                     manager=shared.get_source_id())
