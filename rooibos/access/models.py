@@ -17,9 +17,9 @@ class AccessControl(models.Model):
     manage = models.NullBooleanField()
     restrictions_repr = models.TextField(blank=True, default='')
 
-
     class Meta:
         unique_together = ('content_type', 'object_id', 'user', 'usergroup')
+        db_table = 'access_accesscontrol'
 
     def save(self, **kwargs):
         if (self.user and self.usergroup):
@@ -77,6 +77,10 @@ class ExtendedGroupManager(models.Manager):
 
 
 class ExtendedGroup(Group):
+
+    class Meta:
+        db_table = 'access_extendedgroup'
+
     TYPE_CHOICES = (
         ('A', 'Authenticated'),
         ('I', 'IP Address based'),
@@ -123,6 +127,9 @@ class Subnet(models.Model):
     group = models.ForeignKey(ExtendedGroup, limit_choices_to={'type': 'I'})
     subnet = models.CharField(max_length=80)
 
+    class Meta:
+        db_table = 'access_subnet'
+
     def __unicode__(self):
         return '%s: %s' % (self.group.name, self.subnet)
 
@@ -131,6 +138,9 @@ class Attribute(models.Model):
     group = models.ForeignKey(ExtendedGroup, limit_choices_to={'type': 'P'})
     attribute = models.CharField(max_length=255)
 
+    class Meta:
+        db_table = 'access_attribute'
+
     def __unicode__(self):
         return '%s: %s' % (self.group.name, self.attribute)
 
@@ -138,3 +148,6 @@ class Attribute(models.Model):
 class AttributeValue(models.Model):
     attribute = models.ForeignKey(Attribute)
     value = models.CharField(max_length=255)
+
+    class Meta:
+        db_table = 'access_attributevalue'
