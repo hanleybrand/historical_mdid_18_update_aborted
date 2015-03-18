@@ -1,5 +1,5 @@
 CREATE DATABASE rooibos17 CHARACTER SET utf8;
- GRANT ALL PRIVILEGES ON rooibos.* TO rooibos@localhost
+ GRANT ALL PRIVILEGES ON rooibos17.* TO rooibos@localhost
    IDENTIFIED BY 'rooibos';
  UPDATE mysql.user SET Select_priv='Y',Insert_priv='Y',
    Update_priv='Y',Delete_priv='Y',Create_priv='Y',
