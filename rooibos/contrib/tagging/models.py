@@ -483,6 +483,7 @@ class Tag(models.Model):
         ordering = ('name',)
         verbose_name = _('tag')
         verbose_name_plural = _('tags')
+        db_table = 'tagging_tag'
 
     def __unicode__(self):
         return self.name
@@ -504,6 +505,7 @@ class TaggedItem(models.Model):
         unique_together = (('tag', 'content_type', 'object_id'),)
         verbose_name = _('tagged item')
         verbose_name_plural = _('tagged items')
+        db_table = 'tagging_taggeditem'
 
     def __unicode__(self):
         return u'%s [%s]' % (self.object, self.tag)

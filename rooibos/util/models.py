@@ -36,6 +36,7 @@ class OwnedWrapper(models.Model):
 
     class Meta:
         unique_together = ('content_type', 'object_id', 'user')
+        db_table = 'util_ownedwrapper'
 
     @staticmethod
     def t(model):

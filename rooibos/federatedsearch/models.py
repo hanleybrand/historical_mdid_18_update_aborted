@@ -18,6 +18,9 @@ class HitCount(models.Model):
     objects = models.Manager()
     current_objects = CurrentHitCountManager()
 
+    class Meta:
+        db_table = 'federatedsearch_hitcount'
+
     def __unicode__(self):
         return "%s '%s': %s" % (self.source, self.query, self.hits)
 

@@ -51,6 +51,7 @@ class SharedCollection(models.Model):
 
     class Meta:
         ordering = ['title']
+        db_table = 'shared_sharedcollection'
 
     def save(self, **kwargs):
         unique_slug(self, slug_source='title', slug_field='name',

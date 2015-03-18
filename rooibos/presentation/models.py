@@ -98,6 +98,7 @@ class Presentation(models.Model):
         permissions = (
             ("publish_presentations", "Can publish presentations"),
         )
+        db_table = 'presentation_presentation'
 
 class PresentationItem(models.Model):
 
@@ -183,10 +184,13 @@ class PresentationItem(models.Model):
 
     class Meta:
         ordering = ['order']
+        db_table = 'presentation_presentationitem'
 
 
 class PresentationItemInfo(models.Model):
-
     item = models.ForeignKey('PresentationItem', related_name='media')
     media = models.ForeignKey(Media)
     info = models.TextField(blank=True)
+
+    class Meta:
+        db_table = 'presentation_presentationiteminfo'

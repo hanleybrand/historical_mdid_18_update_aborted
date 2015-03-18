@@ -19,6 +19,9 @@ class SolrIndexUpdates(models.Model):
     record = models.IntegerField()
     delete = models.BooleanField(default=False)
 
+    class Meta:
+        db_table = 'solr_solrindexupdates'
+
 
 def mark_for_update(record_id, delete=False):
     SolrIndexUpdates.objects.create(record=record_id, delete=delete)

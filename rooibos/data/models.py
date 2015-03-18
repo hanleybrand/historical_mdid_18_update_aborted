@@ -18,11 +18,12 @@ import types
 
 log = logging.getLogger('rooibos')
 
+# TODO: Where is data_collection_children's model?
 
 class Collection(models.Model):
     title = models.CharField(max_length=100)
     name = models.SlugField(max_length=50, unique=True, blank=True)
-    children = models.ManyToManyField('self', symmetrical=False, blank=True)
+    children = models.ManyToManyField('self', symmetrical=False, blank=True, db_table='data_collection_children')
     records = models.ManyToManyField('Record', through='CollectionItem')
     owner = models.ForeignKey(User, null=True, blank=True)
     hidden = models.BooleanField(default=False)
@@ -32,6 +33,7 @@ class Collection(models.Model):
 
     class Meta:
         ordering = ['title']
+        db_table = 'data_collection'
 
     def save(self, **kwargs):
         unique_slug(self, slug_source='title', slug_field='name', check_current_slug=kwargs.get('force_insert'))
@@ -87,6 +89,9 @@ class CollectionItem(models.Model):
     record = models.ForeignKey('Record')
     hidden = models.BooleanField(default=False)
 
+    class Meta:
+        db_table = 'data_collectionitem'
+
     def __unicode__(self):
         return "Record %s Collection %s%s" % (self.record_id, self.collection_id, 'hidden' if self.hidden else '')
 
@@ -107,6 +112,8 @@ class Record(models.Model):
     next_update = models.DateTimeField(null=True, blank=True)
     owner = models.ForeignKey(User, null=True, blank=True)
 
+    class Meta:
+        db_table = 'data_record'
 
     @staticmethod
     def filter_by_access(user, *ids):
@@ -304,6 +311,9 @@ class MetadataStandard(models.Model):
     name = models.SlugField(max_length=50, unique=True)
     prefix = models.CharField(max_length=16, unique=True)
 
+    class Meta:
+        db_table = 'data_metadatastandard'
+
     def __unicode__(self):
         return self.title
 
@@ -317,11 +327,15 @@ class Vocabulary(models.Model):
 
     class Meta:
         verbose_name_plural = "vocabularies"
+        db_table = 'data_vocabulary'
 
 
 class VocabularyTerm(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)
     term = models.TextField()
+
+    class Meta:
+        db_table = 'data_vocabularyterm'
 
     def __unicode__(self):
         return self.term
@@ -332,7 +346,8 @@ class Field(models.Model):
     name = models.SlugField(max_length=50)
     old_name = models.CharField(max_length=100, null=True, blank=True)
     standard = models.ForeignKey(MetadataStandard, null=True, blank=True)
-    equivalent = models.ManyToManyField("self", null=True, blank=True)
+    equivalent = models.ManyToManyField("self", null=True, blank=True,
+                                        db_table='data_field_equivalent')
     vocabulary = models.ForeignKey(Vocabulary, null=True, blank=True)
 
     def save(self, **kwargs):
@@ -362,6 +377,7 @@ class Field(models.Model):
         unique_together = ('name', 'standard')
         ordering = ['name']
         order_with_respect_to = 'standard'
+        db_table = 'data_field'
 
 
 @transaction.commit_on_success
@@ -406,6 +422,7 @@ class FieldSetField(models.Model):
 
     class Meta:
         ordering = ['order']
+        db_table = 'data_fieldsetfield'
 
 
 class FieldValue(models.Model):
@@ -447,12 +464,15 @@ class FieldValue(models.Model):
 
     class Meta:
         ordering = ['order']
+        db_table = 'data_fieldvalue'
 
 
 class DisplayFieldValue(FieldValue):
     """
     Represents a mapped field value for display.  Cannot be saved.
     """
+    class Meta:
+        db_table = 'data_displayfieldvalue'
 
     def save(self, *args, **kwargs):
         raise NotImplementedError()
