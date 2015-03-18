@@ -15,6 +15,9 @@ class Activity(models.Model):
     event = models.CharField(max_length=64, db_index=True)
     data_field = models.TextField(blank=True, db_column='data')
 
+    class Meta:
+        db_table = 'statistics_activity'
+
     def __unicode__(self):
         return "Activity (%s %s) %s" % (self.date, self.time, self.event)
 
@@ -66,6 +69,9 @@ class AccumulatedActivity(models.Model):
     event = models.CharField(max_length=64, db_index=True)
     final = models.BooleanField(default=False)
     count = models.IntegerField()
+
+    class Meta:
+        db_table = 'statistics_accumulatedactivity'
 
     def __unicode__(self):
         return "AccumulatedActivity (%s) %s %s" % (self.date, self.event, self.count)

@@ -37,6 +37,7 @@ class Storage(models.Model):
 
     class Meta:
         verbose_name_plural = 'storage'
+        db_table = 'storage_storage'
 
     def save(self, **kwargs):
         unique_slug(self, slug_source='title', slug_field='name', check_current_slug=kwargs.get('force_insert'))
@@ -146,6 +147,7 @@ class Media(models.Model):
     class Meta:
         unique_together = ("record", "name")
         verbose_name_plural = "media"
+        db_table = 'storage_media'
 
     def __unicode__(self):
         return self.url
@@ -254,6 +256,9 @@ class Media(models.Model):
 class TrustedSubnet(models.Model):
     subnet = models.CharField(max_length=80)
 
+    class Meta:
+        db_table = 'storage_trustedsubnet'
+
     def __unicode__(self):
         return "TrustedSubnet (%s)" % self.subnet
 
@@ -265,6 +270,9 @@ class ProxyUrl(models.Model):
     user = models.ForeignKey(User)
     user_backend = models.CharField(max_length=256, null=True, blank=True)
     last_access = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'storage_proxyurl'
 
     def __unicode__(self):
         return 'ProxyUrl %s: %s (Ctx %s, Usr %s, Sbn %s)' % (self.uuid, self.url, self.context, self.user, self.subnet)

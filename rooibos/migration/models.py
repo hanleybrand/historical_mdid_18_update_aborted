@@ -14,6 +14,8 @@ class ObjectHistory(models.Model):
     original_id = models.CharField(max_length=255, db_index=True)
     content_hash = models.CharField(max_length=32)
 
+    class Meta:
+        db_table = 'migration_objecthistory'
 
 def content_hash(*args):
     hash = hashlib.md5()
