@@ -1,12 +1,14 @@
+from __future__ import absolute_import
 from django import template
 from django.db import models
 from django.contrib.sites.models import Site
 
 from django.template import Context, loader
-
+#from ..models import Analytics
 
 register = template.Library()
-Analytics = models.get_model('googleanalytics', 'analytics')
+# Analytics = models.get_model('googleanalytics', 'analytics')
+
 
 def do_get_analytics(parser, token):
     try:
