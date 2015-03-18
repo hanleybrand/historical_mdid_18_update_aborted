@@ -29,30 +29,30 @@ urlpatterns = patterns('',
     # direct_to_template replaced in dj1.5
     # url(r'^report-problem/$', direct_to_template, {'template': 'ui_report_problem.html'}, name='ui-report-problem'),
     url(r'^report-problem/$', TemplateView.as_view(template_name='ui_report_problem.html'), name='ui-report-problem'),
-    # url(r'^announcement/new/$', CreateView, {
-    #     'model': Comment,
-    #     'template_name': 'ui_announcements_form.html',
-    #     'extra_context': {
-    #         'flatpage_content_type': ContentType.objects.get_for_model(FlatPage).id,
-    #         'site': settings.SITE_ID,
-    #     },
-    #     'post_save_redirect': reverse_lazy('main'),
-    #     'login_required': True,
-    #     }, name='ui-announcement-new'),
-    # url(r'^announcement/(?P<object_id>\d+)/edit/$', UpdateView, {
-    #     'model': Comment,
-    #     'template_name': 'ui_announcements_form.html',
-    #     'extra_context': {
-    #         'flatpage_content_type': ContentType.objects.get_for_model(FlatPage).id,
-    #         'site': settings.SITE_ID,
-    #     },
-    #     'post_save_redirect': reverse_lazy('main'),
-    #     'login_required': True,
-    #     }, name='ui-announcement-edit'),
-    # url(r'^announcement/(?P<object_id>\d+)/delete/$', DeleteView, {
-    #     'model': Comment,
-    #     'template_name': 'ui_announcements_delete.html',
-    #     'post_delete_redirect': reverse_lazy('main'),
-    #     'login_required': True,
-    #     }, name='ui-announcement-delete'),
+    url(r'^announcement/new/$', CreateView, {
+        'model': Comment,
+        'template_name': 'ui_announcements_form.html',
+        'extra_context': {
+            'flatpage_content_type': ContentType.objects.get_for_model(FlatPage).id,
+            'site': settings.SITE_ID,
+        },
+        'post_save_redirect': reverse_lazy('main'),
+        'login_required': True,
+        }, name='ui-announcement-new'),
+    url(r'^announcement/(?P<object_id>\d+)/edit/$', UpdateView, {
+        'model': Comment,
+        'template_name': 'ui_announcements_form.html',
+        'extra_context': {
+            'flatpage_content_type': ContentType.objects.get_for_model(FlatPage).id,
+            'site': settings.SITE_ID,
+        },
+        'post_save_redirect': reverse_lazy('main'),
+        'login_required': True,
+        }, name='ui-announcement-edit'),
+    url(r'^announcement/(?P<object_id>\d+)/delete/$', DeleteView, {
+        'model': Comment,
+        'template_name': 'ui_announcements_delete.html',
+        'post_delete_redirect': reverse_lazy('main'),
+        'login_required': True,
+        }, name='ui-announcement-delete'),
 )
