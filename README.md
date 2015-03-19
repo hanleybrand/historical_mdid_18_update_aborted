@@ -36,13 +36,22 @@ DATABASES = {
 
 #### AttributeError at /data/record/7/arc5262/
 ##### 'function' object has no attribute 'compile'
+
 Request Method:	**GET**
+
 Request URL:	**http://127.0.0.1:8000/data/record/7/arc5262/**
+
 Django Version:	**1.7.6**
+
 Exception Type:	**AttributeError**
+
 Exception Value:	
+
 **'function' object has no attribute 'compile'**
 
+from __rooibos/contrib/tagging/models.py in usage_for_queryset__
+
+```where, params = queryset.query.where.as_sql(compiler.quote_name_unless_alias, compiler.connection) ```
 
 **This branch has the potential to mess up the database of any existing installation, copy your existing db and use the copy**
 
