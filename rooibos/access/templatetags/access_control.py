@@ -1,10 +1,15 @@
+import logging
+
 from django import template
 from django.utils.html import escape
 from django.core.urlresolvers import reverse
 from django.template.loader import get_template
 from django.template import Context, Variable, Template
 from django.contrib.contenttypes.models import ContentType
+
 from rooibos.access import get_accesscontrols_for_object, filter_by_access
+
+log = logging.getLogger(__name__)
 
 register = template.Library()
 
@@ -51,6 +56,8 @@ def permissions_modify_url(parser, token):
 def accessible_objects(user, args):
     app_model, access = args.split(',')
     app, model = app_model.split('.')
+    log.debug('app = %s, model = %s, access = %s' % (app, model, access))
+    log.debug('model.__class__ : %s \n%s' % (model, model.__class__))
     read = 'r' in access
     write = 'w' in access
     manage = 'm' in access

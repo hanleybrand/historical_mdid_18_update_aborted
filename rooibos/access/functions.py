@@ -1,23 +1,27 @@
+from __future__ import absolute_import
 import logging
+
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import AnonymousUser, User  # , Group
 from django.shortcuts import _get_queryset
+
 from rooibos.util.caching import get_cached_value, invalidate_model_cache
 # import md5 - deprecated but also unused?
 # from hashlib import md5
-from models import AccessControl, ExtendedGroup
+from .models import AccessControl, ExtendedGroup
 
 log = logging.getLogger(__name__)
 
-
+# TODO: (research) what is the scope of this var when deployed? Is is a global? per user? is it run every time for all?
 restriction_precedences = dict()
 
 
 def add_restriction_precedence(setting, func):
     invalidate_model_cache(AccessControl)
     restriction_precedences[setting] = func
+    log.debug('restriction_precedences set to ', restriction_precedences)
 
 
 def get_accesscontrols_for_object(model_instance):
@@ -105,17 +109,23 @@ def check_access(user, model_instance, read=True, write=False, manage=False, fai
 
 
 def filter_by_access(user, queryset, read=True, write=False, manage=False):
-
-    log.debug('access.functions.filter_by_access: %s, %s, %s, %s, %s' % (user, queryset, read, write, manage))
-    log.debug('qset model: %s' % queryset.model)
+    # leaving this in for now in case there are new problems introduced by fix below
+    log.debug('user = %s, queryset = %s, read = %s, write = %s, manage = %s' % (user, queryset, read, write, manage))
+    log.debug('queryset.__class__ : %s \n%s' % (queryset, queryset.__class__))
 
     user = user or AnonymousUser()
-    # was bombing out on main page with Admin (or when queryset = None), fix with if
+    # dj 1.7 was bombing out on main page with Admin/Anon or when queryset = None)
+    # but now that I look at it - what does this do? _get_queryset() returns a manager, but
+    # wouldn't do anything to the object being passed to it - this might be a change, not sure
+    # but queryset = _get_queryset(queryset) will convert objects to a queryset, and if it's already
+    # fix Object is of type 'NoneType', but must be a Django Model, Manager, or QuerySet error with if
     if queryset:
-        log.debug('qset model: %s' % queryset.model)
-        _get_queryset(queryset)
+    #     _get_queryset(queryset)
+        queryset = _get_queryset(queryset)
+
     if not (read or write or manage) or user.is_superuser:  # nothing to do
         return queryset
+
     model_type = ContentType.objects.get_for_model(queryset.model)
     usergroups_q = Q(usergroup__in=ExtendedGroup.objects.get_extra_groups(user))
     if not user.is_anonymous():
