@@ -109,7 +109,7 @@ def serve_mogilefs_file(request, key=None):
         # we don't have perlbal, let's just serve the image via django
         file_data = client[key]
         if file_data:
-            response = HttpResponse(file_data, mimetype=mimetype)
+            response = HttpResponse(file_data, content_type=mimetype)
         else:
             response = HttpResponseNotFound()
     

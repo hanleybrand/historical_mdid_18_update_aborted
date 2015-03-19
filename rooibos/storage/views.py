@@ -80,7 +80,7 @@ def retrieve(request, recordid, record, mediaid, media):
                             request=request,
                             content_object=mediaobj)
     if content:
-        return HttpResponse(content=content, mimetype=str(mediaobj.mimetype))
+        return HttpResponse(content=content, content_type=str(mediaobj.mimetype))
     else:
         return HttpResponseRedirect(mediaobj.get_absolute_url())
 
@@ -100,7 +100,7 @@ def retrieve_image(request, recordid, record, width=None, height=None):
                             content_object=Record.objects.get(id=recordid),
                             data=dict(width=width, height=height))
     try:
-        response = HttpResponse(content=file(path, 'rb').read(), mimetype='image/jpeg')
+        response = HttpResponse(content=file(path, 'rb').read(), content_type='image/jpeg')
         if request.GET.has_key('forcedl'):
             response["Content-Disposition"] = "attachment; filename=%s.jpg" % record
         return response
@@ -173,7 +173,7 @@ def media_upload(request, recordid, record):
                                         context_instance=RequestContext(request)
                 )
                 return HttpResponse(content=json.dumps(dict(status='ok', html=html)),
-                                    mimetype='application/json')
+                                    content_type='application/json')
 
             return HttpResponseRedirect(request.GET.get('next', reverse('main')))
         else:
@@ -194,7 +194,8 @@ def media_delete(request, mediaid, medianame):
     else:
         return HttpResponseNotAllowed(['POST'])
 
-
+# TODO: Passing mimetype to HttpResponse is deprecated and removed in Django 1.7 as per
+# https://github.com/django/django/commit/8eadbc5a03d06f5bfedfa3fad35ad0801d2ab6ff
 @add_content_length
 @cache_control(private=True, max_age=3600)
 def record_thumbnail(request, id, name):
@@ -207,7 +208,7 @@ def record_thumbnail(request, id, name):
                                 #content_object=record,
                                 data=dict(square=int(request.GET.has_key('square'))))
         try:
-            return HttpResponse(content=open(filename, 'rb').read(), mimetype='image/jpeg')
+            return HttpResponse(content=open(filename, 'rb').read(), content_type='image/jpeg')
         except IOError:
             logging.error("IOError: %s" % filename)
     return HttpResponseRedirect(reverse('static', args=('images/thumbnail_unavailable.png',)))
@@ -393,14 +394,14 @@ def import_files(request):
                 if len(records) == 1:
                     # Matching record found
                     record = records[0]
-                    media = record.media_set.filter(storage=storage, mimetype=mimetype)
+                    media = record.media_set.filter(storage=storage, content_type=mimetype)
                     media_same_id = media.filter(name=id)
                     if len(media) == 0 or (len(media_same_id) == 0 and multiple_files):
                         # No media yet
                         media = Media.objects.create(record=record,
                                                      name=id,
                                                      storage=storage,
-                                                     mimetype=mimetype)
+                                                     content_type=mimetype)
                         media.save_file(file.name, file)
                         result = "File added (Identifier '%s')." % id
                     elif len(media_same_id) > 0 and multiple_files:
@@ -428,7 +429,7 @@ def import_files(request):
                         media = Media.objects.create(record=record,
                                                      name=id,
                                                      storage=storage,
-                                                     mimetype=mimetype)
+                                                     content_type=mimetype)
                         media.save_file(file.name, file)
                         result = "File added to new record (Identifier '%s')." % id
                     else:
@@ -445,7 +446,7 @@ def import_files(request):
                                         context_instance=RequestContext(request)
                 )
                 return HttpResponse(content=json.dumps(dict(status='ok', html=html)),
-                                    mimetype='application/json')
+                                    content_type='application/json')
 
             messages.info(request, message=result)
             next = request.GET.get('next', request.get_full_path())
@@ -459,7 +460,7 @@ def import_files(request):
                                         context_instance=RequestContext(request)
                 )
                 return HttpResponse(content=json.dumps(dict(status='ok', html=html)),
-                                    mimetype='application/json')
+                                    content_type='application/json')
 
     else:
         form = UploadFileForm()

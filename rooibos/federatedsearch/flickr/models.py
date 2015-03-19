@@ -146,7 +146,7 @@
 #                      name='full',
 #                      url=originalInfo['source'].split('/')[-1],
 #                      storage=storage,
-#                      mimetype='image/jpeg',
+#                      content_type='image/jpeg',
 #                      width=originalInfo['width'],
 #                      height=originalInfo['height'])
 #        media.save()

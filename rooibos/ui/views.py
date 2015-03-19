@@ -33,7 +33,7 @@ def css(request, stylesheet):
     return render_to_response(stylesheet + '.css',
                               {},
                               context_instance=RequestContext(request),
-                              mimetype='text/css')
+                              content_type='text/css')
 
 @csrf_protect
 def main(request):
@@ -117,7 +117,6 @@ def remove_tag(request, type, id):
                               {'tag': tag,
                                'next': request.GET.get('next')},
                               context_instance=RequestContext(request))
-
 
 
 @json_view

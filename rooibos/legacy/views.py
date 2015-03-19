@@ -41,7 +41,7 @@ def imageviewer_login(request):
                                'sessiontoken': sessiontoken,
                                'slideshows': slideshows},
                               context_instance=RequestContext(request),
-                              mimetype='text/xml')
+                              content_type='text/xml')
 
 
 def imageviewer_getslideshow(request):
@@ -75,7 +75,7 @@ def imageviewer_getslideshow(request):
                                'errormessage': errormessage,
                                'slides': slides},
                               context_instance=RequestContext(request),
-                              mimetype='text/xml')
+                              content_type='text/xml')
 
 
 

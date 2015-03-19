@@ -66,7 +66,7 @@ def json_view(func):
         # getting a linting warning - changing to an explicitly separate variable name
         json_dump = json.dumps(response)
 
-        return HttpResponse(json_dump, mimetype='text/plain') # mimetype='application/json')
+        return HttpResponse(json_dump, content_type='text/plain') # content_type='application/json')
     return wrap
 
 
