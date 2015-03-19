@@ -1,27 +1,52 @@
-# Madison Digial Image Database (MDID)
+#  experimental django upgrade - do not use in production
 
-The [Madison Digital Image Database](http://mdid.org/) is a free, open source media repo aimed at education spaces.
-It was created at [James Madison University](http://www.jmu.edu).
 
-## Django 1.6.5 upgrade - clone to a new directory
+## Django 1.7 upgrade - clone to a new directory, copy the database
 
-**Status:** Currently in a "first running" state - will work on an existing mdid3 installation's database, although obvs don't run it against a production database.
+This snippet for settings_local can help:
 
-**This branch has the potential to mess up the organization of a django 1.2.7 based branch, so it seems best to `git clone` to seperate directory**
+```python
+from django import get_version
+from distutils.version import StrictVersion
 
-I'm currently running it on OS X but I tried to make any settings changes as generic as possible (I made most if not all directories set relative to PROJECT_ROOT
+DJANGO_VERSION = StrictVersion(get_version())
+DJANGO_16 = StrictVersion('1.6.10')
+
+if DJANGO_VERSION > DJANGO_16:
+    DATABASE_NAME = 'rooibos17'
+else:
+    DATABASE_NAME = 'rooibos'
+
+print('Django version is %s' % DJANGO_VERSION)
+print('using database %s' % DATABASE_NAME)
+
+DATABASES = {
+    'default': {
+        # ...
+        'NAME': DATABASE_NAME,
+        # ...
+        },
+    }
+}
+
+
+```
+
+### **Status:** 
+
+#### AttributeError at /data/record/7/arc5262/
+##### 'function' object has no attribute 'compile'
+Request Method:	**GET**
+Request URL:	**http://127.0.0.1:8000/data/record/7/arc5262/**
+Django Version:	**1.7.6**
+Exception Type:	**AttributeError**
+Exception Value:	
+**'function' object has no attribute 'compile'**
+
+
+**This branch has the potential to mess up the database of any existing installation, copy your existing db and use the copy**
+
 
 ### setting up
 
-I'd recommend making a fresh virtual env with python 2.7.x so everything has that 'oh-so-fresh' feeling!
-
-I've been developing/testing this fork with an export of a production database and I haven't hit a snag, so right on!
-
-- Switched static files to the staticfiles app, so a good start for running against an already existing database after setting up your virtualenv is:
-``` shell 
-pip install -f requirements.txt
-python manage.py collectstatic
-python manage.py runserver
-``` 
-- Following the newer django convention, moved the main app files to a 'project' directory, and followed [Jeff Knupp's advice](http://www.jeffknupp.com/blog/2013/12/18/starting-a-django-16-project-the-right-way/) that this is really a 'config' directory, so settings file plus the main urls & wsgi files are in the PROJECT_ROOT/config directory, collected staticfiles are in PROJECT_ROOT/static, and local templates are in PROJECT_ROOT/templates.
-
+You my friend, are on your own.
