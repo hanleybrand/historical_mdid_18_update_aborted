@@ -32,7 +32,7 @@ import base64
 from django.contrib import messages
 
 # todo: no log statements in file; remove logging?
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 @login_required
 def create(request):

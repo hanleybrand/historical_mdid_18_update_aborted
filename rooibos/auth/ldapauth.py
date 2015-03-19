@@ -4,7 +4,7 @@ import ldap
 from baseauth import BaseAuthenticationBackend
 import logging
 
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 class LdapAuthenticationBackend(BaseAuthenticationBackend):
     def authenticate(self, username=None, password=None):

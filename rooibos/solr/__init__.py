@@ -15,7 +15,7 @@ from rooibos.access.models import AccessControl
 
 SOLR_EMPTY_FIELD_VALUE = 'unspecified'
 
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 
 def object_acl_to_solr(obj):

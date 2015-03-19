@@ -26,7 +26,7 @@ import os
 import pyodbc
 import re
 
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 # MDID2 permissions
 P = dict(

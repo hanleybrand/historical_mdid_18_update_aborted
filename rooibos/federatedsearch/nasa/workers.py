@@ -11,7 +11,7 @@ import urllib2
 import traceback
 
 
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 @register_worker('nasa_download_media')
 def nasa_download_media(job):

@@ -15,7 +15,7 @@ from shared import SharedSearch
 
 import logging
 
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 #sources = {
 #    'NasaImageExchange': NasaImageExchange,

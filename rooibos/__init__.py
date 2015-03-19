@@ -2,7 +2,7 @@ import logging
 import os, sys
 from django.conf import settings
 import config.settings_local
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 log.info('\n\n\n\n====== MDID Startup ===============================================================================')
 log.info('Important Directories')

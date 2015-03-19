@@ -14,7 +14,7 @@ from rooibos.access.views import login, logout
 from rooibos.legacy.views import legacy_viewer
 
 import logging
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 admin.autodiscover()
 

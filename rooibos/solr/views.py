@@ -321,9 +321,9 @@ def run_search(user,
                selected=False,
                remove=None,
                produce_facets=False):
-
-    available_storage = list(filter_by_access(user, Storage).values_list(
-        'id', flat=True))
+    filter_by_access(user, Storage)
+    available_storage = list(filter_by_access(user, Storage)
+                             .values_list('id', flat=True))
     exclude_facets = ['identifier']
     fields = Field.objects.filter(standard__prefix='dc').exclude(
         name__in=exclude_facets)

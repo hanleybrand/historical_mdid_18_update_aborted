@@ -16,7 +16,7 @@ import logging
 import random
 import types
 
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 # TODO: Where is data_collection_children's model?
 

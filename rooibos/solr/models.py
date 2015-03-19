@@ -12,7 +12,7 @@ from django.core.cache import cache
 DELAY_INDEXING_CACHE_KEY = '_solr_delay_record_indexing'
 
 # todo: remove logging from file? (not used)
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 
 class SolrIndexUpdates(models.Model):

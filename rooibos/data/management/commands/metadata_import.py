@@ -14,7 +14,7 @@ from rooibos.data.views import get_scratch_dir  # TODO: make proper function
 import json
 import logging
 
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     help = 'Command line metadata import tool'

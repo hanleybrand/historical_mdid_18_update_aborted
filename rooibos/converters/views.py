@@ -17,7 +17,7 @@ import logging
 import tempfile
 from django.contrib import messages
 
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 def convert_ppt(owner, title, collection, storage, tempdir, filename):
     # Call Open Office via the command line in order to convert Power Point Slides to Images

@@ -8,7 +8,7 @@ from rooibos.util import guess_extension
 import logging
 import urllib2
 
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 @register_worker('shared_download_media')
 def shared_download_media(job):

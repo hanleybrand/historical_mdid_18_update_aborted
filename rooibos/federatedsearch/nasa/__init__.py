@@ -13,7 +13,7 @@ import urllib2
 import logging
 import json
 
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 
 # TODO: Is the nasa federated search fixable, or should it be removed?

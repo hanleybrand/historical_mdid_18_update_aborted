@@ -41,51 +41,59 @@
     <div id="content-wrapper">
         <div id="content">
 
-
-
-
-{% block basket %}
-{% spaceless %}
-<div id="basket-content">
-    <div id="basket-scroll-right"></div>
-    <div id="basket-scroll-left"></div>
-    <div id="basket-thumbs">{% include "ui_basket.html" %}</div>
-</div>
-{% endspaceless %}
-{% endblock %}
-
-<div style="height: 15px;"></div>
-
-
-{% if messages %}
-<div id="messages">
-    {% for message in messages %}
-    <span>{{ message }}</span><br />
-    {% endfor %}
-</div>
-{% endif %}
-
-{% block content-top %}
-{% endblock %}
-
-<div id="sidebar">
-{% block sidebar %}
-{% include "ui_related_pages.html" %}
-{% endblock %}
-</div>
-
-{% block content %}
-{% endblock %}
-
-{% block footer %}
-            <div id="footer">
-                {% if COPYRIGHT %}
-                {{ COPYRIGHT|safe }}
-                {% else %}
-                Copyright 1997-2012 James Madison University
-                {% endif %}
+            {% block basket %}
+            {% spaceless %}
+            <div id="basket-content">
+                <div id="basket-scroll-right"></div>
+                <div id="basket-scroll-left"></div>
+                <div id="basket-thumbs">{% include "ui_basket.html" %}</div>
             </div>
-{% endblock %}
+            {% endspaceless %}
+            {% endblock %}
+
+            <div style="height: 15px;"></div>
+
+            {% if messages %}
+            <div id="messages">
+                {% for message in messages %}
+                <span>{{ message }}</span><br />
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% block content-top %}
+            {% endblock %}
+
+            <div id="sidebar">
+                {% block sidebar %}
+{#                    {% include "ui_related_pages.html" %}#}
+                    {% if related_pages.pages %}
+                    <div class="facet active-facet" id="sidebar_related_pages">
+                      <div class="facet-header">Related pages</div>
+                      <div class="facet-body">
+                        <ul>
+                          {% for page in related_pages.pages %}
+                            <li><a href="{{ page.url }}">{{ page.title }}</a></li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                    </div>
+                    {% endif %}
+                {% endblock %}
+            </div>
+
+            {% block content %}
+            {% endblock %}
+
+            {% block footer %}
+                <div id="footer">
+                    {% if COPYRIGHT %}
+                        {{ COPYRIGHT|safe }}
+                    {% else %}
+                        Copyright 1997-2012 James Madison University
+                    {% endif %}
+                </div>
+            {% endblock %}
 
         </div>
     </div>
@@ -93,10 +101,8 @@
 
 <div id="preview-dialog" style="display: none;" class="ui-corner-all"></div>
 
-
-
 {% block header %}
-{% spaceless %}
+    {% spaceless %}
     <div id="topmenu">
         <ul>
             {% if user.is_authenticated %}
@@ -177,7 +183,7 @@
             </div>
         </div>
     </div>
-{% endspaceless %}
+    {% endspaceless %}
 {% endblock %}
 
 <!--

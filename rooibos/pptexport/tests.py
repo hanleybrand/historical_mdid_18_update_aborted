@@ -11,7 +11,7 @@ import logging
 
 from functions import PowerPointGenerator
 
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 class PowerpointTestCase(unittest.TestCase):
 

@@ -1,12 +1,15 @@
+import logging
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import AnonymousUser, User #, Group
+from django.contrib.auth.models import AnonymousUser, User  # , Group
 from django.shortcuts import _get_queryset
 from rooibos.util.caching import get_cached_value, invalidate_model_cache
 # import md5 - deprecated but also unused?
 # from hashlib import md5
 from models import AccessControl, ExtendedGroup
+
+log = logging.getLogger(__name__)
 
 
 restriction_precedences = dict()
@@ -19,7 +22,9 @@ def add_restriction_precedence(setting, func):
 
 def get_accesscontrols_for_object(model_instance):
     model_type = ContentType.objects.get_for_model(model_instance)
-    aclist = AccessControl.objects.select_related('user', 'usergroup').filter(object_id=model_instance.id, content_type__pk=model_type.id).order_by('usergroup__name', 'user__username')
+    aclist = AccessControl.objects.select_related('user', 'usergroup')\
+                          .filter(object_id=model_instance.id, content_type__pk=model_type.id)\
+                          .order_by('usergroup__name', 'user__username')
     return aclist
 
 
@@ -41,7 +46,8 @@ def get_effective_permissions_and_restrictions(user, model_instance, assume_auth
 
     def calculate():
         if not user.is_anonymous():
-            q = Q(user=user) | Q(usergroup__in=ExtendedGroup.objects.get_extra_groups(user, assume_authenticated)) | Q(usergroup__in=user.groups.all())
+            q = Q(user=user) | Q(usergroup__in=ExtendedGroup.objects.get_extra_groups(user, assume_authenticated)) | Q(
+                usergroup__in=user.groups.all())
         else:
             q = Q(usergroup__in=ExtendedGroup.objects.get_extra_groups(user)) | Q(user=None, usergroup=None)
 
@@ -55,8 +61,11 @@ def get_effective_permissions_and_restrictions(user, model_instance, assume_auth
 
         def reduce_aclist(list):
             def combine(a, b):
-                if a == False or (a == True and b == None): return a
-                else: return b
+                if a == False or (a == True and b == None):
+                    return a
+                else:
+                    return b
+
             read = write = manage = None
             restrictions = None
             for ac in list:
@@ -96,8 +105,15 @@ def check_access(user, model_instance, read=True, write=False, manage=False, fai
 
 
 def filter_by_access(user, queryset, read=True, write=False, manage=False):
+
+    log.debug('access.functions.filter_by_access: %s, %s, %s, %s, %s' % (user, queryset, read, write, manage))
+    log.debug('qset model: %s' % queryset.model)
+
     user = user or AnonymousUser()
-    queryset = _get_queryset(queryset)
+    # was bombing out on main page with Admin (or when queryset = None), fix with if
+    if queryset:
+        log.debug('qset model: %s' % queryset.model)
+        _get_queryset(queryset)
     if not (read or write or manage) or user.is_superuser:  # nothing to do
         return queryset
     model_type = ContentType.objects.get_for_model(queryset.model)
@@ -105,7 +121,8 @@ def filter_by_access(user, queryset, read=True, write=False, manage=False):
     if not user.is_anonymous():
         usergroups_q = usergroups_q | Q(usergroup__in=user.groups.all())
     user_q = Q(user__isnull=True, usergroup__isnull=True) if user.is_anonymous() else Q(user=user)
-    owner_q = Q(owner=user) if 'owner' in (f.name for f in queryset.model._meta.fields) and not user.is_anonymous() else None
+    owner_q = Q(owner=user) if 'owner' in (f.name for f in
+                                           queryset.model._meta.fields) and not user.is_anonymous() else None
 
     def build_query(**kwargs):
         (field, check) = kwargs.popitem()

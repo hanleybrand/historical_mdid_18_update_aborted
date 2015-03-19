@@ -7,7 +7,7 @@ from django.db import transaction,  close_old_connections
 
 # TODO: Figure out how to  flush_transaction
 
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 # transaction management changed in django 1.6
 # see http://www.realpython.com/blog/python/transaction-management-with-django-1-6/
@@ -24,12 +24,12 @@ def flush_transaction():
     """
     transaction.set_autocommit(False)
     try:
-        logging.info("Commiting Transaction")
+        log.debug("Commiting Transaction")
         transaction.commit()
     except Exception as e:
         # database connection probably closed, open a new one
-        logging.exception(e)
-        logging.exception("Forcing connection close")
+        log.exception(e)
+        log.exception("Forcing connection close")
         # close_connection()
         close_old_connections()
     finally:
@@ -61,9 +61,9 @@ def discover_workers():
         for app in settings.INSTALLED_APPS:
             try:
                 __import__(app + ".workers")
-                logging.debug('Imported workers for %s' % app)
+                log.debug('Imported workers for %s' % app)
             except ImportError:
-                logging.debug('No workers found for %s' % app)
+                log.debug('No workers found for %s' % app)
         workers['_discovered'] = True
 
 

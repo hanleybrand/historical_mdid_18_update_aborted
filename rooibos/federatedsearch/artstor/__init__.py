@@ -16,7 +16,7 @@ import datetime
 import socket
 import logging
 
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 class SmartRedirectHandler(urllib2.HTTPRedirectHandler):
     def http_error_301(self, req, fp, code, msg, headers):

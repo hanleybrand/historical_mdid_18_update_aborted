@@ -4,7 +4,7 @@ import logging
 from rooibos.util import json_view
 from .models import UserProfile  # , Preference
 
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 
 def load_settings(user, filter=None):

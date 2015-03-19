@@ -9,7 +9,7 @@ import csv
 from spreadsheetimport import SpreadsheetImport
 from views import _get_scratch_dir
 
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 @register_worker('csvimport')
 def csvimport(job):

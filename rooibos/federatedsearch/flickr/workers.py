@@ -13,7 +13,7 @@ import json
 # import mimetypes
 # import traceback
 
-log = logging.getLogger('rooibos')
+log = logging.getLogger(__name__)
 
 @register_worker('flickr_download_media')
 def flickr_download_media(job):
