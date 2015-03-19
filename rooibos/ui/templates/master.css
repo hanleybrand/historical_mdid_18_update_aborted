@@ -9,6 +9,7 @@
     "content_border_gradient1":     "rgb(201, 198, 188)",
     "content_border_gradient2":     "rgb(174, 171, 163)",
     "content_text":                 "black",
+    "content_color":                 "black",
     "header_background":            "{{ PRIMARY_COLOR }}",
     "headings":                     "{{ PRIMARY_COLOR }}",
     "topmenu_text":                 "white",
