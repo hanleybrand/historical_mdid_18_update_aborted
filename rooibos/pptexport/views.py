@@ -13,7 +13,7 @@ def thumbnail(request, template):
     if not os.path.isfile(filename):
         raise Http404()
     template = ZipFile(filename, mode='r')
-    return HttpResponse(content=template.read('docProps/thumbnail.jpeg'), mimetype='image/jpg')
+    return HttpResponse(content=template.read('docProps/thumbnail.jpeg'), content_type='image/jpg')
 
 
 def download(request, id, template):
@@ -29,7 +29,7 @@ def download(request, id, template):
         g.generate(template, filename)
         with open(filename, mode="rb") as f:
             response = HttpResponse(content=f.read(),
-                mimetype='application/vnd.openxmlformats-officedocument.presentationml.presentation')
+                content_type='application/vnd.openxmlformats-officedocument.presentationml.presentation')
         response['Content-Disposition'] = 'attachment; filename=%s.pptx' % presentation.name
         return response
     finally:

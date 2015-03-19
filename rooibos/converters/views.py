@@ -53,7 +53,7 @@ def convert_ppt(owner, title, collection, storage, tempdir, filename):
 
         name = 'ppt-import-%s-%s-%s.jpg' % (owner.username, presentation.name, counter + 1)
         file = open(os.path.join(tempdir, image), 'rb')
-        media = Media.objects.create(name=name, record=record, storage=storage, mimetype='image/jpeg')
+        media = Media.objects.create(name=name, record=record, storage=storage, content_type='image/jpeg')
         media.save_file(name=name, content=file)
         file.close()
 

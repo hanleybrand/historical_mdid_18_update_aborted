@@ -1,8 +1,13 @@
-from django.core.files.storage import FileSystemStorage
-from django.core.urlresolvers import reverse
-from backends.rackspace import CloudFilesStorage
+from __future__ import absolute_import
 import os
 import random
+
+from django.core.files.storage import FileSystemStorage
+from django.core.urlresolvers import reverse
+
+from rooibos.contrib.backends.rackspace import CloudFilesStorage
+from .models import Media
+
 
 class CloudFilesStorageSystem(CloudFilesStorage):
 
