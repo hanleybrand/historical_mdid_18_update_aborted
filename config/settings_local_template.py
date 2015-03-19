@@ -110,17 +110,23 @@ CL_DEBUG = True  # or False or 'Full'
 # MDID will not function correctly when Testing = True
 TESTING = False
 
-'''-### Local MDID Settings  ############################################
+"""-### Local MDID Settings  ############################################
 
+        ### Custom branding
         Settings in this section allow customization of your MDID installation
-        You can put local files in mdid_dj16-data/local_static and
+        You can put local files in MDID_ROOT/static and
         add reference them like:
-        LOGO_URL = os.path.normpath(os.path.join(DEFAULT_CUSTOM_DIR, 'logo.png'))
-        FAVICON_URL = os.path.normpath(os.path.join(DEFAULT_CUSTOM_DIR, 'favico.ico'))
+        LOGO_URL = normpath(join(DEFAULT_CUSTOM_DIR, 'logo.png'))
+        FAVICON_URL = normpath(join(DEFAULT_CUSTOM_DIR, 'favico.ico'))
+        note - you must run './manage.py collectstatic' to get the custom images to show up
 
-'''
+        ### Custom text elements
+        COPYRIGHT = the copyright statement on the lower left of the page
+        TITLE = text in the html>head>title element (what a browser reports as a page title)
 
+"""
 LOGO_URL = None
+FAVICON_URL = None
 COPYRIGHT = None
 TITLE = None
 
