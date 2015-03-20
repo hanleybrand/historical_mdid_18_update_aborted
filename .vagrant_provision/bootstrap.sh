@@ -13,15 +13,14 @@ sudo -u vagrant mkdir bootstrap_logs
 # A Vagrant provisioning shell script to setup an MDID Development VM
 ##############################################################################
 # add ppa for ffmpeg
-sudo add-apt-repository ppa:mc3man/trusty-media
-
+add-apt-repository ppa:mc3man/trusty-media
 
 # Update our apt sources
-sudo apt-get update
+apt-get update
 
 # Make sure we are starting from an up-to-date system
-sudo apt-get upgrade -y
-sudo apt-get dist-upgrade -y
+apt-get upgrade -y
+apt-get dist-upgrade -y
 
 ##############################################################################
 # Install MySQL
@@ -150,6 +149,9 @@ cp $PROVISION_DIR/.bash-completion $HOME_DIR
 cp $PROVISION_DIR/.git-prompt $HOME_DIR
 cp $PROVISION_DIR/.mdid-funcs $HOME_DIR
 cp $PROVISION_DIR/.bash-profile $HOME_DIR
+
+## make sure settings_local (if it exists) is not copied over
+rm
 
 # start up the services
 service mdid3-solr start
