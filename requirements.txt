@@ -12,7 +12,7 @@ reportlab
 Pillow
 werkzeug
 flup
-django-grappelli
+django-grappelli==2.5.6≤
 https://pyodbc.googlecode.com/files/pyodbc-3.0.7.zip
 pika
 pycrypto
