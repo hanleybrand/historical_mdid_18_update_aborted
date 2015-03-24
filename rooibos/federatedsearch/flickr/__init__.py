@@ -5,7 +5,7 @@ from rooibos.access.models import AccessControl, ExtendedGroup, AUTHENTICATED_GR
 from rooibos.data.models import Collection, Record, standardfield, CollectionItem, FieldValue  # , Field, FieldSet
 from rooibos.federatedsearch.models import FederatedSearch
 # from rooibos.solr import SolrIndex
-from rooibos.storage import Storage  # , Media
+from rooibos.storage.models import Storage, Media
 from rooibos.workers.models import JobInfo
 import json
 import flickrapi
