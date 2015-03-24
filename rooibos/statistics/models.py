@@ -17,6 +17,8 @@ class Activity(models.Model):
 
     class Meta:
         db_table = 'statistics_activity'
+        ordering = ['-date', '-time']
+        verbose_name_plural = "activities"
 
     def __unicode__(self):
         return "Activity (%s %s) %s" % (self.date, self.time, self.event)

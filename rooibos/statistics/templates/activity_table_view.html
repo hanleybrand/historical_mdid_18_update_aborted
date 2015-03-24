@@ -1,0 +1,41 @@
+{% extends 'master_root.html' %}
+{% load staticfiles %}
+{% load render_table from django_tables2 %}
+
+{% block stylesheets %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'django_tables2/themes/paleblue/css/screen.css' %}" />
+{% endblock %}
+
+{% block sidebar %}
+    {% if event_types %}
+    <div class="facet active-facet" id="sidebar_statistics_filter_event">
+        <div class="facet-header">Filter by Event</div>
+        <div class="facet-body">
+            <ul>
+                {% for event in event_types %}
+                    <li><a href="events/{{ event }}">{{ event }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% else %}
+    <div class="facet active-facet">
+        <div class="facet-header">Activity List</div>
+        <div class="facet-body">
+            <h3><a href="{% url 'stats:full_table' %}">All Activity</a></h3>
+        </div>
+    </div>
+    {% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+    <div style="margin-top: 2em">
+        <h2>Activity Table</h2>
+    </div>
+
+    {% render_table table %}
+
+{% endblock %}

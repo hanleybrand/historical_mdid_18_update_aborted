@@ -52,7 +52,7 @@ urls = [
     url(r'^login/$', login, {'HELP': 'logging-in', 'SSL': True}, name='login'),
     url(r'^logout/$', logout, {'HELP': 'logging-out', 'next_page': settings.LOGOUT_URL}, name='logout'),
     #    url(r'^admin/(.*)', admin.site.root, {'SSL': True}, name='admin'),
-    (r'^grappelli/', include('grappelli.urls')), # grappelli URLS
+    (r'^grappelli/', include('grappelli.urls')),  # grappelli URLS
     (r'^admin/', include(admin.site.urls)),
 
     # Legacy URL for presentation viewer in earlier version
@@ -81,7 +81,7 @@ urls = [
     (r'^pdfviewer/', include('rooibos.pdfviewer.urls')),
     (r'^pptexport/', include('rooibos.pptexport.urls')),
     (r'^audiotextsync/', include('rooibos.audiotextsync.urls')),
-
+    (r'^stats/', include('rooibos.statistics.urls', namespace='stats')),
     url(r'^favicon.ico$', serve, {'document_root': settings.STATIC_DIR, 'path': 'images/favicon.ico'}),
     url(r'^robots.txt$', serve, {'document_root': settings.STATIC_DIR, 'path': 'robots.txt'}),
     url(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_DIR}, name='static'),

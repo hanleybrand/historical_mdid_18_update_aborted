@@ -1,0 +1,44 @@
+{% extends 'master_root.html' %}
+
+{% load render_table from django_tables2 %}
+
+{% block content %}
+    <div style="border-top:15px">
+        <h2>Activity</h2>
+    </div>
+    <div style="margin-top: 2em">
+        <h2>Activity Table</h2>
+    </div>
+
+    {% render_table table %}
+
+
+    {#            {% if 'is_paginated' %}#}
+    {#        <div class="pagination">#}
+    {#            <span class="step-links">#}
+    {#                {% if page_obj.has_previous %}#}
+    {#                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>#}
+    {#                {% endif %}#}
+    {##}
+    {#                <span class="current">#}
+    {#                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.#}
+    {#                </span>#}
+    {##}
+    {#                {% if page_obj.has_next %}#}
+    {#                    <a href="?page={{ page_obj.next_page_number }}">next</a>#}
+    {#                {% endif %}#}
+    {#            </span>#}
+    {#        </div>#}
+    {#        {% endif %}#}
+
+    {#    <table>#}
+    {#        {% for activity in object_list %}#}
+    {#            <tr>#}
+    {#            <td>{{ activity.date|date }}</td>#}
+    {#            <td>{{ activity.time }}</td>#}
+    {#            <td>{{ activity.event }}</td>#}
+    {#            <td>{{ activity.data }}</td>#}
+    {#            </tr>#}
+    {#        {% endfor %}#}
+    {#    </table>#}
+{% endblock %}

@@ -1,9 +1,10 @@
 from django.db.models import Count
-from django.db import connection
+# from django.db import connection
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from models import AccumulatedActivity, Activity
 from datetime import datetime, date, timedelta
+
 
 def accumulate(event=None, from_date=None, until_date=None, object=None):
     today = datetime.now().date()
@@ -18,7 +19,7 @@ def accumulate(event=None, from_date=None, until_date=None, object=None):
         content_type = ContentType.objects.get_for_model(object)
         query = query.filter(content_type=content_type, object_id=object.id)
     rows = []
-    for data in query.values('content_type','object_id','date','event').annotate(count=Count('id')):
+    for data in query.values('content_type', 'object_id', 'date', 'event').annotate(count=Count('id')):
         # query.values() returns dates as strings for some databases
         if type(data['date']) != date:
             data['date'] = datetime.strptime(data['date'], '%Y-%m-%d').date()
@@ -37,7 +38,6 @@ def accumulate(event=None, from_date=None, until_date=None, object=None):
 
 
 def get_history(event, from_date, until_date=None, object=None, acc=False):
-
     if acc:
         rows = accumulate(event, from_date, until_date, object)
     else:
@@ -53,7 +53,7 @@ def get_history(event, from_date, until_date=None, object=None, acc=False):
         sum[row.date] = sum.get(row.date, 0) + row.count
 
     if not until_date:
-        until_date=datetime.now().date() + timedelta(1)
+        until_date = datetime.now().date() + timedelta(1)
 
     result = []
     date = from_date
@@ -64,8 +64,8 @@ def get_history(event, from_date, until_date=None, object=None, acc=False):
     return result
 
 
-
 registered_statistics = []
+
 
 def discover_statistics():
     if not registered_statistics:
@@ -75,11 +75,29 @@ def discover_statistics():
             except ImportError:
                 pass
 
+
 def get_registered_statistics():
     discover_statistics()
     return registered_statistics
+
 
 def register_statistics(func):
     registered_statistics.append(func)
     return func
 
+
+def fake_distinct(dj_model, field_name):
+    """
+    Perform a fake distinct query on the value_list of a model's objects
+    :param dj_model: A model imported from your django app, e.g.
+                     # from myapp.models import ActivityLog
+    :param field_name: The name of a field passed as a string
+    :return: a list of the unique (distinct) values
+    example:  import fake_distinct_for_model_field_values as fake_dist
+              fake_dist(ActivityLog, 'event_types')
+          >>> [u'login', u'media-download', u'media-thumbnail', u'media-download-image']
+    """
+    output = set()
+    for x in dj_model.objects.values_list(field_name):
+        output.add(x.__getitem__(0))
+    return list(output)

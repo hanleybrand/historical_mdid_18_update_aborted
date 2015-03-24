@@ -1,0 +1,56 @@
+{% extends 'master_root.html' %}
+
+{% load staticfiles %}
+{% load render_table from django_tables2 %}
+
+{% block stylesheets %}
+    {{ block.super }}
+        <link rel="stylesheet" href="{% static 'django_tables2/themes/paleblue/css/screen.css' %}" />
+{% endblock %}
+
+{% block content %}
+    <div style="margin-top:2em;">
+        <h2>Activity</h2>
+
+        {% if 'is_paginated' %}
+            <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+            </div>
+        {% endif %}
+
+    </div>
+    <div class="stats_table">
+ {% render_table table %}
+
+{#        <table>#}
+{#            <tr>#}
+{#                <td style="min-width: 6em;">Date</td>#}
+{#                <td style="min-width: 4em;">Time</td>#}
+{#                <td style="min-width: 4em;">User</td>#}
+{#                <td style="min-width: 4em;">Event</td>#}
+{#                <td>Data</td>#}
+{#            </tr>#}
+{#            {% for activity in object_list %}#}
+{#                <tr>#}
+{#                    <td>{{ activity.date|date }}</td>#}
+{#                    <td>{{ activity.time }}</td>#}
+{#                    <td>{{ activity.user_field }}</td>#}
+{#                    <td>{{ activity.event }}</td>#}
+{#                    <td>{{ activity.data }}</td>#}
+{#                </tr>#}
+{#            {% endfor %}#}
+{#        </table>#}
+    </div>
+{% endblock %}

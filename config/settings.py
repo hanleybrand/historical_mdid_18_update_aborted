@@ -140,23 +140,30 @@ INSTALLED_APPS = (
     'rooibos.pdfviewer',
     'rooibos.pptexport',
     'rooibos.audiotextsync',
+    'django_tables2',
     # TODO: clear rooibos.contrib of apps that can be installed as a normal dependency via requirements.txt
     'rooibos.contrib.google_analytics',
     'rooibos.contrib.pagination',
     'rooibos.contrib.impersonate',
     'compressor',
+    # 'rooibos.contrib.south',
     'debug_toolbar',
 )
 
-TEMPLATE_LOADERS = (
-    ('django.template.loaders.cached.Loader', (
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-    )),
-)
+# this may need to be in settings_local - cached.loader should only be used in production
+# TEMPLATE_LOADERS = (
+#
+#     ('django.template.loaders.cached.Loader',
+#      (
+#          'django.template.loaders.filesystem.Loader',
+#          'django.template.loaders.app_directories.Loader',
+#      )
+#     ),
+# )
 
+# similarly...
 TEMPLATE_CONTEXT_PROCESSORS = (
-    # "django.core.context_processors.",
+    #"django.core.context_processors",
     "django.core.context_processors.debug",
     # "django.core.context_processors.i18n",
     "django.core.context_processors.media",
@@ -244,7 +251,7 @@ USE_TZ = True
 # Methods to be called after a user is successfully authenticated
 # using an external backend (LDAP, IMAP, POP).
 # Must take two parameters:
-#   user object
+# user object
 #   dict of string->list/tuple pairs (may be None or empty)
 # Returns:
 #   True: login continues
