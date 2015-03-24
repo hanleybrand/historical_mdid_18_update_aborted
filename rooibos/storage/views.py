@@ -8,7 +8,7 @@ import json
 
 from django import forms
 from django.conf import settings
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login  # , authenticate
 from django.contrib.auth.decorators import login_required
 # from django.contrib.auth.models import Group
 from django.core.urlresolvers import resolve, reverse
@@ -37,7 +37,7 @@ from .models import Media, Storage, TrustedSubnet, ProxyUrl
 
 
 # def expire_header(seconds=3600):
-#    return (datetime.utcnow() + timedelta(0, seconds)).strftime('%a, %d %b %Y %H:%M:%S GMT')
+# return (datetime.utcnow() + timedelta(0, seconds)).strftime('%a, %d %b %Y %H:%M:%S GMT')
 
 
 def add_content_length(func):
@@ -194,7 +194,8 @@ def media_delete(request, mediaid, medianame):
     else:
         return HttpResponseNotAllowed(['POST'])
 
-# TODO: Passing mimetype to HttpResponse is deprecated and removed in Django 1.7 as per
+
+# doneTODO: Passing mimetype to HttpResponse is deprecated and removed in Django 1.7 as per
 # https://github.com/django/django/commit/8eadbc5a03d06f5bfedfa3fad35ad0801d2ab6ff
 @add_content_length
 @cache_control(private=True, max_age=3600)
@@ -331,7 +332,8 @@ def import_files(request):
 
     class UploadFileForm(forms.Form):
         collection = forms.ChoiceField(
-            choices=((c.id, '%s%s' % ('*' if c.id in writable_collection_ids else '', c.title)) for c in
+            choices=((c.id,
+                      '%s%s' % ('*' if c.id in writable_collection_ids else '', c.title)) for c in
                      sorted(available_collections, key=lambda c: c.title)))
         storage = forms.ChoiceField(choices=storage_choices)
         file = forms.FileField()
@@ -351,7 +353,6 @@ def import_files(request):
                     self._errors['collection'] = ErrorList(["Can only add personal records to selected collection"])
                     del cleaned_data['collection']
             return cleaned_data
-
 
     if request.method == 'POST':
 
