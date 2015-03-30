@@ -128,6 +128,10 @@ WWW_AUTHENTICATION_REALM = "Please log in to access media from MDID at Your Univ
 CUSTOM_TRACKER_HTML = ""
 SHOW_FRONTPAGE_LOGIN = 'yes'
 
+# Set EMBED_MASTER_CSS to True to have your styles inline in the master-root.html template
+# if True, a separate file will be downloaded from $ROOT_URL/ui/css/master/
+EMBED_MASTER_CSS = False
+
 ADMINS = (
     #    ('Your name', 'your@email.example'),
 )
@@ -160,7 +164,8 @@ SSL_PORT = None  # ':443'
 PRIMARY_COLOR = "rgb(152, 189, 198)"
 SECONDARY_COLOR = "rgb(118, 147, 154)"
 
-EXPOSE_TO_CONTEXT = ('STATIC_DIR', 'PRIMARY_COLOR', 'SECONDARY_COLOR', 'CUSTOM_TRACKER_HTML', 'ADMINS')
+EXPOSE_TO_CONTEXT = ('STATIC_DIR', 'PRIMARY_COLOR', 'SECONDARY_COLOR',
+                     'EMBED_MASTER_CSS', 'CUSTOM_TRACKER_HTML', 'ADMINS')
 
 HELP_URL = 'http://sites.jmu.edu/mdidhelp/'
 

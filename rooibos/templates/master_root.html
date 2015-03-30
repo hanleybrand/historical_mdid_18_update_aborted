@@ -25,8 +25,17 @@
     <link href="{% static 'css/typography.css' %}" rel="stylesheet" type="text/css" media="screen">
     <link href="{% static 'jquery/jquery.autocomplete.css' %}" rel="stylesheet" type="text/css" media="screen">
     <link href="{% static 'jquery/jquery-ui-1.8.11.custom.css' %}" rel="stylesheet" type="text/css" media="screen">
-    {% include "master.css" %}
+    {% if EMBED_MASTER_CSS  %}
+        {% include "master.css" %}
+    {% endif %}
 {% endcompress %}
+
+    {% if not EMBED_MASTER_CSS %}
+        <link href="{% url 'ui-css' 'master' %}" rel="stylesheet" type="text/css" media="screen">
+    {% endif %}
+
+
+
 <!--[if IE]>
 {% compress css %}
     {% include "master-ie.css" %}

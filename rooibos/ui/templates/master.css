@@ -44,7 +44,10 @@
     "drop_shadow":                  "grey"
 }
 {% endvar %}
-{% with openstyle="<style type='text/css'>" %} {{ openstyle }} {% endwith %}
+
+{% if EMBED_MASTER_CSS  %}
+    {% with openstyle="<style type='text/css'>" %} {{ openstyle }} {% endwith %}
+{% endif %}
 
 #branding {
 
@@ -1347,5 +1350,6 @@ td.annotation-col textarea {
 .wide-table {
     font-size: 90%;
 }
-
-</style>
+{% if EMBED_MASTER_CSS  %}
+    {% with closestyle="</style>" %} {{ openstyle }} {% endwith %}
+{% endif %}
