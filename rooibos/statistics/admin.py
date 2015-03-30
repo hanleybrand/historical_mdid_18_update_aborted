@@ -4,6 +4,7 @@ from django.contrib import admin
 
 from .models import Activity
 
+
 class ActivityAdmin(admin.ModelAdmin):
     list_display = ('date', 'time', 'user_field', 'event', 'data_field')
     list_filter = ('event', 'user_field')
