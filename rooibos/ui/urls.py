@@ -19,6 +19,7 @@ reverse_lazy = lazy(reverse, str)
 urlpatterns = patterns('',
     # example - to req master.css the url is e.g. http://127.0.0.1:8000/ui/css/master
     url(r'^css/(?P<stylesheet>[-\w]+)/$', css, name='ui-css'),
+    url(r'^js/(?P<js_file>[-\w]+).js$', js, name='ui-js'),
     url(r'^api/select-record/', select_record, name='ui-api-select-record'),
     url(r'^tag/(?P<type>\d+)/(?P<id>\d+)/', add_tags, name='ui-add-tags'),
     url(r'^tag/remove/(?P<type>\d+)/(?P<id>\d+)/', remove_tag, name='ui-remove-tag'),

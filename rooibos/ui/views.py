@@ -35,6 +35,16 @@ def css(request, stylesheet):
                               context_instance=RequestContext(request),
                               content_type='text/css')
 
+
+@cache_control(max_age=24 * 3600)
+def js(request, js_file):
+
+    return render_to_response(js_file + '.js',
+                              {},
+                              context_instance=RequestContext(request),
+                              content_type='text/javascript')
+
+
 @csrf_protect
 def main(request):
 
