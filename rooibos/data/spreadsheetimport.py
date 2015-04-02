@@ -1,11 +1,16 @@
+import csv
+import logging
+
 from django.db.models import Q, Count
+
 from models import Field, FieldValue, Record, CollectionItem, get_system_field
 from rooibos.solr.models import delay_record_indexing, resume_record_indexing
-import csv
+
+
+log = logging.getLogger(__name__)
 
 
 class SpreadsheetImport(object):
-
     events = [
         'on_added', 'on_added_skipped', 'on_updated', 'on_updated_skipped',
         'on_duplicate_in_file_skipped', 'on_no_id_skipped', 'on_owner_skipped',
@@ -24,7 +29,7 @@ class SpreadsheetImport(object):
         self._identifier_ids = list(
             self._dcidentifier.get_equivalent_fields().values_list(
                 'id', flat=True)
-            ) + [self._dcidentifier.id]
+        ) + [self._dcidentifier.id]
         self.csv_file = csv_file
         self.separator = separator
         self.analyzed = False
@@ -63,10 +68,10 @@ class SpreadsheetImport(object):
         try:
             value = unicode(value, 'utf8')
         except UnicodeDecodeError:
-            #print "split error"
+            # print "split error"
             self.decode_error = True
             value = ''
-        if (self.separator and split):
+        if self.separator and split:
             return map(lambda s: s.strip(), value.split(self.separator))
         else:
             return [value.strip()]
@@ -91,7 +96,7 @@ class SpreadsheetImport(object):
     def _guess_mapping(self, field):
         scores = {}
         for standard_field in self._fields:
-            if (field == standard_field.name or field == standard_field.label):
+            if field == standard_field.name or field == standard_field.label:
                 # exact match with field name or label
                 if standard_field.standard:
                     if standard_field.standard.prefix == 'dc':
@@ -143,8 +148,7 @@ class SpreadsheetImport(object):
     def find_duplicate_identifiers(self):
         query = (FieldValue.objects.filter(
             record__collection__in=self.collections,
-            field__in=self._identifier_ids)
-            .values('value').annotate(c=Count('id')).exclude(c=1))
+            field__in=self._identifier_ids).values('value').annotate(c=Count('id')).exclude(c=1))
         identifiers = query.values_list('value', flat=True)
         return identifiers
 
@@ -210,11 +214,11 @@ class SpreadsheetImport(object):
                         record = Record.objects.create(owner=self.owner)
                         apply_values(record, row, is_new=True)
                         for collection in (
-                                target_collections or self.collections):
+                                    target_collections or self.collections):
                             CollectionItem.objects.get_or_create(
                                 record=record,
                                 collection=collection
-                                )
+                            )
                     self.added += 1
                     for func in self.on_added:
                         func(ids)
@@ -232,7 +236,7 @@ class SpreadsheetImport(object):
                             record = fvs[0].record
                             apply_values(record, row)
                             for collection in (
-                                    target_collections or self.collections):
+                                        target_collections or self.collections):
                                 CollectionItem.objects.get_or_create(
                                     record=record,
                                     collection=collection)
@@ -278,9 +282,12 @@ class SpreadsheetImport(object):
 
                 current_id = row.get(identifier_field)
 
+                log.debug('processing row %s - current_id: %s, last_id==%s' %
+                          (row or None, current_id or None, last_id or None))
                 if not current_id or (last_id == current_id):
                     # combine current and last rows
                     for key, values in row.iteritems():
+                        #log.debug('spreadsheet import: %s, %s'(key, value))
                         v = last_row.setdefault(key, [])
                         for value in (values or []):
                             if not value in v:

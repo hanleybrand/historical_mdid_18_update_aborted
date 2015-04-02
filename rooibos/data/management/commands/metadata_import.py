@@ -80,6 +80,8 @@ class Command(BaseCommand):
         full_path = os.path.join(get_scratch_dir(), 'cmdline=' + filename)
         shutil.copy(data_file, full_path)
 
+        log.debug('job created - csvimport, file= %s\nlabels= %s' % (full_path, labels))
+
         JobInfo.objects.create(
             owner=User.objects.get(username='admin'),
             func='csvimport',

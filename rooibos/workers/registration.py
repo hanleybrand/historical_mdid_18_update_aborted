@@ -116,7 +116,7 @@ def run_worker(worker, arg, **kwargs):
     queue_name = 'rooibos-%s-jobs' % (
         getattr(settings, 'INSTANCE_NAME', 'default'))
     channel.queue_declare(queue=queue_name, durable=True)
-    log.debug('Sending message to worker process')
+    log.debug('Sending message to worker process: %s' % queue_name)
     try:
         channel.basic_publish(
             exchange='',
