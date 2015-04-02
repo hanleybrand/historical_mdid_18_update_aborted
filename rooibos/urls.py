@@ -1,6 +1,5 @@
-#from django.conf.urls import *
-import os.path
-from django.conf.urls import patterns, url, include, handler500, handler404
+# from django.conf.urls import *
+from django.conf.urls import patterns, url, include, handler404
 from django.contrib import admin
 from django.conf import settings
 #from django.views.generic.simple import direct_to_template
@@ -14,18 +13,10 @@ from rooibos.access.views import login, logout
 from rooibos.legacy.views import legacy_viewer
 
 import logging
+
 log = logging.getLogger('rooibos')
 
 admin.autodiscover()
-
-# TODO: should apps_prefix be set in settings_local?
-# urls were not loading for apps
-apps_prefix = 'rooibos.apps.'
-apps_pre_slice = apps_prefix.__len__()
-
-apps = filter(lambda a: a.startswith(apps_prefix), settings.INSTALLED_APPS)
-apps_showcases = list(s[apps_pre_slice:].replace('.', '-') + '-showcase.html' for s in apps)
-
 
 # Cache static files
 serve = cache_control(max_age=365 * 24 * 3600)(serve)
@@ -52,7 +43,7 @@ urls = [
     url(r'^login/$', login, {'HELP': 'logging-in', 'SSL': True}, name='login'),
     url(r'^logout/$', logout, {'HELP': 'logging-out', 'next_page': settings.LOGOUT_URL}, name='logout'),
     #    url(r'^admin/(.*)', admin.site.root, {'SSL': True}, name='admin'),
-    (r'^grappelli/', include('grappelli.urls')), # grappelli URLS
+    (r'^grappelli/', include('grappelli.urls')),  # grappelli URLS
     (r'^admin/', include(admin.site.urls)),
 
     # Legacy URL for presentation viewer in earlier version
@@ -89,17 +80,79 @@ urls = [
     url(r'^exception/$', raise_exception),
 ]
 
+"""
+    MDID plugin apps (i.e. apps in the rooibos/apps dir)
+    added to settings.INSTALLED_APPS as 'rooibos.apps.{appname} will have their urls
+    automatically added to MDID
+
+
+
+"""
+# TODO: should apps_prefix be set in settings_local?
+# urls were not loading for apps
+apps_prefix = 'rooibos.apps.'
+apps_pre_slice = apps_prefix.__len__()
+
+apps = filter(lambda a: a.startswith(apps_prefix), settings.INSTALLED_APPS)
+
+if settings.CLIP_APP_NAMES:
+    # TODO update for a tuple rather than a string - currently only the first will be processed
+    clip = settings.CLIP_APP_STRINGS[0]
+else:
+    clip = ''
+
+app_list = [app[len(clip):] if app[:len(clip)] == clip else app for app in [app[apps_pre_slice:] for app in apps]]
+# TODO: is it a correct assumpion that showcases would want to clip names as well?
+apps_showcases = list(s[apps_pre_slice:].replace('.', '-') + '-showcase.html' for s in app_list)
+
+log.debug('processing rooibos.apps: %s ' % app_list)
+
 for app in apps:
     #if not '.' in app[5:]:
     if not '.' in app[apps_pre_slice:]:
         # list dynamically appended app urls in  log
-        log.debug('rooibos.urls - attempting to append urls for %s as ^/%s'
-                  ' (app added via config.settings_local.INSTALLED_APPS)' % (app, app[apps_pre_slice:]))
+        sliced_app = app[apps_pre_slice:]
+        app_name = sliced_app[len(clip):] if sliced_app[:len(clip)] == clip else sliced_app
+        log.debug('rooibos.urls - appending urls for %s as ^/%s'
+                  ' (app added via config.settings_local.INSTALLED_APPS)' % (app, app_name))
         try:
-            urls.append(url(r'^%s/' % app[apps_pre_slice:], include('%s.urls' % app)))
+            urls.append(url(r'^%s/' % app_name, include('%s.urls' % app)))
         except Exception as e:
             log.debug('rooibos.urls Error loading  %s.urls -not loaded' % app)
+            log.debug(e)
             continue
 
 urlpatterns = patterns('', *urls)
 
+
+# # CLIP_APP_STRINGS = ('mdid-', )
+# clip = 'mdid-'
+#
+# if settings.CLIP_APP_NAMES:
+#     app_url_list = [app[len(clip):]
+#                     if app[:len(clip)] == clip else app
+#                     for app in [app[apps_pre_slice:] for app in apps]]
+#
+#     log.debug('app_name_list: %s ' % app_url_list)
+# else:
+#     app_url_list = [app for app in apps]
+#
+# for app in apps:
+#     #log.debug('app = %s; clip: %s,  app[:len(clip)]: %s, app: %s' % (app, clip, app[:len(clip)], app[len(clip):]))
+#
+#     #if not '.' in app[5:]:
+#     if not '.' in app[apps_pre_slice:]:
+#         sliced_app = app[apps_pre_slice:]
+#         # list dynamically appended app urls in  log
+#         log.debug('rooibos.urls - attempting to append urls for %s as ^/%s'
+#                   ' (app added via config.settings_local.INSTALLED_APPS)' % (app, sliced_app))
+#         try:
+#             if settings.CLIP_APP_NAMES and sliced_app[:len(clip)] == clip:
+#                 clipped_name = sliced_app[len(clip):]
+#                 log.debug('app %s, app name: %s, clipped name: %s' % (app, sliced_app, clipped_name))
+#                 urls.append(url(r'^%s/' % clipped_name, include('%s.urls' % sliced_app)))
+#             else:
+#                 urls.append(url(r'^%s/' % app[apps_pre_slice:], include('%s.urls' % app)))
+#         except Exception as e:
+#             log.debug('rooibos.urls Error loading  %s.urls -not loaded' % app)
+#             continue
