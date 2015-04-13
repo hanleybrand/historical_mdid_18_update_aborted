@@ -11,6 +11,8 @@ from subprocess import Popen, PIPE
 from rooibos.data.models import FieldValue, get_system_field
 from PIL import Image
 
+log = logging.getLogger(__name__)
+
 def _seconds_to_timestamp(seconds):
     hours = seconds / 3600
     minutes = seconds / 60
@@ -80,10 +82,10 @@ def identify(file):
         match = re.search(r'Video: .+ (\d+)x(\d+)', errors)
         width = int(match.group(1)) if match else None
         height = int(match.group(2)) if match else None
-        logging.debug('Identified %s: %dx%d %d' % (file, width or 0, height or 0, bitrate or 0))
+        log.debug('Identified %s: %dx%d %d' % (file, width or 0, height or 0, bitrate or 0))
         return width, height, bitrate
     except Exception, e:
-        logging.debug('Error identifying %s: %s' % (file, e))
+        log.debug('Error identifying %s: %s' % (file, e))
         return None, None, None
 
 
@@ -145,7 +147,7 @@ def render_pdf(pdffile):
 
 
 def get_image(media):
-    logging.debug('get_image: %s (%s)' % (media.get_absolute_file_path(), media.mimetype))
+    log.debug('get_image: %s (%s)' % (media.get_absolute_file_path(), media.mimetype))
     image = None
     if media.mimetype.startswith('image/'):
         image = media.load_file()
@@ -182,6 +184,7 @@ def overlay_image_with_mimetype_icon(image, mimetype):
         return image
 
     if not isinstance(image, Image.Image):
+        # TODO: what is img_object? (besides something throwing an error)
         original_image = image if img_object else Image.open(image)
     else:
         original_image = image
