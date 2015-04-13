@@ -4,7 +4,7 @@ python-dateutil
 #MySQL-python>=1.2.4
 PyMySQL
 Django==1.6.5
-python-ldap
+#python-ldap
 python-memcached
 # PIL=>1.1.7
 flickrapi>=2.0
@@ -12,7 +12,7 @@ reportlab
 Pillow
 werkzeug
 flup
-django-grappelli==2.5.6≤
+django-grappelli==2.5.6
 https://pyodbc.googlecode.com/files/pyodbc-3.0.7.zip
 pika
 pycrypto
