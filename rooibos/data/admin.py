@@ -58,6 +58,19 @@ class VocabularyTermAdmin(admin.ModelAdmin):
     list_display = ('term', 'vocabulary', )
     list_display_links = ('vocabulary', )
 
+class FieldValueAdmin(admin.ModelAdmin):
+    list_display = ('resolved_label', 'field', 'value')
+    list_filter = ('field', )
+    search_fields = ['value']
+    ordering = ('order',)
+    change_list_template = "admin/change_list_filter_sidebar.html"
+
+    def resolved_label(self, obj):
+        return obj.label or obj.field.label
+
+    # def eq_fields(self, obj):
+    #     return ", ".join([f.full_name for f in obj.get_equivalent_fields()])
+
 
 admin.site.register(Collection, CollectionAdmin)
 admin.site.register(MetadataStandard, MetadataStandardAdmin)
@@ -66,3 +79,4 @@ admin.site.register(FieldSet, FieldSetAdmin)
 admin.site.register(Record, RecordAdmin)
 admin.site.register(Vocabulary, VocabularyAdmin)
 admin.site.register(VocabularyTerm, VocabularyTermAdmin)
+admin.site.register(FieldValue, FieldValueAdmin)
