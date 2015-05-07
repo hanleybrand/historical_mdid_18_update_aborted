@@ -1,6 +1,11 @@
-from __future__ import with_statement
+from __future__ import with_statement, absolute_import
+from six.moves import cStringIO
 from PIL import Image
-import StringIO
+try:
+    from io import StringIO
+except ImportError:
+    from cStringIO import StringIO
+#import StringIO
 import logging
 import mimetypes
 import os
@@ -8,9 +13,9 @@ import re
 from django.conf import settings
 from django.db.models import Q
 from django.contrib.auth.models import User
-from rooibos.access import filter_by_access, get_effective_permissions_and_restrictions
+from rooibos.access.functions import filter_by_access, get_effective_permissions_and_restrictions
 from rooibos.data.models import Collection, Record, standardfield, standardfield_ids
-from models import Media, Storage
+from .models import Media, Storage
 
 
 
