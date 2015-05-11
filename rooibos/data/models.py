@@ -1,4 +1,12 @@
 from datetime import datetime
+# for python 3  https://docs.python.org/2/library/functools.html#functools.reduce
+from functools import reduce
+import logging
+import random
+import types
+import sys
+
+
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
@@ -8,14 +16,13 @@ from django.db import models, transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
-from rooibos.access import filter_by_access, check_access
+
+from rooibos.access.functions import filter_by_access, check_access
 from rooibos.access.models import AccessControl
 from rooibos.util import unique_slug
 from rooibos.util.caching import get_cached_value, cache_get, cache_get_many, cache_set, cache_set_many
-import logging
-import random
-import types
 
+PY2 = sys.version_info[0] == 2
 log = logging.getLogger(__name__)
 
 
@@ -129,7 +136,12 @@ class Record(models.Model):
                 ['record-access-%d-%d' % (user.id or 0, id) for id in ids],
                 model_dependencies=[Record, Collection, AccessControl]
             )
-            accessible_record_ids = map(lambda (k, v): (int(k.rsplit('-', 1)[1]), v), accessible_records.iteritems())
+            # https://www.python.org/dev/peps/pep-3113/
+            # python 3 removes 'tuple unpacking' but this is actually k,v in accessible_records.iteritems(), right?
+            if PY2:
+                accessible_record_ids = map(lambda (k, v): (int(k.rsplit('-', 1)[1]), v), accessible_records.iteritems())
+            else:
+                accessible_record_ids = map(lambda k, v: (int(k.rsplit('-', 1)[1]), v), accessible_records.iteritems())
 
             allowed_ids = [k for k, v in accessible_record_ids if v == 't']
             denied_ids = [k for k, v in accessible_record_ids if v == 'f']
@@ -379,7 +391,8 @@ class Field(models.Model):
         db_table = 'data_field'
 
 
-@transaction.commit_on_success
+#@transaction.commit_on_success
+@transaction.atomic
 def get_system_field():
     field, created = Field.objects.get_or_create(name='system-value',
                                                  defaults=dict(label='System Value'))
@@ -481,7 +494,10 @@ class DisplayFieldValue(FieldValue):
         for ob in order_by:
             s = getattr(self, ob)
             o = getattr(other, ob)
-            if s <> o: return cmp(s, o)
+            # cmp() is removed in python 3
+            #if s != o: return cmp(s, o)
+            if s != o: return s.__cmp__(o)
+
         return 0
 
     @staticmethod

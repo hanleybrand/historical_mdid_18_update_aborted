@@ -1,11 +1,6 @@
 from __future__ import with_statement, absolute_import
-from six.moves import cStringIO
 from PIL import Image
-try:
-    from io import StringIO
-except ImportError:
-    from cStringIO import StringIO
-#import StringIO
+import StringIO
 import logging
 import mimetypes
 import os
@@ -20,7 +15,6 @@ from .models import Media, Storage
 
 
 mimetypes.init([os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'mime.types'))])
-
 
 # sort images by area
 def _imgsizecmp(x, y):
@@ -132,7 +126,7 @@ def get_image_for_record(record, user=None, width=100000, height=100000, passwor
             ImageFile.MAXBLOCK = 16 * 1024 * 1024
             # Import here to avoid circular reference
             # TODO: need to move all these functions out of __init__.py
-            from multimedia import get_image, overlay_image_with_mimetype_icon
+            from .multimedia import get_image, overlay_image_with_mimetype_icon
             try:
                 file = get_image(master)
                 image = Image.open(file)

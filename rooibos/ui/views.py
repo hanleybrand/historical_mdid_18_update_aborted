@@ -17,7 +17,7 @@ from django.contrib import messages
 from rooibos.util import json_view
 from rooibos.data.models import Record, Collection
 from rooibos.storage.models import Storage
-from rooibos.access import filter_by_access
+from rooibos.access.functions import filter_by_access
 from rooibos.contrib.tagging.models import Tag
 from rooibos.contrib.tagging.utils import parse_tag_input
 from rooibos.util.models import OwnedWrapper
@@ -97,7 +97,8 @@ def select_record(request):
 
 @login_required
 def add_tags(request, type, id):
-    if request.method <> 'POST':
+    #if request.method <> 'POST':
+    if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
     tags = request.POST.get('tags')
     if '"' in tags:

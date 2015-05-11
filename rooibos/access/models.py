@@ -1,9 +1,12 @@
+import sys
 from django.db import models
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User, Group
 from rooibos.contrib.ipaddr import IP
+
+PY2 = sys.version_info[0] == 2
 
 
 class AccessControl(models.Model):
@@ -118,7 +121,12 @@ class ExtendedGroup(Group):
         return True
 
     def _full_type(self):
-        return filter(lambda (a,f): a==self.type, self.TYPE_CHOICES)[0][1]
+        # TODO "tuple unpacking removed in python 3"
+        if PY2:
+            return filter(lambda (a,f): a==self.type, self.TYPE_CHOICES)[0][1]
+        else:
+            # TODO is this equivalent?
+            return filter(lambda a, f: a==self.type, self.TYPE_CHOICES)[0][1]
 
     def __unicode__(self):
         return '%s (%s)' % (self.name, self._full_type())

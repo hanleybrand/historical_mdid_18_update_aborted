@@ -4,13 +4,16 @@ from django.db.models import signals
 from django.contrib.sites import models as sites_app
 from django.contrib.flatpages import models as flatpages_app
 from django.contrib.auth import models as auth_app
-from django.contrib.comments import models as comments_app
+#from django.contrib.comments import models as comments_app
+from django_comments import models as comments_app
 from django.core.exceptions import ObjectDoesNotExist
 import logging
 
 
+log = logging.getLogger(__name__)
+
 def create_site_fixtures(*args, **kwargs):
-    print "Creating sites fixtures"
+    log.debug("Creating sites fixtures")
     try:
         # the test database may contain an initial site 'example.com'
         s = sites_app.Site.objects.get(id=1)
@@ -21,7 +24,7 @@ def create_site_fixtures(*args, **kwargs):
 
 
 def create_flatpage_fixtures(*args, **kwargs):
-    print "Creating flatpages fixtures"
+    log.debug("Creating flatpages fixtures")
     s = sites_app.Site.objects.get(id=1)
     p, created = flatpages_app.FlatPage.objects.get_or_create(
         url='/about/',
@@ -37,7 +40,7 @@ def create_flatpage_fixtures(*args, **kwargs):
 
 
 def create_user_fixtures(*args, **kwargs):
-    print "Creating auth fixtures"
+    log.debug("Creating auth fixtures")
     auth_app.User.objects.get_or_create(
         username='admin',
         defaults=dict(
