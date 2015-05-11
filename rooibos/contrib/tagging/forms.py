@@ -11,6 +11,8 @@ from utils import parse_tag_input
 class TagAdminForm(forms.ModelForm):
     class Meta:
         model = Tag
+        # pretty sure this doesn't matter for MDID, but the fields attribute is necessary in django 1.8
+        fields = {'name'}
 
     def clean_name(self):
         value = self.cleaned_data['name']
