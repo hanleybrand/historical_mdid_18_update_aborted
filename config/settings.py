@@ -109,7 +109,9 @@ INSTALLED_APPS = (
     'grappelli',
     'django.contrib.admin',
     'django.contrib.humanize',
-    'django.contrib.comments',
+    # removed from django in 1.7
+    #'django.contrib.comments',
+    'django_comments',
     'django.contrib.redirects',
     'django.contrib.staticfiles',
     'django.contrib.messages',
