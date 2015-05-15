@@ -1,20 +1,24 @@
 #TODO - when app is running and all changes are committed: remove old comments and reformat for PEP8
+from __future__ import absolute_import
 from django.conf.urls import patterns, url, include
 from django.contrib.contenttypes.models import ContentType
 # from django.views.generic.simple import direct_to_template
 from django.views.generic import TemplateView
-
 #  from django.views.generic.create_update import create_object, delete_object, update_object is gone --
 # django.views.generic.create_update.create_object replaced by
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-
-from django.contrib.comments.models import Comment
+from django.core.urlresolvers import reverse_lazy  # reverse
+# from django.utils.functional import lazy
+# from django.contrib.comments.models import Comment
+from django_comments.models import Comment
 from django.contrib.flatpages.models import FlatPage
-from django.utils.functional import lazy
-from django.conf import settings
-from views import *
 
-reverse_lazy = lazy(reverse, str)
+from django.conf import settings
+
+from .views import css, js, select_record, add_tags, remove_tag, manage, options
+from .views import clear_selected_records, delete_selected_records
+
+#reverse_lazy = lazy(reverse, str)
 
 urlpatterns = patterns('',
     # example - to req master.css the url is e.g. http://127.0.0.1:8000/ui/css/master
