@@ -8,7 +8,7 @@ from django.http import HttpResponse, HttpRequest, HttpResponseNotAllowed, HttpR
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views.decorators.cache import cache_control
-from rooibos.access import filter_by_access
+from rooibos.access.functions import filter_by_access
 from rooibos.data.models import Collection, CollectionItem, DisplayFieldValue, Field, FieldSet, FieldSetField, FieldValue, MetadataStandard, Record
 from rooibos.presentation.models import Presentation
 from rooibos.solr.views import *

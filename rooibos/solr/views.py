@@ -1,3 +1,9 @@
+from __future__ import absolute_import
+import socket
+import re
+import copy
+import random
+
 from django.db.models import Count
 from django.core.cache import cache
 from django.shortcuts import render_to_response, get_object_or_404
@@ -10,22 +16,17 @@ from django import forms
 from django.forms.formsets import formset_factory
 from django.db.models import Q
 from django.contrib.auth.models import User
-from . import SolrIndex
-from pysolr import SolrError
-from rooibos.access import filter_by_access
-import socket
+
+from rooibos.access.functions import filter_by_access
 from rooibos.util import safe_int, json_view, calculate_hash
 from rooibos.data.models import Field, Collection, FieldValue, Record
-from rooibos.data.functions import apply_collection_visibility_preferences, \
-    get_collection_visibility_preferences
+from rooibos.data.functions import apply_collection_visibility_preferences, get_collection_visibility_preferences
 from rooibos.storage.models import Storage
 from rooibos.ui import update_record_selection, clean_record_selection_vars
-from rooibos.federatedsearch.views import sidebar_api_raw, \
-    available_federated_sources
-import re
-import copy
-import random
+from rooibos.federatedsearch.views import sidebar_api_raw, available_federated_sources
 
+from . import SolrIndex
+from .pysolr import SolrError
 
 class SearchFacet(object):
 

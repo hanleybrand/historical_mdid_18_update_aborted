@@ -1,3 +1,9 @@
+from __future__ import absolute_import
+import re
+import math
+import zipfile
+import os
+from StringIO import StringIO
 from django import forms
 from django.http import Http404, HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response
@@ -8,12 +14,6 @@ from django.core.files.temp import NamedTemporaryFile
 from django.core.servers.basehttp import FileWrapper
 from django.template import Context, Template
 from django.utils.encoding import smart_str, smart_unicode
-from rooibos.access import get_effective_permissions_and_restrictions, filter_by_access
-from rooibos.viewers import register_viewer, Viewer
-from rooibos.storage import get_image_for_record
-from rooibos.data.models import Record, Collection
-from rooibos.api.views import presentation_detail
-from models import Presentation
 from reportlab.pdfgen import canvas
 from reportlab.lib import pagesizes
 from reportlab.lib.units import inch
@@ -25,12 +25,12 @@ from reportlab.platypus.paragraph import Paragraph
 from reportlab.platypus.frames import Frame
 from reportlab.platypus.doctemplate import BaseDocTemplate, PageTemplate
 from PIL import Image
-import re
-import math
-import zipfile
-import os
-from StringIO import StringIO
-
+from rooibos.access.functions import get_effective_permissions_and_restrictions, filter_by_access
+from rooibos.viewers.functions import register_viewer, Viewer
+from rooibos.storage import get_image_for_record
+from rooibos.data.models import Record, Collection
+from rooibos.api.views import presentation_detail
+from .models import Presentation
 
 def _get_presentation(obj, request, objid):
     if obj:

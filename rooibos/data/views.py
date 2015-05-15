@@ -1,5 +1,9 @@
 # from rooibos.viewers import get_viewers
-from __future__ import with_statement
+from __future__ import with_statement, absolute_import
+import os
+import random
+import string
+import json
 from django import forms
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -14,25 +18,23 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpRespons
 from django.shortcuts import get_object_or_404, get_list_or_404, render_to_response
 from django.template import RequestContext
 from django.template.loader import render_to_string
-import json
+from django.contrib import messages
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.views.decorators.http import require_POST
-from models import *
-from forms import FieldSetChoiceField, get_collection_visibility_prefs_form
-from functions import get_collection_visibility_preferences, \
-    set_collection_visibility_preferences, apply_collection_visibility_preferences
-from rooibos.access import filter_by_access, check_access
+
+from rooibos.access.functions import filter_by_access, check_access
 from rooibos.presentation.models import Presentation
 from rooibos.storage.models import Media, Storage
 from rooibos.userprofile.views import load_settings, store_settings
 from rooibos.util import json_view
 from rooibos.workers.models import JobInfo
-from spreadsheetimport import SpreadsheetImport
-import os
-import random
-import string
-from django.contrib import messages
+
+from .models import *
+from .forms import FieldSetChoiceField, get_collection_visibility_prefs_form
+from .functions import get_collection_visibility_preferences, set_collection_visibility_preferences
+from .functions import apply_collection_visibility_preferences
+from .spreadsheetimport import SpreadsheetImport
 
 
 @login_required

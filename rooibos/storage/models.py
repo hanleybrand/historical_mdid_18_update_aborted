@@ -1,3 +1,4 @@
+from __future__ import  absolute_import
 from django.db import models
 from django.core.files import File
 from django.conf import settings
@@ -10,9 +11,10 @@ import uuid
 from rooibos.contrib.ipaddr import IP
 from rooibos.util import unique_slug
 from rooibos.data.models import Record
-from rooibos.access import sync_access, get_effective_permissions_and_restrictions, check_access
-import multimedia
-from functions import extractTextFromPdfStream
+from rooibos.access.functions import sync_access, get_effective_permissions_and_restrictions, check_access
+
+from . import multimedia
+from .functions import extractTextFromPdfStream
 
 import logging
 

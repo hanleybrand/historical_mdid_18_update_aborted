@@ -2,7 +2,7 @@
 Functions for presentation app
 """
 
-from rooibos.access import sync_access
+from rooibos.access.functions import sync_access
 from rooibos.contrib.tagging.models import Tag
 from rooibos.util.models import OwnedWrapper
 

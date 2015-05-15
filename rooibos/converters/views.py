@@ -7,7 +7,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, get_list_or_404
 from django.template import RequestContext
-from rooibos.access import filter_by_access
+from rooibos.access.functions import filter_by_access
 from rooibos.data.models import Collection, CollectionItem, Record, FieldSet, Field
 from rooibos.solr import SolrIndex
 from rooibos.storage.models import Storage, Media

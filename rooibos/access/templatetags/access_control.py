@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.template.loader import get_template
 from django.template import Context, Variable, Template
 from django.contrib.contenttypes.models import ContentType
-from rooibos.access import get_accesscontrols_for_object, filter_by_access
+from rooibos.access.functions import get_accesscontrols_for_object, filter_by_access
 
 register = template.Library()
 

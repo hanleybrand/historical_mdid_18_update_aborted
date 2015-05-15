@@ -31,8 +31,9 @@ from rooibos.storage import get_media_for_record, get_image_for_record, get_thum
 from rooibos.storage import analyze_media, analyze_records, find_record_by_identifier  # match_up_media,
 from rooibos.util import json_view
 from rooibos.workers.models import JobInfo
-from rooibos.access import filter_by_access  # , get_effective_permissions_and_restrictions,
+from rooibos.access.functions import filter_by_access  # , get_effective_permissions_and_restrictions,
 # get_accesscontrols_for_object, check_access
+
 from .models import Media, Storage, TrustedSubnet, ProxyUrl
 
 

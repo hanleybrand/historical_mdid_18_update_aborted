@@ -84,7 +84,7 @@ def identify(file):
         height = int(match.group(2)) if match else None
         log.debug('Identified %s: %dx%d %d' % (file, width or 0, height or 0, bitrate or 0))
         return width, height, bitrate
-    except Exception, e:
+    except Exception as e:
         log.debug('Error identifying %s: %s' % (file, e))
         return None, None, None
 
@@ -158,7 +158,7 @@ def get_image(media):
                 field=get_system_field(),
                 label='thumbnail-offset',
             )[0].value)
-        except IndexError, ValueError:
+        except (IndexError, ValueError):
             offset = 5
         image = capture_video_frame(media.get_absolute_file_path(), offset=offset)
     elif media.mimetype.startswith('audio/'):

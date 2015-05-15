@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 from django.db import connection, reset_queries, IntegrityError
 from django.template.defaultfilters import slugify
 from optparse import make_option
-from rooibos.access import sync_access
+from rooibos.access.functions import sync_access
 from rooibos.access.models import AccessControl, ExtendedGroup, Subnet, Attribute, AttributeValue, ATTRIBUTE_BASED_GROUP, IP_BASED_GROUP
 from rooibos.contrib.ipaddr import IP
 from rooibos.contrib.tagging.models import Tag, TaggedItem
