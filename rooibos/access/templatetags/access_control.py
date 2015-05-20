@@ -5,6 +5,7 @@ from django.template.loader import get_template
 from django.template import Context, Variable, Template
 from django.contrib.contenttypes.models import ContentType
 from rooibos.access.functions import get_accesscontrols_for_object, filter_by_access
+from rooibos.data.models import Collection
 
 register = template.Library()
 
@@ -54,5 +55,8 @@ def accessible_objects(user, args):
     read = 'r' in access
     write = 'w' in access
     manage = 'm' in access
-    return filter_by_access(user, ContentType.objects.get(app_label=app, model=model).model_class(),
-                            read, write, manage)
+    # return filter_by_access(user, ContentType.objects.get(app_label=app, model=model).model_class(), read, write, manage)
+    # django.contrib.contenttypes has been changed for dj 1.8
+    # ContentType.objects.get(app_label=app, model=model).model_class() is retuning None
+    return filter_by_access(user, ContentType.objects.get_for_model(Collection).model_class(), read, write, manage)
+
