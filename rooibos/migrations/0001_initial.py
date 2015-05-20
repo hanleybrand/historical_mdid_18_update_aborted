@@ -4,6 +4,10 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 from django.conf import settings
 
+#from django.contrib.contenttypes.management import update_contenttypes
+
+#update_contenttypes()
+
 
 class Migration(migrations.Migration):
 
