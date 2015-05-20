@@ -24,3 +24,5 @@ solr/nohup.out
 .vagrant/machines/*
 venv.vagrant/*
 tests/*local*
+
+*.dump

@@ -5,7 +5,7 @@ from django.conf import settings
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from rooibos.access.functions import get_effective_permissions_and_restrictions, filter_by_access
-from rooibos.viewers import register_viewer, Viewer
+from rooibos.viewers.functions import register_viewer, Viewer
 from rooibos.data.models import Record
 import re
 import math
