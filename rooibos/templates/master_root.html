@@ -153,14 +153,18 @@
                             {% if current_presentation.id %}
                             <li><a href="{% url 'presentation-edit' current_presentation.id current_presentation.name %}">Edit {{ current_presentation.title }}</a></li>
                             {% endif %}
+                            <li style="color: #808080; font-variant: small-caps;">your content</li>
                             <li><a href="{% url 'presentation-manage' %}">Your Presentations</a></li>
                             <li><a href="{% url 'solr-search' %}?c=ownedtag:{{ user.id }}-favorite">Your Favorites</a></li>
-                            <li><a href="{% url 'solr-search' %}?c=owner:{{ user.id }}">Your Content</a></li>
+                            <li><a href="{% url 'solr-search' %}?c=owner:{{ user.id }}">Your Records</a></li>
+
                             {% if user|accessible_objects:"data.Collection,r"|length %}
-                            <li><a href="{% url 'data-record-new-personal' %}">Create Item</a></li>
+                                <li style="color: #808080; font-variant: small-caps;">new content</li>
+                                <li><a href="{% url 'storage-import' %}">Upload Images</a></li>
+                                <li><a href="{% url 'data-record-new-personal' %}">Create Record</a></li>
                             {% endif %}
                             {% if user|accessible_objects:"data.Collection,rw"|length %}
-                            <li><a href="{% url 'data-record-new' %}">Create Collection Item</a></li>
+                            <li><a href="{% url 'data-record-new' %}">+Collection Item</a></li>
                             {% endif %}
                             <li><a href="{% url 'presentation-create' %}">Create Presentation</a></li>
                         </ul>
