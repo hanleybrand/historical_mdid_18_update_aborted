@@ -18,7 +18,7 @@ from rooibos.storage.views import create_proxy_url_if_needed
 from rooibos.ui import update_record_selection
 from rooibos.util import safe_int, json_view, must_revalidate
 from rooibos.util.models import OwnedWrapper
-from rooibos.contrib.tagging.models import Tag
+from tagging.models import Tag
 from django.views.decorators.csrf import csrf_exempt
 
 

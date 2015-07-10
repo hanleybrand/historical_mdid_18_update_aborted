@@ -1,4 +1,5 @@
-from models import Collection, Field, FieldValue, FieldSet, Record, CollectionItem
+from __future__ import absolute_import
+from .models import Collection, Field, FieldValue, FieldSet, Record, CollectionItem
 from xml.dom import minidom, Node
 from decimal import Decimal
 

@@ -9,7 +9,7 @@ from django.template import Variable  # , Context, Template
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 
-from rooibos.contrib.tagging.models import Tag
+from tagging.models import Tag, calculate_cloud
 from rooibos.util.models import OwnedWrapper
 from rooibos.ui.functions import fetch_current_presentation, store_current_presentation
 # from django.utils.html import escape
@@ -62,6 +62,11 @@ class OwnedTagsForObjectNode(template.Node):
         self.user = user
         self.var_name = var_name
         self.include = include
+
+    # def cloud_for_queryset(self, queryset, min_count=None):
+    #     tags = list(self.usage_for_queryset(queryset, counts=True, min_count=min_count))
+    #     return calculate_cloud(tags)
+
     def render(self, context):
         object = self.object.resolve(context)
         user = self.user.resolve(context)
@@ -73,7 +78,14 @@ class OwnedTagsForObjectNode(template.Node):
             qs = OwnedWrapper.objects.filter(object_id=object.id, content_type=OwnedWrapper.t(object.__class__))
             if not user.is_anonymous():
                 qs = qs.exclude(user=user)
-            context[self.var_name] = Tag.objects.cloud_for_queryset(qs)
+            context[self.var_name] = calculate_cloud(Tag.objects.usage_for_queryset(qs))
+            # context[self.var_name] = Tag.objects.cloud_for_queryset(qs)
+            #
+            # cloud_for_queryset was removed/never part of the main django-tagging module.
+            # The easy solution seemed to be to just def the function in this class and then call it
+            #     context[self.var_name] = self.cloud_for_queryset(qs)
+            # But the above seems more explicit/less complicated than that
+
         return ''
 
 @register.tag

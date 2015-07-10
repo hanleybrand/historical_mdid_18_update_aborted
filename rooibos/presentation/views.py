@@ -20,9 +20,9 @@ from django.contrib import messages
 # from django.core.paginator import Paginator
 # from django.contrib.auth.models import Permission
 
-from rooibos.contrib.tagging.models import Tag, TaggedItem
-from rooibos.contrib.tagging.forms import TagField
-from rooibos.contrib.tagging.utils import parse_tag_input
+from tagging.models import Tag, TaggedItem
+from tagging.forms import TagField
+from tagging.utils import parse_tag_input
 from rooibos.util.models import OwnedWrapper
 from rooibos.access.functions import filter_by_access
 from rooibos.util import json_view

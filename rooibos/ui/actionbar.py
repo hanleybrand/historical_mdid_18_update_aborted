@@ -1,6 +1,6 @@
-from rooibos.contrib.tagging.models import Tag, TaggedItem
-from rooibos.contrib.tagging.forms import TagField
-from rooibos.contrib.tagging.utils import parse_tag_input
+from tagging.models import Tag, TaggedItem
+from tagging.forms import TagField
+from tagging.utils import parse_tag_input
 from rooibos.util.models import OwnedWrapper
 import base64
 

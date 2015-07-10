@@ -1,6 +1,6 @@
 # commented out unused import
 # import re
-# from rooibos.contrib.tagging.models import Tag
+# from tagging.models import Tag
 # from rooibos.data.models import Record
 # from rooibos.util.models import OwnedWrapper
 # from django.utils.html import escape

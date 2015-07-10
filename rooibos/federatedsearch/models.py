@@ -1,3 +1,4 @@
+from __builtin__ import super
 from django.db import models
 from datetime import datetime
 
