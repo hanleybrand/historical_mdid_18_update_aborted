@@ -159,14 +159,14 @@
                             <li><a href="{% url 'solr-search' %}?c=owner:{{ user.id }}">Your Records</a></li>
 
                             {% if user|accessible_objects:"data.Collection,r"|length %}
-                                <li style="color: #808080; font-variant: small-caps;">new content</li>
+                                <li style="color: #808080; font-variant: small-caps;">create new</li>
                                 <li><a href="{% url 'storage-import' %}">Upload Images</a></li>
-                                <li><a href="{% url 'data-record-new-personal' %}">Create Record</a></li>
+                                <li><a href="{% url 'data-record-new-personal' %}">+ Record</a></li>
                             {% endif %}
                             {% if user|accessible_objects:"data.Collection,rw"|length %}
-                            <li><a href="{% url 'data-record-new' %}">+Collection Item</a></li>
+                            <li><a href="{% url 'data-record-new' %}">+ Collection Item</a></li>
                             {% endif %}
-                            <li><a href="{% url 'presentation-create' %}">Create Presentation</a></li>
+                            <li><a href="{% url 'presentation-create' %}">+ Presentation</a></li>
                         </ul>
                     </li>
                     {% endif %}
