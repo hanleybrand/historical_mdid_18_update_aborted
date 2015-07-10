@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied
 from django.contrib.contenttypes.models import ContentType
@@ -6,7 +7,7 @@ from django.shortcuts import _get_queryset
 from rooibos.util.caching import get_cached_value, invalidate_model_cache
 # import md5 - deprecated but also unused?
 # from hashlib import md5
-from models import AccessControl, ExtendedGroup
+from .models import AccessControl, ExtendedGroup
 
 
 restriction_precedences = dict()
