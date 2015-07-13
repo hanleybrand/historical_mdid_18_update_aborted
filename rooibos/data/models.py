@@ -1,4 +1,4 @@
-from datetime import datetime
+# from datetime import datetime
 # for python 3  https://docs.python.org/2/library/functools.html#functools.reduce
 from functools import reduce
 import logging
@@ -6,11 +6,10 @@ import random
 import types
 import sys
 
-
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
-from django.core.cache import cache
+# from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db import models, transaction
 from django.db.models import Q
@@ -20,7 +19,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from rooibos.access.functions import filter_by_access, check_access
 from rooibos.access.models import AccessControl
 from rooibos.util import unique_slug
-from rooibos.util.caching import get_cached_value, cache_get, cache_get_many, cache_set, cache_set_many
+from rooibos.util.caching import get_cached_value, cache_get_many, cache_set_many  #, cache_get, cache_set
 
 PY2 = sys.version_info[0] == 2
 log = logging.getLogger(__name__)
@@ -61,7 +60,7 @@ class Collection(models.Model):
                 if self != collection:
                     result += (collection,)
                 for g in collection.children.all():
-                    if g != self and not g in sub:
+                    if g != self and g not in sub:
                         todo += (g,)
             if not todo:
                 break
@@ -78,7 +77,7 @@ class Collection(models.Model):
                 if self != collection:
                     result += (collection,)
                 for g in collection.collection_set.all():
-                    if g != self and not g in parents:
+                    if g != self and g not in parents:
                         todo += (g,)
             if not todo:
                 break
@@ -139,14 +138,15 @@ class Record(models.Model):
             # https://www.python.org/dev/peps/pep-3113/
             # python 3 removes 'tuple unpacking' but this is actually k,v in accessible_records.iteritems(), right?
             if PY2:
-                accessible_record_ids = map(lambda (k, v): (int(k.rsplit('-', 1)[1]), v), accessible_records.iteritems())
+                accessible_record_ids = map(lambda (k, v): (int(k.rsplit('-', 1)[1]), v),
+                                            accessible_records.iteritems())
             else:
                 accessible_record_ids = map(lambda k, v: (int(k.rsplit('-', 1)[1]), v), accessible_records.iteritems())
 
             allowed_ids = [k for k, v in accessible_record_ids if v == 't']
             denied_ids = [k for k, v in accessible_record_ids if v == 'f']
 
-            to_check = [id for id in ids if not id in allowed_ids and not id in denied_ids]
+            to_check = [id for id in ids if id not in allowed_ids and id not in denied_ids]
 
             if not to_check:
                 return records.filter(id__in=allowed_ids)
@@ -180,7 +180,6 @@ class Record(models.Model):
             cache_set_many(cache_update, model_dependencies=[Record, Collection, AccessControl])
 
         return records.filter(id__in=allowed_ids)
-
 
     @staticmethod
     def filter_one_by_access(user, id):
@@ -260,8 +259,9 @@ class Record(models.Model):
                     values_to_map.append(v)
 
             for v in values_to_map:
-                eq = eq_cache.has_key(v.field) and eq_cache[v.field] or eq_cache.setdefault(v.field,
-                                                                                            v.field.get_equivalent_fields())
+                # eq = eq_cache.has_key(v.field) and eq_cache[v.field] or eq_cache.setdefault(v.field,
+                eq = v.field in eq_cache and eq_cache[v.field] or eq_cache.setdefault(v.field,
+                                                                                      v.field.get_equivalent_fields())
                 for f in eq:
                     if f in target_fields:
                         result.setdefault(f, []).append(DisplayFieldValue.from_value(v, f))
@@ -294,7 +294,7 @@ class Record(models.Model):
         return get_cached_value('record-%d-title' % self.id,
                                 get_title,
                                 model_dependencies=[Field, FieldValue],
-        ) if self.id else None
+                                ) if self.id else None
 
     @property
     def shared(self):
@@ -391,7 +391,7 @@ class Field(models.Model):
         db_table = 'data_field'
 
 
-#@transaction.commit_on_success
+# @transaction.commit_on_success
 @transaction.atomic
 def get_system_field():
     field, created = Field.objects.get_or_create(name='system-value',
@@ -483,6 +483,7 @@ class DisplayFieldValue(FieldValue):
     """
     Represents a mapped field value for display.  Cannot be saved.
     """
+
     class Meta:
         db_table = 'data_displayfieldvalue'
 
@@ -495,7 +496,7 @@ class DisplayFieldValue(FieldValue):
             s = getattr(self, ob)
             o = getattr(other, ob)
             # cmp() is removed in python 3
-            #if s != o: return cmp(s, o)
+            # if s != o: return cmp(s, o)
             if s != o: return s.__cmp__(o)
 
         return 0
