@@ -1,0 +1,7 @@
+{
+  "name": "MDID",
+  "version": "1.0.0",
+  "description": "The collection of APIs that currently ship with MDID 3.0 (a newer API version is in development)",
+  "title": "MDID3 APIS v 1.0",
+  "url" : "https://mdid.domain.edu/api"
+}

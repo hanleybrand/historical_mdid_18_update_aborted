@@ -22,8 +22,49 @@ from tagging.models import Tag
 from django.views.decorators.csrf import csrf_exempt
 
 
+# urls for easy reference
+
+    # url(r'^search/$', api_search),
+    # url(r'^search(/(?P<id>\d+)/(?P<name>[\w-]+))?/$', api_search),
+    # url(r'^record/(?P<id>\d+)/(?P<name>[-\w]+)/$', record, name='api-record'),
+    # url(r'^presentations/currentuser/$', presentations_for_current_user),
+    # url(r'^presentation/(?P<id>\d+)/$', presentation_detail, name='api-presentation-detail'),
+    # url(r'^keepalive/$', keep_alive, name='api-keepalive'),
+    # url(r'^autocomplete/user/$', autocomplete_user, name='api-autocomplete-user'),
+    # url(r'^autocomplete/group/$', autocomplete_group, name='api-autocomplete-group'),
+
+
+"""
+@apiDefine csrf User must be logged in
+This api will only return correct results if the user has been authenticated
+"""
+
+
 @json_view
 def collections(request, id=None):
+    """
+    @api {get} /collection/:id Get Collection Information
+    @apiName collections
+    @apiGroup collections
+    @apiVersion 1.0.0
+
+    @apiParam {Number} id Collection ID.
+
+    @apiDescription Returns information about a Collection obtained via filter_by_access(request.user, Collection.objects.filter(id=id))
+
+    @apiSuccessExample {json} User has access to a collection
+    {"collections": [{"description": "Personal images", "title": "Personal Images", "agreement": null, "children": [], "owner": null, "hidden": false, "id": 1, "name": "personal-images"}], "result": "ok"}
+
+    @apiSuccessExample {json} Collection does not exist
+    {"collections": [], "result": "ok"}
+
+    @apiSuccess {json} collections A list of the collections the sepecific user has access to.
+
+    @apiUse csrf
+    """
+
+
+
     if id:
         collections = filter_by_access(request.user, Collection.objects.filter(id=id))
     else:
@@ -43,9 +84,51 @@ def collections(request, id=None):
     }
 
 
+"""
+@api {get} /collections List User's Accessible Collections
+@apiName collection
+@apiGroup collections
+@apiVersion 1.0.0
+
+@apiDescription Returns a list of Collections obtained via filter_by_access(request.user, Collection)
+
+@apiSuccess {json} collections A list of the collections the current user has access to.
+
+@apiSuccessExample {json} User has access to a collection
+{"collections": [], "result": "ok"}
+"""
+
+
+
 @csrf_exempt
 @json_view
 def login(request):
+    """
+    @api {post} /login Login
+    @apiName login
+    @apiGroup authentication
+    @apiVersion 1.0.0
+
+    @apiParam {String} username request.POST["username"]
+    @apiParam {String} password request.POST["password"]
+
+    @apiDescription Authenticate a user
+
+    @apiSuccess {Number} sessionid Session ID token
+    @apiSuccess {Number} userid The ID (pk) of the authenticated user
+    @apiSuccess {String} result Will be either 'ok', 'Login failed' or 'Invalid method. Use POST.'
+
+    @apiSuccessExample {json} User is successfully logged in
+    {"sessionid": "b87ed91f693bc51927d522c60fc22ac9", "userid": 37, "result": "ok"}
+
+    @apiErrorExample {json} Login Failed
+    {"result": "Login failed"}
+
+    @apiErrorExample {json} Forgot to use Post
+    {"result": "Invalid method. Use POST."}
+
+    """
+
     if request.method == 'POST':
         username = request.POST["username"]
         password = request.POST["password"]
@@ -63,6 +146,19 @@ def login(request):
 
 @json_view
 def logout(request):
+    """
+    @api {get} /logout Logout
+    @apiName logout
+    @apiGroup authentication
+    @apiVersion 1.0.0
+
+    @apiDescription Log a user out. Does not require POST.
+
+    @apiSuccess {String} result Will be always be 'ok'
+
+    @apiSuccessExample {json} User is successfully logged out
+    {"result": "ok"}
+    """
     auth.logout(request)
     return dict(result='ok')
 
@@ -144,12 +240,75 @@ def api_search(request, id=None, name=None):
 
 @json_view
 def record(request, id, name):
+    """
+    @api {get} /record/:id/:name Record
+    @apiName record
+    @apiGroup Data
+    @apiVersion 1.0.0
+    @apiParam {Number} id  The ID (PK) of the specified record
+    @apiParam {String} name  The name  of the record (default names will be like 'r-123456789')
+    @apiParamExample {curl} Example usage:
+        curl -i https://mdid.domain.edu/api/record/2991/r-7388605
+    @apiSuccessExample {json} Result of request ~/record/2991/r-7388605
+    {"record":
+        {
+            "name": "r-7388605", "title": "2", "image": "/media/get/2991/r-7388605/",
+                "metadata": [
+                    {"value": "AH-CD0000201-890", "label": "ID"}, {"value": "2", "label": "Title"},
+                    {"value": "Indiana, Robert", "label": "Creator"},
+                    {"value": "1966-93", "label": "Creation Year"},
+                    {"value": "Paint on aluminum.", "label": "Medium"},
+                    {"value": "American", "label": "Culture"},
+                    {"value": "Modern: 19th c. to present.", "label": "Period"},
+                    {"value": "n/a", "label": "Style"}, {"value": "n/a", "label": "Country"},
+                    {"value": "NO", "label": "Copyright Permission"}
+                ],
+            "thumbnail": "/media/thumb/2991/r-7388605/",
+            "id": 2991
+        },
+        "result": "ok"
+    }
+    """
+    # @apiSampleRequest https://mdid.domain.edu/api/record/2991/r-7388605
     record = Record.get_or_404(id, request.user)
     return dict(record=_record_as_json(record, owner=request.user))
 
 
 @json_view
 def presentations_for_current_user(request):
+
+    """
+    @api {get} /presentations/currentuser/ Presentations For Current User
+    @apiName presentations_currentuser
+    @apiGroup Presentations
+    @apiVersion 1.0.0
+    @apiSuccess {String} result
+    @apiSuccess {Object} presentations List of Presentations owned by Request.User
+    @apiSuccessExample {json}  User has presentations
+    {
+    "result": "ok",
+    "presentations": [
+        {
+            "description": null, "name": "arch-search", "title": "arch search",
+            "created": "2005-05-12T13:42:48", "modified": "2005-05-12T13:42:48", "hidden": false,
+            "id": 338,
+            "tags": [
+                "MDID1 Slideshows"
+            ]
+        },
+        {
+            "description": null, "name": "catalonian-madness", "title": "Catalonian Madness!!!",
+            "created": "2006-10-13T15:58:02", "modified": "2009-09-11T11:43:25",
+            "hidden": false, "id": 1464,
+            "tags": []
+        },
+      ]
+    }
+    @apiErrorExample {json} User has no presentations
+        {"result": "ok", "presentations": []}
+    @apiErrorExample {json} User is not Logged In
+        {"result": "ok", "presentations": []}
+        """
 
     def tags_for_presentation(presentation):
         ownedwrapper = OwnedWrapper.objects.get_for_object(request.user, presentation)
