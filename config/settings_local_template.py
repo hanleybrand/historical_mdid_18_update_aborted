@@ -187,7 +187,7 @@ DATABASES = {
         # empty string with host & port = default
         # start host with a forward slash with MySQL to connect via a Unix socket, i.e.
         # "HOST": '/var/run/mysql',
-        'HOST': 'localhost',  # note IP6 can cause trouble with localhost, using  '127.0.0.1' is a workaround
+        'HOST': '127.0.0.1',  # note IP6 can cause trouble with localhost, using  '127.0.0.1' is a workaround
         'PORT': '',
         # TODO: test CONN_MAX_AGE (throws error if set to None)
         #    lifetime of a database connection, in seconds - 0 is the old behavior,
