@@ -1,6 +1,19 @@
+HOME_DIR=`pwd`
+VAGRANT_DIR=/vagrant
+PROVISION_DIR=$VAGRANT_DIR/.vagrant_provision
+MDID_DIR=$HOME_DIR/mdid
+MDID_DATA_DIR=$HOME_DIR/mdid-data
+CONFIG_DIR=$MDID_DIR/config
+ROOIBOS_DIR=$MDID_DIR/rooibos
+
+
+export WORKON_HOME=$HOME/.virtualenvs
+# export PROJECT_HOME=$HOME/
+
+
 source /usr/local/bin/virtualenvwrapper.sh
-source ~/.git-prompt.bash
-source ~/.git-completion.bash
+source ~/.bash-completion
+source ~/.git-prompt
 source ~/.mdid-funcs
 
 alias mdidenv="source ~/mdid/venv.vagrant/bin/activate"
