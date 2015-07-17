@@ -24,5 +24,4 @@ solr/nohup.out
 .vagrant/machines/*
 venv.vagrant/*
 tests/*local*
-rooibos/api/doc
 *.dump
