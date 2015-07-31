@@ -1,20 +1,29 @@
 from __future__ import with_statement, absolute_import
-from PIL import Image
-import StringIO
+# from PIL import Image
+# import StringIO
+# from six.moves import cStringIO
+# import six
+try:
+    from io import StringIO
+except ImportError:
+    import StringIO
 import logging
 import mimetypes
 import os
 import re
+
+from PIL import Image
+
 from django.conf import settings
 from django.db.models import Q
 from django.contrib.auth.models import User
+
 from rooibos.access.functions import filter_by_access, get_effective_permissions_and_restrictions
-from rooibos.data.models import Collection, Record, standardfield, standardfield_ids
+from rooibos.data.models import Record, standardfield_ids
 from .models import Media, Storage
 
-
-
 mimetypes.init([os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'mime.types'))])
+
 
 # sort images by area
 def _imgsizecmp(x, y):
@@ -65,11 +74,12 @@ def get_media_for_record(record, user=None, passwords={}):
     return Media.objects.filter(
         record__id=record_id,
         storage__id__in=filter_by_access(user, Storage),
-        )
+    )
 
 
 try:
     import gfx
+
     PDF_SUPPORT = True
 except ImportError:
     PDF_SUPPORT = False
@@ -120,7 +130,8 @@ def get_image_for_record(record, user=None, width=100000, height=100000, passwor
 
         def derivative_image(master, width, height):
             if not master.file_exists():
-                logging.error('Image derivative failed for media %d, cannot find file "%s"' % (master.id, master.get_absolute_file_path()))
+                logging.error('Image derivative failed for media %d, cannot find file "%s"' % (
+                master.id, master.get_absolute_file_path()))
                 return None, (None, None)
             from PIL import ImageFile
             ImageFile.MAXBLOCK = 16 * 1024 * 1024
@@ -175,7 +186,7 @@ def get_thumbnail_for_record(record, user=None, crop_to_square=False):
 
 
 def find_record_by_identifier(identifiers, collection, owner=None,
-        ignore_suffix=False, suffix_regex=r'[-_]\d+$'):
+                              ignore_suffix=False, suffix_regex=r'[-_]\d+$'):
     idfields = standardfield_ids('identifier', equiv=True)
     if not isinstance(identifiers, (list, tuple)):
         identifiers = [identifiers]
