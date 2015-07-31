@@ -3,6 +3,8 @@
 The [Madison Digital Image Database](http://mdid.org/) is a free, open source media repo aimed at education spaces.
 It was created at [James Madison University](http://www.jmu.edu).
 
+[![Code Issues](http://www.quantifiedcode.com/api/v1/project/0094577cbd774ac9a1f3d0f220bf6a49/badge.svg)](http://www.quantifiedcode.com/app/project/0094577cbd774ac9a1f3d0f220bf6a49)
+
 ## Django 1.8.x upgrade - clone to a new directory
 
 **Status:** Currently in a "for developers only/get it running" state - will work on an existing mdid3 installation's database, although obvs don't run it against a production database.
