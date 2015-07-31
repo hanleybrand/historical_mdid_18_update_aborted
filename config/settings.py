@@ -26,10 +26,11 @@ if not BASE_DIR in sys.path: sys.path.append(BASE_DIR)
 if not CONTRIB_DIR in sys.path: sys.path.append(CONTRIB_DIR)
 
 # STATIC_FILES
-# where non-dynamic files are stored (i.e. javascript libraries, css, etc.)
+# STATIC_ROOT: The absolute path to the directory where collectstatic will collect static files for deployment.
 STATIC_ROOT = os.path.normpath(os.path.join(PROJECT_ROOT, 'static'))
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
+    #  these files will be copied up by collectstatic
     os.path.normpath(os.path.join(ROOIBOS_ROOT, 'static')),
 )
 STATICFILES_FINDERS = (
@@ -109,8 +110,7 @@ INSTALLED_APPS = (
     'grappelli',
     'django.contrib.admin',
     'django.contrib.humanize',
-    # removed from django in 1.7
-    #'django.contrib.comments',
+    # 'django.contrib.comments' removed from django in 1.7
     'django_comments',
     'django.contrib.redirects',
     'django.contrib.staticfiles',
@@ -133,6 +133,7 @@ INSTALLED_APPS = (
     'rooibos.federatedsearch.artstor',
     'rooibos.federatedsearch.flickr',
     'rooibos.converters',
+    'rest_framework',
     # replace rooibos.contrib.tagging with django-tagging
     'tagging',
     'rooibos.workers',

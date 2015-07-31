@@ -24,6 +24,7 @@ import sys
 
 '''
 
+
 # MDID root  (e.g. /var/local/mdid/ )
 PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '../'))
 # setting for django-extensions
@@ -340,13 +341,6 @@ LOGGING = {
         },
     },
     'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': DEFAULT_DATA_DIR + "/logs/rooibos.log",
-            # 'filename': 'rooibos.log',
-            'formatter': 'verbose'
-        },
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
