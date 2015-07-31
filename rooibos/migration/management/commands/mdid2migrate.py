@@ -23,8 +23,14 @@ from xml.dom import minidom
 import gc
 import logging
 import os
-import pyodbc
 import re
+
+# todo: Is pyodbc only required if SQL Server is involved?
+try:
+    import pyodbc
+except ImportError:
+    print "pyodbc not installed - database connection may not work"
+    pass
 
 log = logging.getLogger('rooibos')
 
@@ -123,10 +129,10 @@ class MigrateModel(object):
 
     def m2m_create(self, row):
         # needs to return (object_id, m2m_object_id) tuple
-        raise NotImplemented
+        raise NotImplementedError
 
     def m2m_delete(self, object_id, m2m_object_id):
-        raise NotImplemented
+        raise NotImplementedError
 
     def key(self, row):
         return str(row.ID)

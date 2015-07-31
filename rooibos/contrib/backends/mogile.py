@@ -40,7 +40,7 @@ class MogileFSStorage(Storage):
     # The following methods define the Backend API
 
     def filesize(self, filename):
-        raise NotImplemented
+        raise NotImplementedError
         #return os.path.getsize(self._get_absolute_path(filename))
     
     def path(self, filename):
@@ -54,7 +54,7 @@ class MogileFSStorage(Storage):
         return urlparse.urljoin(self.base_url, filename).replace('\\', '/')
 
     def open(self, filename, mode='rb'):
-        raise NotImplemented
+        raise NotImplementedError
         #return open(self._get_absolute_path(filename), mode)
 
     def exists(self, filename):
