@@ -29,10 +29,10 @@ class AccessOnStart:
             log.debug(sql)
             cursor = connection.cursor()
             for s in sql:
-                log.debug('access.middleware.AccessOnStart: Add missing index on object_id on AccessControl table'
+                log.debug('.AccessOnStart: Add missing index on object_id on AccessControl table'
                           '\nrunning query %s' % s)
                 cursor.execute(s)
-                log.debug('access.middleware.AccessOnSta'
+                log.debug('.AccessOnStart:'
                           'rt: done adding missing index %s' % s)
         except Exception as e:
             log.exception("""access.middleware: error running query
