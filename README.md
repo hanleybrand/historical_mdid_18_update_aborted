@@ -13,7 +13,7 @@ It was created at [James Madison University](http://www.jmu.edu).
 
 **Status:** Currently in a "for developers only/get it running" state - will work on an existing mdid3 installation's database, although obvs don't run it against a production database.
 
-**This branch has the potential to mess up the organization of a django 1.2.7 based branch, so `git clone` to seperate directory for testing**
+**This branch has the potential to mess up the organization of a django 1.2.7 based branch, so `git clone` to separate directory for testing**
 
 I'm currently running it on OS X but I tried to make any settings changes as generic as possible (I made most if not all directories set relative to PROJECT_ROOT)
 
