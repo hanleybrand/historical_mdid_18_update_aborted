@@ -5,6 +5,7 @@ import os
 # import uuid
 import mimetypes
 import json
+import logging
 
 from django import forms
 from django.conf import settings
@@ -36,6 +37,7 @@ from rooibos.access.functions import filter_by_access  # , get_effective_permiss
 
 from .models import Media, Storage, TrustedSubnet, ProxyUrl
 
+log = logging.getLogger(__name__)
 
 # def expire_header(seconds=3600):
 # return (datetime.utcnow() + timedelta(0, seconds)).strftime('%a, %d %b %Y %H:%M:%S GMT')
@@ -55,6 +57,7 @@ def add_content_length(func):
             elif isinstance(response.content, basestring):
                 #logging.debug('did an error just get thrown? see storage/views.py:49')
                 response['Content-Length'] = len(response.content)
+        log.debug(response)
         return response
 
     return _add_header
@@ -95,6 +98,7 @@ def retrieve_image(request, recordid, record, width=None, height=None):
     if not path:
         logging.error("get_image_for_record failed for record.id %s" % recordid)
         raise Http404()
+    logging.debug('path = ' % path)
 
     Activity.objects.create(event='media-download-image',
                             request=request,
