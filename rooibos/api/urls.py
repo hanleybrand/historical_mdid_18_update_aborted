@@ -1,12 +1,15 @@
+# commented out this file rest_framework lines are for future development of the MDID3 api
+
+
 from __future__ import absolute_import
 from django.conf.urls import patterns, url, include, handler404
 
-from rest_framework import routers
+# from rest_framework import routers
 
 from .views import *
 
-router = routers.DefaultRouter()
-router.register(r'record', RecordViewSet)
+# router = routers.DefaultRouter()
+# router.register(r'record', RecordViewSet)
 
 urlpatterns = patterns('',
 
@@ -23,5 +26,5 @@ urlpatterns = patterns('',
     url(r'^autocomplete/user/$', autocomplete_user, name='api-autocomplete-user'),
     url(r'^autocomplete/group/$', autocomplete_group, name='api-autocomplete-group'),
     # for now separate out django-rest api
-    url(r'^v2/', include(router.urls)),
+    # url(r'^v2/', include(router.urls)),
 )

@@ -18,7 +18,6 @@ print 'Django version is %s' % DJANGO_VERSION
 # else:
 #     DATABASE_NAME = 'rooibos'
 
-
 '''-### directory variables ############################################-
 
         Self set directory paths based on local file locations
@@ -51,7 +50,7 @@ ROOIBOS_ROOT = normpath(join(PROJECT_ROOT, 'rooibos'))
 
 '''-### Local Data ############################################-'''
 
-# use the
+# use uname to use the same settings_local file on multiple computers
 
 # if running via vagrant
 if uname()[1] == 'vagrant-ubuntu-trusty-64' and exists('/vagrant'):
@@ -90,7 +89,9 @@ SCRATCH_DIR = normpath(join(DEFAULT_DATA_DIR, 'mdid-scratch'))
 # TODO: get better definition for what AUTO_STORAGE_DIR is for
 AUTO_STORAGE_DIR = normpath(join(DEFAULT_DATA_DIR, 'collections'))
 
-'''### MEDIA settings
+'''
+
+### MEDIA settings
 
     #  Define urls, [en|dis]able asset compression, template locations, etc.
 
@@ -107,6 +108,7 @@ ADMIN_MEDIA_PREFIX = '/static/admin/'
 ### CSS & JavaScript compression (i.e. minification)
 
 # enable compression set to True or False
+
 COMPRESS_ENABLED = False
 
 # this is set in kb
@@ -183,7 +185,15 @@ MANAGERS = ADMINS
 # accessing mdid_dj16 from any ip listed below will change the following behaviors:
 # see debug comments, when DEBUG is True
 # debug_toolbar (if installed) will act as if debug=true
-INTERNAL_IPS = ('127.0.0.1', 'localhost')
+
+## if the vagrant bootstrap.sh runs, VAGRANT_GATEWAY will be changed
+VAGRANT_GATEWAY = '<<GATEWAY_IP>>'
+
+## if VAGRANT_GATEWAY doesn't start with << anymore, add it to INTERNAL_IPS
+if VAGRANT_GATEWAY[:2] == '<<':
+    INTERNAL_IPS = ('127.0.0.1', 'localhost')
+else:
+    INTERNAL_IPS = ('127.0.0.1', 'localhost', VAGRANT_GATEWAY)
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

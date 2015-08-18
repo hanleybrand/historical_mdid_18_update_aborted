@@ -12,6 +12,7 @@ ROOIBOS_DIR=$MDID_DIR/rooibos
 
 SQL_PASSWORD=rooibos
 
+# create a logs dir so verbose output of the script can be saved for review if something is not correct
 sudo -u vagrant mkdir -p bootstrap_logs
 
 
@@ -153,7 +154,7 @@ cp $PROVISION_DIR/.bash_profile $HOME_DIR
 #  echo "cd /vagrant" >> ~/.profile
 #fi
 
-
+# refactored this elsewhere
 # create a virtual environment (if needed)
 #[[ ! -d venv.vagrant/ ]] && virtualenv venv.vagrant
 
@@ -180,17 +181,20 @@ mysql -u root -p$SQL_PASSWORD < /vagrant/.vagrant_provision/create_database.sql
 # - this might be a better thing with environment variables
 # todo: look
 
-## create the local settings
-#if [ -f $CONFIG_DIR/settings_local.py ]; then
+## save settings_local.py from template if there is none
+if [ ! -f $CONFIG_DIR/settings_local.py ]; then
 #  # backup any existing local settings first
-#  mv $CONFIG_DIR/settings_local.py $ROOIBOS_DIR/settings_local.backup.py
-#fi
+  echo "~~~ no settings_local.py so let's make a fresh one from settings_local_template.py ~~~"
+  cp -n $CONFIG_DIR/settings_local_template.py $CONFIG_DIR/settings_local.py
+else
+  echo "~~~ settings_local.py exists so using it, \e[91m make sure your settings are correct \e[21m ~~~"
+fi
+
+# this is clever, but I broke it - see VAGRANT_GATEWAY in settings_local.py to see if I was able to re-un-break it
 ## Get the default gateway IP address so we can add it to INTERNAL_IPS
-#GATEWAY_IP=`route -n | grep 'UG' | awk '{print $2}'`
+GATEWAY_IP=`route -n | grep 'UG' | awk '{print $2}'`
 ## filter our local settings template, replacing necessary values
-#cat $PROVISION_DIR/settings_local.vagrant.py \
-#  | sed -e "s/<<GATEWAY_IP>>/$GATEWAY_IP/" \
-#  > $ROOIBOS_DIR/settings_local.py
+cat $CONFIG_DIR/settings_local.py | sed -e "s/<<GATEWAY_IP>>/$GATEWAY_IP/" > $CONFIG_DIR/settings_local.py
 
 # move into the $MDID directory (django 1.6 now has manage.py in the top dir)
 cd $MDID_DIR
@@ -199,7 +203,7 @@ chmod +x manage.py
 
 # setup the database
 
-./manage.py migrate --fake-initial
+# ./manage.py migrate --fake-initial
 ./manage.py migrate
 ./manage.py createcachetable cache
 
@@ -216,6 +220,6 @@ service mdid3-workers start
 
 
 echo -e "### COMPLETED ###"
-echo -e "You can start the mdid local server via"
-echo -e "vagrant shh -c '/vagrant/manage.py runserver'"
+echo -e "You can start the mdid server from your desktop via"
+echo -e "vagrant ssh -c '/vagrant/manage.py runserver'"
 

@@ -403,26 +403,27 @@ def autocomplete_group(request):
     return HttpResponse(content='\n'.join(groups))
 
 
+# commented out this file rest_framework lines are for future development of the MDID3 api
 
 
-from rooibos.api.serializers import RecordSerializer
-from rest_framework import viewsets
-from rest_framework import permissions
-
-
-class IsOwnerOrReadOnly(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        else:
-            return obj.owner == request.user
-
-
-class RecordViewSet(viewsets.ModelViewSet):
-    queryset = Record.objects.all()
-    serializer_class = RecordSerializer
-    # probably delete this next part
-    permission_classes = (IsOwnerOrReadOnly,)
-
-    def pre_save(self, obj):
-        obj.owner = self.request.user
+# from rooibos.api.serializers import RecordSerializer
+# from rest_framework import viewsets
+# from rest_framework import permissions
+#
+#
+# class IsOwnerOrReadOnly(permissions.BasePermission):
+#     def has_object_permission(self, request, view, obj):
+#         if request.method in permissions.SAFE_METHODS:
+#             return True
+#         else:
+#             return obj.owner == request.user
+#
+#
+# class RecordViewSet(viewsets.ModelViewSet):
+#     queryset = Record.objects.all()
+#     serializer_class = RecordSerializer
+#     # probably delete this next part
+#     permission_classes = (IsOwnerOrReadOnly,)
+#
+#     def pre_save(self, obj):
+#         obj.owner = self.request.user
