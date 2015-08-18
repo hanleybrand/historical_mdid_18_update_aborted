@@ -1,12 +1,22 @@
 from __future__ import with_statement, absolute_import
+<<<<<<< Updated upstream
 # from PIL import Image
 # import StringIO
 # from six.moves import cStringIO
 # import six
+=======
+# from six.moves import cStringIO
+import six
+from PIL import Image
+>>>>>>> Stashed changes
 try:
     from io import StringIO
 except ImportError:
     import StringIO
+<<<<<<< Updated upstream
+=======
+#import StringIO
+>>>>>>> Stashed changes
 import logging
 import mimetypes
 import os
