@@ -77,7 +77,7 @@ MEDIA_URL = ''
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'change me in settings_local.py'
+SECRET_KEY = 'test_change me in settings_local.py'
 
 
 # MDID3 specific settings
