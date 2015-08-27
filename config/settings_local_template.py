@@ -274,6 +274,7 @@ DATABASE_CHARSET = 'utf8'
 #####-##### other apps  ############################################-'''
 
 # Todo: add windows path back
+# This should be set to None or commented out if ffmpeg is not installed
 # FFMPEG_EXECUTABLE = '/usr/local/bin/ffmpeg'
 
 SOLR_URL = 'http://127.0.0.1:8983/solr/'
