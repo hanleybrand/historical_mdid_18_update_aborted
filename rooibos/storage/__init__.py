@@ -6,7 +6,7 @@ from __future__ import with_statement, absolute_import
 try:
     from io import StringIO
 except ImportError:
-    import StringIO
+    from StringIO import StringIO
 import logging
 import mimetypes
 import os
@@ -24,6 +24,7 @@ from .models import Media, Storage
 
 mimetypes.init([os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'mime.types'))])
 
+log = logging.getLogger(__name__)
 
 # sort images by area
 def _imgsizecmp(x, y):
@@ -98,11 +99,20 @@ def get_image_for_record(record, user=None, width=100000, height=100000, passwor
 
     if not media:
         return None
+
+    # TODO: what does this line do? e.g. what purpose does it serve?
     map(lambda m: m.identify(lazy=True), media)
+    # media =  <Media: arc7078.jpg>]
+    # map(lambda m: m.identify(lazy=True), media)
+    # [None]
+    # media = [<Media: arc7078.jpg>]
+
+
     media = sorted(media, _imgsizecmp, reverse=True)
     # find matching media
     last = None
     for m in media:
+        log.debug('m (in media) = %s' % m)
         if m.width > width or m.height > height:
             # Image still larger than given dimensions
             last = m
@@ -149,7 +159,8 @@ def get_image_for_record(record, user=None, width=100000, height=100000, passwor
                         image = image.crop((0, (h - w) / 2, w, (h - w) / 2 + w))
                 image.thumbnail((width, height), Image.ANTIALIAS)
                 image = overlay_image_with_mimetype_icon(image, master.mimetype)
-                output = StringIO.StringIO()
+                #output = StringIO.StringIO()
+                output = StringIO()
                 if image.mode != "RGB":
                     image = image.convert("RGB")
                 image.save(output, 'JPEG', quality=85, optimize=True)

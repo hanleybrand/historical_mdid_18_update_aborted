@@ -45,7 +45,9 @@ log = logging.getLogger(__name__)
 
 def add_content_length(func):
     def _add_header(request, *args, **kwargs):
+        log.debug('adding header....')
         response = func(request, *args, **kwargs)
+        log.debug('response type: %s' % type(response))
         if type(response) == HttpResponse:
             if hasattr(response._container, 'size'):
                 response['Content-Length'] = response._container.size
@@ -57,7 +59,8 @@ def add_content_length(func):
             elif isinstance(response.content, basestring):
                 #logging.debug('did an error just get thrown? see storage/views.py:49')
                 response['Content-Length'] = len(response.content)
-        log.debug(response)
+
+
         return response
 
     return _add_header
