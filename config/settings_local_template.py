@@ -207,7 +207,7 @@ TIME_ZONE = 'America/New_York'
 # you can generate a key in a terminal by issuing the below command in PROJECT_ROOT
 # python manage.py generate_secret_key
 # --> !0hbkf##*39#vgkra-d$2_x8^#4^2qmw1pa*@x4%otfvczt#*j
-SECRET_KEY = 'Make this unique, and don\'t share it with anybody.'
+SECRET_KEY = 'test_Make this unique, and don\'t share it with anybody.'
 
 SESSION_COOKIE_AGE = 6 * 3600  # in seconds
 
@@ -291,7 +291,7 @@ CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
 GOOGLE_ANALYTICS_MODEL = True
 
 FLICKR_KEY = 'fbef6e60837b1fb2d354bceee23409be'
-FLICKR_SECRET = 'dae5ccee937924f9'
+FLICKR_SECRET = 'test_wdae5ccee937924f9'
 
 # Set to None if you don't subscribe to ARTstor
 ARTSTOR_GATEWAY = None

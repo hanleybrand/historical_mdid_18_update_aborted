@@ -101,7 +101,6 @@ def retrieve_image(request, recordid, record, width=None, height=None):
     if not path:
         logging.error("get_image_for_record failed for record.id %s" % recordid)
         raise Http404()
-    logging.debug('path = ' % path)
 
     Activity.objects.create(event='media-download-image',
                             request=request,
