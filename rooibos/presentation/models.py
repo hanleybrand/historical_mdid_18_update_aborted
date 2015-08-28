@@ -102,6 +102,7 @@ class Presentation(models.Model):
         )
         db_table = 'presentation_presentation'
 
+
 class PresentationItem(models.Model):
 
     presentation = models.ForeignKey('Presentation', related_name='items')
