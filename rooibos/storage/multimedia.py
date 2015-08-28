@@ -165,6 +165,7 @@ def get_image(media):
         image = render_audio_waveform_by_mimetype(media.get_absolute_file_path(), media.mimetype)
     elif media.mimetype == 'application/pdf':
         image = render_pdf(media.get_absolute_file_path())
+    log.debug('returning %s, type %s' % (image, type(image)))
     return image
 
 

@@ -87,6 +87,8 @@ except ImportError:
 
 
 def get_image_for_record(record, user=None, width=100000, height=100000, passwords={}, crop_to_square=False):
+
+    log.debug('get_media_for_record(%s (%s), %s, %s)' % (record, type(record), user, passwords))
     media = get_media_for_record(record, user, passwords)
     q = Q(mimetype__startswith='image/')
     if settings.FFMPEG_EXECUTABLE:
@@ -150,6 +152,7 @@ def get_image_for_record(record, user=None, width=100000, height=100000, passwor
             from .multimedia import get_image, overlay_image_with_mimetype_icon
             try:
                 file = get_image(master)
+                log.debug('file should be the same - %s' % file)
                 image = Image.open(file)
                 if crop_to_square:
                     w, h = image.size
@@ -159,11 +162,15 @@ def get_image_for_record(record, user=None, width=100000, height=100000, passwor
                         image = image.crop((0, (h - w) / 2, w, (h - w) / 2 + w))
                 image.thumbnail((width, height), Image.ANTIALIAS)
                 image = overlay_image_with_mimetype_icon(image, master.mimetype)
+                log.debug('image should be PIL- %s' % image)
                 #output = StringIO.StringIO()
                 output = StringIO()
+                log.debug('what is output? - %s' % output)
                 if image.mode != "RGB":
                     image = image.convert("RGB")
                 image.save(output, 'JPEG', quality=85, optimize=True)
+                log.debug('what is output again? - %s' % output)
+                log.debug('return output.getvalue(), image.size:  %s, %s' % (output.getvalue(), image.size))
                 return output.getvalue(), image.size
             except Exception, e:
                 logging.error('Image derivative failed for media %d (%s)' % (master.id, e))

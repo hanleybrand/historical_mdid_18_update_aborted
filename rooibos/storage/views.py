@@ -45,9 +45,10 @@ log = logging.getLogger(__name__)
 
 def add_content_length(func):
     def _add_header(request, *args, **kwargs):
-        log.debug('adding header....')
+        log.debug('request: %s' % request)
         response = func(request, *args, **kwargs)
-        log.debug('response type: %s' % type(response))
+
+        #log.debug('response type: %s' % type(response))
         if type(response) == HttpResponse:
             if hasattr(response._container, 'size'):
                 response['Content-Length'] = response._container.size
@@ -60,7 +61,7 @@ def add_content_length(func):
                 #logging.debug('did an error just get thrown? see storage/views.py:49')
                 response['Content-Length'] = len(response.content)
 
-
+        log('response: %s' % response)
         return response
 
     return _add_header
@@ -96,8 +97,9 @@ def retrieve(request, recordid, record, mediaid, media):
 @cache_control(private=True, max_age=3600)
 def retrieve_image(request, recordid, record, width=None, height=None):
     passwords = request.session.get('passwords', dict())
-
-    path = get_image_for_record(recordid, request.user, int(width or 100000), int(height or 100000), passwords)
+    log.debug('get_image_for_record(%s, %s, %i, %i, %s)' % (recordid, request.user, int(width or 100000), int(height or 100000), passwords))
+    #path = get_image_for_record(recordid, request.user, int(width or 100000), int(height or 100000), passwords)
+    path = get_image_for_record(Record.objects.get(id=recordid), request.user, int(width or 100000), int(height or 100000), passwords)
     if not path:
         logging.error("get_image_for_record failed for record.id %s" % recordid)
         raise Http404()
