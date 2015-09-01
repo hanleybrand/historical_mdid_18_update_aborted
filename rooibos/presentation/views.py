@@ -13,7 +13,7 @@ from django.db.models.aggregates import Count
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 #from django.db import backend
-from django.db import connection
+
 from django import forms
 from django.views.decorators.http import require_POST
 from django.contrib import messages
@@ -24,6 +24,7 @@ from tagging.models import Tag, TaggedItem
 from tagging.forms import TagField
 from tagging.utils import parse_tag_input
 from rooibos.util.models import OwnedWrapper
+from rooibos.util.database_operations import col
 from rooibos.access.functions import filter_by_access
 from rooibos.util import json_view
 from rooibos.storage.models import ProxyUrl
@@ -36,10 +37,8 @@ from rooibos.userprofile.views import load_settings, store_settings
 from .models import Presentation, PresentationItem
 from .functions import duplicate_presentation
 
+log = logging.getLogger(__name__)
 
-
-# todo: no log statements in file; remove logging?
-log = logging.getLogger('rooibos')
 
 @login_required
 def create(request):
@@ -314,20 +313,19 @@ def browse(request, manage=False):
     active_tags = tags
     active_presenter = presenter
 
-    def col(model, field):
-        # django.db.backend has been removed
-        # qn = backend.DatabaseOperations(model).quote_name
-        backend_name = connection.vendor.lower()
-        qn = backend_name.DatabaseOperations(model).quote_name
-        return '%s.%s' % (qn(model._meta.db_table), qn(model._meta.get_field(field).column))
-
     if presentations and not manage:
+
+        # TODO: investigate replacing this with built-in django-tagging functionality
+        # see right above: http://django-tagging.readthedocs.org/en/develop/#tag-input
+        # Tag.objects.usage_for_model(Presentation, filters= user__username=request.user.username))
+
         q = OwnedWrapper.objects.extra(
             tables=(Presentation._meta.db_table,),
             where=('%s=%s' % (col(OwnedWrapper, 'object_id'), col(Presentation, 'id')),
                    '%s=%s' % (col(OwnedWrapper, 'user'), col(Presentation, 'owner')))).filter(
             object_id__in=presentations.values('id'),
             content_type=OwnedWrapper.t(Presentation))
+
         tags = Tag.objects.usage_for_queryset(q, counts=True)
 
         for p in presentations:
