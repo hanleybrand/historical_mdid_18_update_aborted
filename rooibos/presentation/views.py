@@ -13,7 +13,7 @@ from django.db.models.aggregates import Count
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 #from django.db import backend
-from django.db import connection
+
 from django import forms
 from django.views.decorators.http import require_POST
 from django.contrib import messages
@@ -36,10 +36,8 @@ from rooibos.userprofile.views import load_settings, store_settings
 from .models import Presentation, PresentationItem
 from .functions import duplicate_presentation
 
+log = logging.getLogger(__name__)
 
-
-# todo: no log statements in file; remove logging?
-log = logging.getLogger('rooibos')
 
 @login_required
 def create(request):
@@ -315,19 +313,43 @@ def browse(request, manage=False):
     active_presenter = presenter
 
     def col(model, field):
+        from django.db import connection
         # django.db.backend has been removed
-        # qn = backend.DatabaseOperations(model).quote_name
-        backend_name = connection.vendor.lower()
-        qn = backend_name.DatabaseOperations(model).quote_name
-        return '%s.%s' % (qn(model._meta.db_table), qn(model._meta.get_field(field).column))
+        # qn = backend.DatabaseOperations(model).quote_name won't work, there
+
+        # solution 1 proof (works, requires handling of all dbs separately
+        if connection.vendor.lower() == 'mysql':
+            from django.db.backends.mysql.operations import DatabaseOperations
+            qn = DatabaseOperations(model).quote_name
+            return '%s.%s' % (qn(model._meta.db_table), qn(model._meta.get_field(field).column))
+        else:
+            return None
 
     if presentations and not manage:
+
         q = OwnedWrapper.objects.extra(
             tables=(Presentation._meta.db_table,),
             where=('%s=%s' % (col(OwnedWrapper, 'object_id'), col(Presentation, 'id')),
                    '%s=%s' % (col(OwnedWrapper, 'user'), col(Presentation, 'owner')))).filter(
             object_id__in=presentations.values('id'),
             content_type=OwnedWrapper.t(Presentation))
+
+        # log.debug('it\'s presentations and not manage:')
+        # log.debug('tables = %s' % Presentation._meta.db_table)
+        # log.debug('where = ')
+        # log.debug('%s=%s' % (col(OwnedWrapper, 'object_id'), col(Presentation, 'id')))
+        # log.debug('%s=%s' % (col(OwnedWrapper, 'user'), col(Presentation, 'owner')))
+        # log.debug('object_id__in = %s' % presentations.values('id'))
+        # log.debug('content_type = %s' % presentations.values('id'))
+
+        # the above should be something like
+        # q = OwnedWrapper.objects.extra(
+        #       tables = presentation_presentation
+        #       where = (`util_ownedwrapper`.`object_id`=`presentation_presentation`.`id`,
+        #                `util_ownedwrapper`.`user_id`=`presentation_presentation`.`owner_id`)).filter(
+        #       object_id__in = [{'id': 1}],
+        #       content_type = [{'id': 1}]
+
         tags = Tag.objects.usage_for_queryset(q, counts=True)
 
         for p in presentations:
