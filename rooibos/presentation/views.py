@@ -24,6 +24,7 @@ from tagging.models import Tag, TaggedItem
 from tagging.forms import TagField
 from tagging.utils import parse_tag_input
 from rooibos.util.models import OwnedWrapper
+from rooibos.util.database_operations import col
 from rooibos.access.functions import filter_by_access
 from rooibos.util import json_view
 from rooibos.storage.models import ProxyUrl
@@ -312,20 +313,11 @@ def browse(request, manage=False):
     active_tags = tags
     active_presenter = presenter
 
-    def col(model, field):
-        from django.db import connection
-        # django.db.backend has been removed
-        # qn = backend.DatabaseOperations(model).quote_name won't work, there
-
-        # solution 1 proof (works, requires handling of all dbs separately
-        if connection.vendor.lower() == 'mysql':
-            from django.db.backends.mysql.operations import DatabaseOperations
-            qn = DatabaseOperations(model).quote_name
-            return '%s.%s' % (qn(model._meta.db_table), qn(model._meta.get_field(field).column))
-        else:
-            return None
-
     if presentations and not manage:
+
+        # TODO: investigate replacing this with built-in django-tagging functionality
+        # see right above: http://django-tagging.readthedocs.org/en/develop/#tag-input
+        # Tag.objects.usage_for_model(Presentation, filters= user__username=request.user.username))
 
         q = OwnedWrapper.objects.extra(
             tables=(Presentation._meta.db_table,),
@@ -333,22 +325,6 @@ def browse(request, manage=False):
                    '%s=%s' % (col(OwnedWrapper, 'user'), col(Presentation, 'owner')))).filter(
             object_id__in=presentations.values('id'),
             content_type=OwnedWrapper.t(Presentation))
-
-        # log.debug('it\'s presentations and not manage:')
-        # log.debug('tables = %s' % Presentation._meta.db_table)
-        # log.debug('where = ')
-        # log.debug('%s=%s' % (col(OwnedWrapper, 'object_id'), col(Presentation, 'id')))
-        # log.debug('%s=%s' % (col(OwnedWrapper, 'user'), col(Presentation, 'owner')))
-        # log.debug('object_id__in = %s' % presentations.values('id'))
-        # log.debug('content_type = %s' % presentations.values('id'))
-
-        # the above should be something like
-        # q = OwnedWrapper.objects.extra(
-        #       tables = presentation_presentation
-        #       where = (`util_ownedwrapper`.`object_id`=`presentation_presentation`.`id`,
-        #                `util_ownedwrapper`.`user_id`=`presentation_presentation`.`owner_id`)).filter(
-        #       object_id__in = [{'id': 1}],
-        #       content_type = [{'id': 1}]
 
         tags = Tag.objects.usage_for_queryset(q, counts=True)
 
