@@ -4,6 +4,7 @@ import logging
 
 import re
 import os
+import sys
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
@@ -23,7 +24,6 @@ from reportlab.platypus.paragraph import Paragraph
 from reportlab.platypus.frames import Frame
 from reportlab.platypus.doctemplate import BaseDocTemplate, PageTemplate
 
-from bs4 import BeautifulSoup
 
 from rooibos.viewers.functions import register_viewer, Viewer
 from rooibos.storage import get_image_for_record
@@ -33,6 +33,18 @@ from .models import Presentation
 
 log = logging.getLogger(__name__)
 
+if 'bs4' in sys.modules:
+    try:
+        from bs4 import BeautifulSoup
+    except ImportError as e:
+        log.debug('Beautiful Soup 4 is something wrong? \n%s' % e)
+elif 'BeautifulSoup' in sys.modules:
+    try:
+        from BeautifulSoup import BeautifulSoup
+    except ImportError as ee:
+        log.debug('Beautiful Soup 3 import error: \n%s' % ee)
+else:
+    log.debug('Beautiful Soup not installed - please install via \'pip install -U beautifulsoup4\'')
 
 def _get_presentation(obj, request, objid):
     if obj:
@@ -374,13 +386,29 @@ class PackageFilesViewer(Viewer):
 
 
 def remove_rels_from_a_tags(fragment):
+
     log.debug('cleaned value = %s' % fragment)
+    if 'bs4' in sys.modules:
+        soup = BeautifulSoup(fragment, 'lxml')
+        for next_rel in soup.find_all("a", rel=True):
+            del next_rel['rel']
 
-    soup = BeautifulSoup(fragment, 'lxml')
-    for next_rel in soup.find_all("a", rel=True):
-        del next_rel['rel']
+        return soup.body.next
 
-    return soup.body.next
+    elif 'BeautifulSoup' in sys.modules:
+        soup = BeautifulSoup(fragment)
+
+        for next_rel in soup.findAll("a", rel=True):
+            del next_rel['rel']
+
+        return soup
+
+    else:
+        log.debug('There is no BeautifulSoup to make  %s soup - make sure requirements are installed' % fragment)
+        return fragment
+
+
+
 
 
 @register_viewer('packagefilesviewer', PackageFilesViewer)
