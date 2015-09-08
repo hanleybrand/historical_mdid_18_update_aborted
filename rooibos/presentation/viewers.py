@@ -1,11 +1,10 @@
 from __future__ import absolute_import
-import re
-import math
 import zipfile
+import logging
+
+import re
 import os
-from StringIO import StringIO
-from django import forms
-from django.http import Http404, HttpResponseForbidden, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template import RequestContext
@@ -13,24 +12,27 @@ from django.core.urlresolvers import reverse
 from django.core.files.temp import NamedTemporaryFile
 from django.core.servers.basehttp import FileWrapper
 from django.template import Context, Template
-from django.utils.encoding import smart_str, smart_unicode
+from django.utils.encoding import smart_str
 from reportlab.pdfgen import canvas
 from reportlab.lib import pagesizes
 from reportlab.lib.units import inch
 from reportlab.lib.styles import StyleSheet1, ParagraphStyle
-from reportlab.lib.colors import white, black
-from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT
+from reportlab.lib.enums import TA_CENTER, TA_RIGHT
 from reportlab.platypus import flowables
 from reportlab.platypus.paragraph import Paragraph
 from reportlab.platypus.frames import Frame
 from reportlab.platypus.doctemplate import BaseDocTemplate, PageTemplate
-from PIL import Image
-from rooibos.access.functions import get_effective_permissions_and_restrictions, filter_by_access
+
+from bs4 import BeautifulSoup
+
 from rooibos.viewers.functions import register_viewer, Viewer
 from rooibos.storage import get_image_for_record
-from rooibos.data.models import Record, Collection
+from rooibos.data.models import Record
 from rooibos.api.views import presentation_detail
 from .models import Presentation
+
+log = logging.getLogger(__name__)
+
 
 def _get_presentation(obj, request, objid):
     if obj:
@@ -52,7 +54,7 @@ class PresentationViewer(Viewer):
         return render_to_response('presentation_viewer.html',
                                   {'presentation': self.obj,
                                    'return_url': return_url,
-                                  },
+                                   },
                                   context_instance=RequestContext(request))
 
 
@@ -94,7 +96,7 @@ class FlashCardViewer(Viewer):
                                           parent=stylesheet['Normal'],
                                           leftIndent=18,
                                           firstLineIndent=-18,
-            ))
+                                          ))
             return stylesheet
 
         styles = getStyleSheet()
@@ -143,6 +145,9 @@ class FlashCardViewer(Viewer):
                 values = item.get_fieldvalues(owner=request.user)
                 for value in values:
                     v = value.value if len(value.value) < 100 else value.value[:100] + '...'
+
+                    v = remove_rels_from_a_tags(v)
+
                     data.append(getParagraph('<b>%s:</b> %s' % (value.resolved_label, v), styles['Data']))
                 annotation = item.annotation
                 if annotation:
@@ -261,6 +266,9 @@ class PrintViewViewer(Viewer):
             text = []
             values = item.get_fieldvalues(owner=request.user)
             for value in values:
+                log.debug('value for cleaning = %s' % value.value)
+                value.value = remove_rels_from_a_tags(value.value)
+                log.debug('cleaned value = %s' % value.value)
                 text.append('<b>%s</b>: %s<br />' % (value.resolved_label, value.value))
             annotation = item.annotation
             if annotation:
@@ -322,7 +330,7 @@ class PackageFilesViewer(Viewer):
                     str(index + 1).zfill(4),
                     filename(title or 'Slide %s' % (index + 1)),
                     os.path.splitext(image)[1])
-                ).encode('ascii', 'replace'))
+                                     ).encode('ascii', 'replace'))
 
         def metadata_file(tempfile, record):
             t = Template("{% load data %}{% metadata record %}")
@@ -363,6 +371,16 @@ class PackageFilesViewer(Viewer):
         response['Content-Disposition'] = 'attachment; filename=%s.zip' % filename(presentation.title)
         response['Content-Length'] = os.path.getsize(tempfile.name)
         return response
+
+
+def remove_rels_from_a_tags(fragment):
+    log.debug('cleaned value = %s' % fragment)
+
+    soup = BeautifulSoup(fragment, 'lxml')
+    for next_rel in soup.find_all("a", rel=True):
+        del next_rel['rel']
+
+    return soup.body.next
 
 
 @register_viewer('packagefilesviewer', PackageFilesViewer)
