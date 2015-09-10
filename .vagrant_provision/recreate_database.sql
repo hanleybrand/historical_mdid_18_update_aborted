@@ -1,3 +1,5 @@
+DROP DATABASE IF EXISTS rooibos;
+
 CREATE DATABASE IF NOT EXISTS rooibos CHARACTER SET utf8;
 GRANT ALL PRIVILEGES ON rooibos.* TO rooibos@localhost IDENTIFIED BY 'rooibos';
 UPDATE mysql.user SET
