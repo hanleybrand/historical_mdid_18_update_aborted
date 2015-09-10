@@ -14,4 +14,9 @@ pgrep -fl "runworkers"
 echo -e  "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 }
 
+function gateway_ip(){
+    route -n | grep 'UG' | awk '{print $2}'
+}
+
 alias solr-check="curl http://localhost:8983/solr/admin/ping"
+
