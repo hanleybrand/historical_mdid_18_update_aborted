@@ -196,6 +196,12 @@ MANAGERS = ADMINS
 # see debug comments, when DEBUG is True
 # debug_toolbar (if installed) will act as if debug=true
 
+# CLIP_APP_* governs the names of apps that begin 'mdid-` that are installed in rooibos/apps
+# e.g.
+CLIP_APP_NAMES = True
+CLIP_APP_ONE = 'mdid-'
+CLIP_APP_STRINGS = ('mdid-',)
+
 # if the vagrant bootstrap.sh runs, VAGRANT_GATEWAY will be changed
 VAGRANT_GATEWAY = '<<GATEWAY_IP>>'
 

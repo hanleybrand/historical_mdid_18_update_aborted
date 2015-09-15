@@ -5,10 +5,5 @@ UPDATE mysql.user SET
     Create_priv='Y', Drop_priv='Y', Index_priv='Y', Alter_priv='y'
     WHERE Host='localhost' AND User='rooibos';
 FLUSH PRIVILEGES;
-GRANT ALL PRIVILEGES ON rooibos.* TO vagrant@localhost IDENTIFIED BY 'vagrant';
-UPDATE mysql.user SET
-    Select_priv='Y', Insert_priv='Y', Update_priv='Y', Delete_priv='Y',
-    Create_priv='Y', Drop_priv='Y', Index_priv='Y', Alter_priv='y'
-    WHERE Host='localhost' AND User='vagrant';
-FLUSH PRIVILEGES;
+
 

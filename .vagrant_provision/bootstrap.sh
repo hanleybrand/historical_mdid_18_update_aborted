@@ -43,12 +43,11 @@ mkdir -p $MDID_DATA_DIR/logs
 # create a ln from /vagrant to our $MDID_DIR
 ln -s $VAGRANT_DIR $MDID_DIR
 
-
 # explicitly create the log directory, because when the workers service fires
 # up later in the provisioning, if they're not there then they will get
 # created by root and permissions will be all jacked up
-mkdir -p $MDID_DATA_DIR/scratch/logs
 
+mkdir -p $MDID_DATA_DIR/scratch/logs
 
 # touch the log files so they work later
 
@@ -79,14 +78,12 @@ echo -e "\n\n                  PSSST:  the mysql root password is: $SQL_PASSWORD
 sudo echo mysql-server mysql-server/root_password password $SQL_PASSWORD | debconf-set-selections
 sudo echo mysql-server mysql-server/root_password_again password $SQL_PASSWORD | debconf-set-selections
 
-
 # Now we can install the packages
 # mysql-server: The MySQL server
 # mysql-client: The MySQL client utilities
 # libmysqlclient-dev: MySQL developmental libraries, needed to build the python
 #   MySQL module
 sudo apt-get install -y mysql-server mysql-client libmysqlclient-dev 1>> bootstrap_logs/install.txt 2>> bootstrap_logs/install_errors.txt
-
 
 ##############################################################################
 # Install other dependencies
@@ -129,9 +126,6 @@ sudo apt-get install -y libldap2-dev libsasl2-dev 1>> bootstrap_logs/python_inst
 # Pillow needs image libraries
 sudo apt-get install -y libtiff5-dev libjpeg8-dev zlib1g-dev 1>> bootstrap_logs/python_install.txt 2>> bootstrap_logs/python_install_errors.txt
 
-
-
-
 ##############################################################################
 # Configure Python and setup a Virtual Environment
 ##############################################################################
@@ -149,7 +143,6 @@ echo -e "################# Installing virtualenv software #################"
 # install virtualenv
 # as per docs, virtualenv & vewrapper should only be installed in a system install of python
 # http://virtualenvwrapper.readthedocs.org/en/latest/install.html#basic-installation
-
 
 mkdir -p $HOME_DIR/.virtualenvs
 
@@ -198,7 +191,6 @@ sudo chown -R vagrant:vagrant /home/vagrant/
 # you can load the schema to work around current weird migrations problems
 # mysql -u root -p$SQL_PASSWORD < /vagrant/.vagrant_provision/mdid_schema.sql
 
-
 ## save settings_local.py from template if there is none
 if [ ! -f $CONFIG_DIR/settings_local.py ]; then
 #  # backup any existing local settings first
@@ -217,7 +209,7 @@ fi
 #cat $CONFIG_DIR/settings_local.py | sed -e "s/<<GATEWAY_IP>>/$GATEWAY_IP/" > $CONFIG_DIR/settings_local.py
 
 mysql --user=root --password=$SQL_PASSWORD -v < /vagrant/.vagrant_provision/create_database.sql 1>> bootstrap_logs/mdid_install.txt 2>> bootstrap_logs/mdid_install_errors.txt
-mysql --user=rooibos --password=$SQL_PASSWORD -v -e "show grants; show tables rooibos;" 1>> bootstrap_logs/mdid_install.txt 2>> bootstrap_logs/mdid_install_errors.txt
+mysql --user=rooibos --password=$SQL_PASSWORD -v -e "show grants; show tables;" rooibos 1>> bootstrap_logs/mdid_install.txt 2>> bootstrap_logs/mdid_install_errors.txt
 
 # make manage.py executable like "./mangage.py syncdb"
 chmod +x $MDID_DIR/manage.py
@@ -233,7 +225,7 @@ $MDID_PY $MDID_DIR/manage.py migrate --noinput 1>> bootstrap_logs/mdid_install.t
 $MDID_PY $MDID_DIR/manage.py collectstatic --noinput 1>> bootstrap_logs/mdid_install.txt 2>> bootstrap_logs/mdid_install_errors.txt
 
 echo -e "################# Adding Upstart scripts for Solr and the Workers #################"
-cp $PROVISION_DIR/mdid3-*.conf /etc/init
+sudo cp $PROVISION_DIR/mdid3-*.conf /etc/init
 
 sudo chown -R vagrant:vagrant /home/vagrant/
 

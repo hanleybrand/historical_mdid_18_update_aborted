@@ -28,7 +28,7 @@ PS1='\[`[ $? = 0 ] && X=2 || X=1; tput setaf $X`\]\h\[`tput sgr0`\]:$PWD\[\033[3
 
 source /home/vagrant/.virtualenvs/mdid/bin/activate
 
-# echo 'type \'id_help\' for a list of
+echo "type 'mdid_help' for a list of mdid specific commands"
 
 
 
