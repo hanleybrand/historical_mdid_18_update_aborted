@@ -42,6 +42,7 @@ class Collection(models.Model):
 
     class Meta:
         ordering = ['order', 'title']
+        app_label = 'rooibos.data'
 
     def save(self, **kwargs):
         unique_slug(self, slug_source='title', slug_field='name',
@@ -104,6 +105,9 @@ class CollectionItem(models.Model):
     record = models.ForeignKey('Record')
     hidden = models.BooleanField(default=False)
 
+    class Meta:
+        app_label = 'rooibos.data'
+
     def natural_key(self):
         return self.collection.natural_key() + self.record.natural_key()
     natural_key.dependencies = ['data.Collection', 'data.Record']
@@ -138,6 +142,9 @@ class Record(models.Model):
     manager = models.CharField(max_length=50, null=True, blank=True)
     next_update = models.DateTimeField(null=True, blank=True, serialize=False)
     owner = models.ForeignKey(User, null=True, blank=True, serialize=False)
+
+    class Meta:
+        app_label = 'rooibos.data'
 
     def natural_key(self):
         return (self.name,)
@@ -453,6 +460,9 @@ class MetadataStandard(models.Model):
     name = models.SlugField(max_length=50, unique=True)
     prefix = models.CharField(max_length=16, unique=True)
 
+    class Meta:
+        app_label = 'rooibos.data'
+
     def natural_key(self):
         return (self.prefix,)
 
@@ -468,12 +478,15 @@ class Vocabulary(models.Model):
     origin = models.TextField(null=True, blank=True)
 
     class Meta:
-        verbose_name_plural = "vocabularies"
-
+        verbose_name_plural = 'vocabularies'
+        app_label = 'rooibos.data'
 
 class VocabularyTerm(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)
     term = models.TextField()
+
+    class Meta:
+        app_label = 'rooibos.data'
 
     def __unicode__(self):
         return self.term
@@ -537,7 +550,7 @@ class Field(models.Model):
         unique_together = ('name', 'standard')
         ordering = ['name']
         order_with_respect_to = 'standard'
-
+        app_label = 'rooibos.data'
 
 @transaction.atomic
 def get_system_field():
@@ -569,6 +582,7 @@ class FieldSet(models.Model):
 
     class Meta:
         ordering = ['title']
+        app_label = 'rooibos.data'
 
     @staticmethod
     def for_user(user):
@@ -591,6 +605,7 @@ class FieldSetField(models.Model):
 
     class Meta:
         ordering = ['order']
+        app_label = 'rooibos.data'
 
 
 class FieldValue(models.Model):
@@ -659,7 +674,7 @@ class FieldValue(models.Model):
             ['field', 'record', 'index_value'],
             ['field', 'record', 'browse_value'],
         ]
-
+        app_label = 'rooibos.data'
 
 class DisplayFieldValue(FieldValue):
     """
@@ -676,6 +691,9 @@ class DisplayFieldValue(FieldValue):
             if s != o:
                 return cmp(s, o)
         return 0
+
+    class Meta:
+        app_label = 'rooibos.data'
 
     @staticmethod
     def from_value(value, field):

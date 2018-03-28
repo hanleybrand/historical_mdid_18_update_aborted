@@ -17,8 +17,10 @@ class AccessControl(models.Model):
     manage = models.NullBooleanField()
     restrictions_repr = models.TextField(blank=True, default='')
 
+
     class Meta:
         unique_together = ('content_type', 'object_id', 'user', 'usergroup')
+        app_label = 'rooibos.access'
 
     def save(self, **kwargs):
         if (self.user and self.usergroup):
@@ -93,6 +95,9 @@ class ExtendedGroup(Group):
         ('E', 'Everybody'),
     )
 
+    class Meta:
+        app_label = 'rooibos.access'
+
     type = models.CharField(max_length=1, choices=TYPE_CHOICES)
 
     objects = ExtendedGroupManager()
@@ -135,6 +140,9 @@ class Subnet(models.Model):
     group = models.ForeignKey(ExtendedGroup, limit_choices_to={'type': 'I'})
     subnet = models.CharField(max_length=80)
 
+    class Meta:
+        app_label = 'rooibos.access'
+
     def __unicode__(self):
         return '%s: %s' % (self.group.name, self.subnet)
 
@@ -146,10 +154,17 @@ class Attribute(models.Model):
     def __unicode__(self):
         return '%s: %s' % (self.group.name, self.attribute)
 
+    class Meta:
+        app_label = 'rooibos.access'
+
 
 class AttributeValue(models.Model):
     attribute = models.ForeignKey(Attribute)
     value = models.CharField(max_length=255)
+
+    class Meta:
+        app_label = 'rooibos.access'
+
 
 
 SEPARATOR = ' :: '
