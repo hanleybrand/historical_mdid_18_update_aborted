@@ -1,7 +1,21 @@
-[![Code Issues](http://www.quantifiedcode.com/api/v1/project/0094577cbd774ac9a1f3d0f220bf6a49/badge.svg)](http://www.quantifiedcode.com/app/project/0094577cbd774ac9a1f3d0f220bf6a49) Code Issues detected by Quantified Code - check them if you're looking for something to fix
+# historical_mdid_18_update_aborted
+just in case
 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hanleybrand/rooibos?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) Chat/ask questions/etc - don't be shy!
+# DO NOT USE
 
+This is a copy of a fork of MDID (vrchost/rooibos) I had made a few years back trying to upgrade the app from Django 1.2 -> 1.8 to see if i could do it. 
+
+I won't say I couldn't, but I will say I didn't get it completely working.  :shrug:
+
+The app is -- as of this writing -- updated to run using Django 1.11 
+
+I'm only keeping this copy in the event that I remember something I had done and want to see how I was doing it.
+
+Use the real thing: [vrchost/rooibos](https://github.com/vrchost/rooibos)
+
+The rest of this document, as they say, is history.
+
+<hr>
 
 # Madison Digial Image Database (MDID)
 
